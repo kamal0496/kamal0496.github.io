@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banking Microservices — README</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0A0C0F;
+    --panel: #12151B;
+    --panel-2: #171B22;
+    --border: #262B33;
+    --text: #EDEFF2;
+    --text-dim: #939AA6;
+    --accent: #6EE7B7;
+    --accent-2: #60A5FA;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background: var(--bg); color: var(--text);
+    font-family: var(--body); line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: var(--accent); }
+  .wrap{ max-width: 820px; margin: 0 auto; padding: 0 32px 100px; }
+
+  .topbar{
+    position: sticky; top:0; z-index: 5;
+    background: rgba(10,12,15,0.9);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    margin-bottom: 50px;
+  }
+  .topbar .wrap{ display:flex; justify-content: space-between; align-items:center; padding-bottom:0; }
+  .back-link{ font-family: var(--mono); font-size: 13px; text-decoration:none; color: var(--text-dim); }
+  .back-link:hover{ color: var(--accent); }
+  .doc-tag{ font-family: var(--mono); font-size: 12px; color: var(--accent-2); }
+
+  h1{ font-family: var(--display); font-size: 32px; font-weight: 600; margin: 0 0 10px; }
+  .subtitle{ color: var(--text-dim); font-size: 15px; margin: 0 0 40px; }
+
+  h2{
+    font-family: var(--display); font-weight: 600; font-size: 21px;
+    margin: 52px 0 18px; padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  h2:first-of-type{ border-top:none; padding-top:0; margin-top: 0; }
+  h3{ font-family: var(--mono); font-size: 15px; color: var(--accent); margin: 28px 0 10px; }
+
+  p{ color: var(--text-dim); font-size: 15px; margin: 0 0 14px; }
+  ul{ color: var(--text-dim); font-size: 14.5px; padding-left: 20px; margin: 0 0 16px; }
+  li{ margin-bottom: 7px; }
+  strong{ color: var(--text); }
+
+  .service-card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+  .service-card .port{
+    display:inline-block; font-family: var(--mono); font-size: 11.5px;
+    color: var(--accent-2); background: var(--panel-2); border-radius: 6px;
+    padding: 3px 9px; margin-left: 10px;
+  }
+  .service-card ul{ margin-bottom: 0; }
+  .service-card .store{ font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); margin: 10px 0; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap: 8px; margin: 10px 0 20px; }
+  .chip{ font-family: var(--mono); font-size: 12px; padding: 5px 11px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); }
+
+  .terminal{
+    background: #06070A; border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin: 16px 0 20px;
+  }
+  .terminal-bar{ display:flex; gap:6px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .terminal-bar i{ width:10px; height:10px; border-radius:50%; background:#333; }
+  .terminal pre{ margin:0; padding: 16px 18px; font-family: var(--mono); font-size: 12.5px; color: #B9E6CF; overflow-x:auto; line-height: 1.7; }
+  .terminal pre .cmt{ color: var(--text-dim); }
+
+  ol.flow{ counter-reset: step; list-style: none; padding-left: 0; margin: 0 0 18px; }
+  ol.flow li{
+    counter-increment: step;
+    position: relative;
+    padding-left: 34px;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    color: var(--text-dim);
+  }
+  ol.flow li::before{
+    content: counter(step);
+    position: absolute; left: 0; top: 0;
+    width: 22px; height: 22px;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-size: 11.5px; color: var(--accent);
+  }
+
+  table{ width:100%; border-collapse: collapse; margin: 10px 0 22px; font-size: 14px; }
+  th, td{ text-align:left; padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+  th{ font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .03em; }
+  td code, li code{ font-family: var(--mono); font-size: 13px; color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; }
+
+  .note{
+    border-left: 2px solid var(--accent-2);
+    background: var(--panel);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    margin: 18px 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a class="back-link" href="kamal-portfolio-full.html">&larr; Back to portfolio</a>
+    <span class="doc-tag">README.md</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1>Banking Microservices Application</h1>
+  <p class="subtitle">Spring Boot-based banking microservice system simulating a real-world digital banking flow — account management, transaction processing, fraud detection, payment integration, and notifications.</p>
+
+  <h2>Architecture</h2>
+  <p>Built as an event-driven microservices system:</p>
+  <div class="chip-row">
+    <span class="chip">Spring Boot 3 / Java 17</span>
+    <span class="chip">PostgreSQL</span>
+    <span class="chip">Redis (OTP)</span>
+    <span class="chip">Apache Kafka</span>
+    <span class="chip">Feign clients</span>
+    <span class="chip">Razorpay SDK</span>
+    <span class="chip">Docker Compose</span>
+  </div>
+
+  <h2>Services</h2>
+
+  <div class="service-card">
+    <strong>account-service</strong><span class="port">:8081</span>
+    <p style="margin-top:10px;">Creates accounts, fetches balances, credits/debits, blocks/unblocks accounts, and maintains daily transaction limits.</p>
+    <div class="store">Data store: PostgreSQL (<code>account_db</code>)</div>
+    <ul>
+      <li><code>GET /api/v1/accounts</code></li>
+      <li><code>POST /api/v1/accounts</code></li>
+      <li><code>GET /api/v1/accounts/{accountNumber}/balance</code></li>
+      <li><code>PUT /api/v1/accounts/{accountNumber}/block</code> · <code>/unblock</code> · <code>/credit</code> · <code>/deduct</code></li>
+    </ul>
+  </div>
+
+  <div class="service-card">
+    <strong>transaction-service</strong><span class="port">:8082</span>
+    <p style="margin-top:10px;">Transfers money between accounts, handles transfer-with-payment flow, validates OTPs for suspicious transactions, stores transaction history, and coordinates payment/fraud workflows over Kafka.</p>
+    <div class="store">Data store: PostgreSQL (<code>transaction_db</code>) + Redis (OTP)</div>
+    <ul>
+      <li><code>POST /api/v1/transactions/transfer</code></li>
+      <li><code>POST /api/v1/transactions/transfer-with-payment</code></li>
+      <li><code>GET /api/v1/transactions/history/{accountNumber}</code></li>
+      <li><code>POST /api/v1/transactions/{transactionId}/verify</code></li>
+    </ul>
+  </div>
+
+  <div class="service-card">
+    <strong>payment-service</strong><span class="port">:8084</span>
+    <p style="margin-top:10px;">Creates Razorpay orders, stores payment records, receives Razorpay webhooks, and emits <code>payment.completed</code> / <code>payment.failed</code> events.</p>
+    <div class="store">Data store: PostgreSQL (<code>payment_db</code>)</div>
+    <ul>
+      <li><code>POST /api/v1/payments/create-order</code></li>
+      <li><code>POST /api/v1/payments/webhook</code></li>
+    </ul>
+  </div>
+
+  <div class="service-card">
+    <strong>fraud-detection-service</strong><span class="port">:8083</span>
+    <p style="margin-top:10px;">Listens for transaction-initiation events, checks sender balance to judge risk, and triggers a verification flow for suspicious transactions.</p>
+    <div class="store">Consumes: <code>transaction.initiated</code> &nbsp;·&nbsp; Produces: <code>verification.required</code>, <code>fraud.check.clean</code></div>
+  </div>
+
+  <div class="service-card">
+    <strong>notification-service</strong><span class="port">:8085</span>
+    <p style="margin-top:10px;">Consumes event notifications from Kafka and logs alerts for OTP generation, transaction status, refunds, fraud alerts, and payment results. Currently logs to console rather than sending real emails/SMS.</p>
+    <div class="store">Consumes: <code>transaction.otp.generated</code>, <code>transaction.completed</code>, <code>fraud.detected</code>, <code>transaction.refunded</code>, <code>payment.completed</code>, <code>payment.failed</code></div>
+  </div>
+
+  <div class="service-card">
+    <strong>api-gateway</strong><span class="port">:9090</span>
+    <p style="margin-top:10px;">Central entry point for client-facing requests, routing to account-service, transaction-service, and payment-service.</p>
+  </div>
+
+  <h2>Application Workflow</h2>
+
+  <h3>Standard bank transfer</h3>
+  <ol class="flow">
+    <li>Client calls <code>POST /api/v1/transactions/transfer</code> via the gateway or directly.</li>
+    <li>transaction-service deducts the sender's balance via a Feign call to account-service.</li>
+    <li>A transaction record is created with status <code>PROCESSING</code>, and a <code>transaction.initiated</code> event is published to Kafka.</li>
+    <li>fraud-detection-service evaluates the transaction and emits either <code>fraud.check.clean</code> or <code>verification.required</code>.</li>
+    <li>If suspicious: transaction-service generates a 6-digit OTP, stores it in Redis with a 5-minute expiry, and emits <code>transaction.otp.generated</code> — notification-service logs/alerts the user.</li>
+    <li>Client verifies via <code>POST /api/v1/transactions/{transactionId}/verify?otp=XXXXXX</code>.</li>
+    <li>If valid: transaction is marked <code>COMPLETED</code>, the receiver is credited, and notification-service confirms it.</li>
+    <li>If invalid or expired: the transaction fails, the sender's account is blocked/flagged, a refund is triggered, and <code>fraud.detected</code> / <code>transaction.refunded</code> events are emitted.</li>
+  </ol>
+
+  <h3>Transfer with Razorpay payment</h3>
+  <ol class="flow">
+    <li>Client calls <code>POST /api/v1/transactions/transfer-with-payment</code>.</li>
+    <li>transaction-service creates the transaction in <code>PAYMENT_PENDING</code> state and requests a payment order from payment-service.</li>
+    <li>payment-service creates a Razorpay order and returns order ID + key details to the frontend.</li>
+    <li>The frontend completes payment; Razorpay sends a webhook to <code>POST /api/v1/payments/webhook</code>.</li>
+    <li>payment-service validates the event, updates the payment record, and publishes <code>payment.completed</code> or <code>payment.failed</code>.</li>
+    <li>transaction-service consumes the event and either completes the transfer or fails it and triggers a refund.</li>
+    <li>notification-service logs the outcome.</li>
+  </ol>
+
+  <div class="note">Each service owns its own database, async events decouple the services, Redis handles short-lived OTP checks, and Kafka provides reliable event-driven coordination between them.</div>
+
+  <h2>Running it locally</h2>
+  <p>Requires Docker and Docker Compose (or Java 17+, PostgreSQL, and Redis if running services directly).</p>
+  <div class="terminal">
+    <div class="terminal-bar"><i></i><i></i><i></i></div>
+    <pre><span class="cmt"># from the project root</span>
+docker-compose up -d</pre>
+  </div>
+
+  <table>
+    <tr><th>Service</th><th>Endpoint</th></tr>
+    <tr><td>Account Service</td><td><code>localhost:8081</code></td></tr>
+    <tr><td>Transaction Service</td><td><code>localhost:8082</code></td></tr>
+    <tr><td>Fraud Detection Service</td><td><code>localhost:8083</code></td></tr>
+    <tr><td>Payment Service</td><td><code>localhost:8084</code></td></tr>
+    <tr><td>Notification Service</td><td><code>localhost:8085</code></td></tr>
+    <tr><td>API Gateway</td><td><code>localhost:9090</code></td></tr>
+  </table>
+
+  <h2>Example requests</h2>
+  <h3>Create a new account</h3>
+  <div class="terminal">
+    <div class="terminal-bar"><i></i><i></i><i></i></div>
+    <pre>curl -X POST http://localhost:8081/api/v1/accounts \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accountHolderName": "John Doe",
+    "email": "john@example.com",
+    "phone": "9876543210",
+    "initialDeposit": 10000,
+    "accountType": "SAVING"
+  }'</pre>
+  </div>
+
+  <h3>Transfer money</h3>
+  <div class="terminal">
+    <div class="terminal-bar"><i></i><i></i><i></i></div>
+    <pre>curl -X POST http://localhost:8082/api/v1/transactions/transfer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "senderAccountNumber": "123456789012",
+    "receiverAccountNumber": "987654321098",
+    "amount": 1000,
+    "description": "Wallet transfer",
+    "currency": "INR"
+  }'</pre>
+  </div>
+
+  <h3>Verify OTP</h3>
+  <div class="terminal">
+    <div class="terminal-bar"><i></i><i></i><i></i></div>
+    <pre>curl -X POST "http://localhost:8082/api/v1/transactions/{transactionId}/verify?otp=123456"</pre>
+  </div>
+
+  <h2>Notes &amp; caveats</h2>
+  <ul>
+    <li>This is a demo/learning application — some notification logic is simulated via logs rather than real email/SMS.</li>
+    <li>Fraud detection currently uses a simplified random-risk decision, intended as a sample implementation.</li>
+    <li>Sensitive credentials are managed through <code>.env</code> and should never be committed to a public repository.</li>
+    <li>The API gateway may need additional routing/security hardening for production use.</li>
+  </ul>
+</div>
+
+</body>
+</html>
