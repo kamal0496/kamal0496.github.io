@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kamal Kumar Thapa — Full-Stack Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #FAFAF8;
-    --surface: #FFFFFF;
-    --border: #E4E1D9;
-    --ink: #14181E;
-    --ink-dim: #5C6470;
-    --accent: #3B5BDB;
-    --accent-soft: #EEF1FD;
-    --display: 'Fraunces', Georgia, serif;
+    --bg: #0A0C0F;
+    --panel: #12151B;
+    --panel-2: #171B22;
+    --border: #262B33;
+    --text: #EDEFF2;
+    --text-dim: #939AA6;
+    --accent: #6EE7B7;
+    --accent-2: #60A5FA;
+    --display: 'Space Grotesk', sans-serif;
     --body: 'Inter', -apple-system, sans-serif;
     --mono: 'IBM Plex Mono', monospace;
   }
@@ -26,242 +27,186 @@
   body{
     margin:0;
     background: var(--bg);
-    color: var(--ink);
+    color: var(--text);
     font-family: var(--body);
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
   }
 
   a{ color: var(--accent); }
-
   .wrap{ max-width: 980px; margin: 0 auto; padding: 0 32px; }
 
-  /* ---------- reveal-on-scroll ---------- */
-  .reveal{
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+  /* ---------- scroll progress ---------- */
+  .progress{
+    position: fixed; top:0; left:0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    width: 0%;
+    z-index: 100;
   }
-  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+
+  /* ---------- reveal ---------- */
+  .reveal{ opacity:0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.is-visible{ opacity:1; transform: translateY(0); }
   @media (prefers-reduced-motion: reduce){
-    .reveal{ opacity: 1; transform: none; transition: none; }
-    html{ scroll-behavior: auto; }
+    .reveal{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
   }
 
   /* ---------- nav ---------- */
   nav.topnav{
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: rgba(250, 250, 248, 0.88);
-    backdrop-filter: blur(8px);
+    position: sticky; top:0; z-index: 10;
+    background: rgba(10,12,15,0.85);
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
-  nav.topnav .wrap{
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 18px;
-    padding-bottom: 18px;
-  }
-  .logo{ font-family: var(--mono); font-size: 14px; font-weight: 500; }
-  .navlinks{ display:flex; gap: 28px; }
-  .navlinks a{
-    font-size: 14px;
-    text-decoration: none;
-    color: var(--ink-dim);
-    position: relative;
-    padding-bottom: 3px;
-  }
-  .navlinks a::after{
-    content:"";
-    position: absolute;
-    left:0; right:0; bottom:0;
-    height: 1.5px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.25s ease;
-  }
-  .navlinks a:hover{ color: var(--ink); }
-  .navlinks a:hover::after{ transform: scaleX(1); }
+  nav.topnav .wrap{ display:flex; justify-content: space-between; align-items:center; padding: 18px 32px; }
+  .logo{ font-family: var(--mono); font-size: 13px; color: var(--accent); }
+  .navlinks{ display:flex; gap: 26px; }
+  .navlinks a{ font-size: 13.5px; text-decoration:none; color: var(--text-dim); transition: color .2s ease; }
+  .navlinks a:hover{ color: var(--text); }
 
   /* ---------- hero ---------- */
-  .hero{ padding: 88px 0 64px; }
-  .hero .eyebrow{
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--accent);
-    margin: 0 0 18px;
-  }
+  .hero{ padding: 96px 0 60px; }
+  .hero .eyebrow{ font-family: var(--mono); font-size: 13px; color: var(--accent-2); margin: 0 0 18px; }
   .hero h1{
-    font-family: var(--display);
-    font-size: clamp(36px, 5.5vw, 54px);
-    font-weight: 500;
-    line-height: 1.15;
-    margin: 0 0 20px;
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(34px, 5.5vw, 52px);
+    line-height: 1.15; margin: 0 0 20px;
   }
-  .hero p.lede{
-    font-size: 17.5px;
-    color: var(--ink-dim);
-    max-width: 62ch;
-    margin: 0 0 34px;
+  .hero h1 span{ color: var(--accent); }
+  .hero p.lede{ font-size: 17px; color: var(--text-dim); max-width: 62ch; margin: 0 0 32px; }
+  .hero-links{ display:flex; flex-wrap:wrap; gap: 12px; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 10px 18px; border-radius: 8px; font-size: 14px;
+    text-decoration:none; border: 1px solid var(--border); color: var(--text);
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
   }
-  .hero-links{ display:flex; flex-wrap: wrap; gap: 12px; }
-  .pill-btn{
-    display:inline-flex;
-    align-items:center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-size: 14px;
-    text-decoration: none;
-    border: 1px solid var(--border);
-    color: var(--ink);
-    transition: border-color 0.2s ease, background 0.2s ease;
-  }
-  .pill-btn.primary{ background: var(--ink); color: #fff; border-color: var(--ink); }
-  .pill-btn.primary:hover{ background: var(--accent); border-color: var(--accent); }
-  .pill-btn:not(.primary):hover{ border-color: var(--accent); color: var(--accent); }
+  .btn.primary{ background: var(--accent); color: #06120C; border-color: var(--accent); font-weight: 600; }
+  .btn.primary:hover{ transform: translateY(-2px); }
+  .btn:not(.primary):hover{ border-color: var(--accent-2); color: var(--accent-2); }
 
-  /* ---------- section shared ---------- */
-  section{ padding: 60px 0; border-top: 1px solid var(--border); }
-  .section-tag{
-    font-family: var(--mono);
-    font-size: 12.5px;
-    color: var(--ink-dim);
-    margin: 0 0 12px;
-  }
-  h2.section-title{
-    font-family: var(--display);
-    font-size: 28px;
-    font-weight: 500;
-    margin: 0 0 36px;
-  }
+  /* ---------- sections ---------- */
+  section{ padding: 64px 0; border-top: 1px solid var(--border); }
+  .tag{ font-family: var(--mono); font-size: 12.5px; color: var(--accent-2); margin: 0 0 12px; }
+  h2.title{ font-family: var(--display); font-weight: 600; font-size: 27px; margin: 0 0 30px; }
 
-  /* ---------- impact bento grid ---------- */
-  .bento{
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .bento-card{
-    background: var(--surface);
+  /* ---------- about ---------- */
+  .about p{ font-size: 16px; color: var(--text-dim); max-width: 74ch; margin: 0 0 14px; }
+  .about p:last-child{ margin-bottom:0; }
+  .about strong{ color: var(--text); font-weight: 600; }
+
+  /* ---------- featured project ---------- */
+  .project-panel{
+    background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    border-radius: 16px;
+    padding: 36px;
   }
-  .bento-card:hover{
-    transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(20, 24, 30, 0.06);
-    border-color: #D3D8E8;
+  .project-head{ display:flex; justify-content: space-between; align-items:flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+  .project-head h3{ font-family: var(--display); font-size: 22px; margin: 0 0 8px; }
+  .project-head .sub{ font-size: 14px; color: var(--text-dim); }
+  .status-chip{
+    font-family: var(--mono); font-size: 11.5px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px;
+    white-space: nowrap;
   }
-  .bento-card .stat{
-    font-family: var(--display);
-    font-size: 32px;
-    color: var(--accent);
-    margin: 0 0 8px;
+  .project-panel p.desc{ color: var(--text-dim); font-size: 15px; max-width: 72ch; margin: 0 0 24px; }
+  .project-links{ display:flex; flex-wrap:wrap; gap: 12px; margin-bottom: 24px; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 30px; }
+  .chip{ font-family: var(--mono); font-size: 12px; padding: 5px 11px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; color: var(--text-dim); }
+
+  /* ---------- architecture diagram ---------- */
+  .diagram-wrap{ margin-bottom: 30px; }
+  .diagram-wrap svg{ width: 100%; height: auto; display:block; }
+  .node rect{ fill: var(--panel-2); stroke: var(--border); stroke-width: 1.5; rx: 8; }
+  .node text{ fill: var(--text); font-family: var(--mono); font-size: 13px; }
+  .node.hub rect{ stroke: var(--accent-2); }
+  .edge-label{ fill: var(--text-dim); font-family: var(--mono); font-size: 10.5px; }
+  .flow-sync{ stroke: var(--accent-2); stroke-width: 2; fill: none; }
+  .flow-async{
+    stroke: var(--accent); stroke-width: 2; fill: none;
+    stroke-dasharray: 6 6;
+    animation: flowmove 1.4s linear infinite;
   }
-  .bento-card .desc{ font-size: 14px; color: var(--ink-dim); }
+  @media (prefers-reduced-motion: reduce){
+    .flow-async{ animation: none; }
+  }
+  @keyframes flowmove{ to{ stroke-dashoffset: -24; } }
+
+  .legend{ display:flex; gap: 22px; font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-top: 10px; flex-wrap: wrap; }
+  .legend span{ display:inline-flex; align-items:center; gap: 8px; }
+  .legend i{ width: 18px; height: 2px; display:inline-block; }
+  .legend .sync-swatch{ background: var(--accent-2); }
+  .legend .async-swatch{ background: var(--accent); background-image: linear-gradient(90deg, var(--accent) 60%, transparent 0); background-size: 6px 2px; }
+
+  /* ---------- terminal snippet ---------- */
+  .terminal{
+    background: #06070A;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .terminal-bar{ display:flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .terminal-bar i{ width: 10px; height: 10px; border-radius: 50%; background: #333; }
+  .terminal pre{ margin:0; padding: 18px 20px; font-family: var(--mono); font-size: 12.5px; color: #B9E6CF; overflow-x: auto; line-height: 1.7; }
+  .terminal pre .cmt{ color: var(--text-dim); }
 
   /* ---------- experience ---------- */
-  .job{
-    padding: 30px 0;
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 30px;
-  }
-  .job:last-child{ border-bottom: none; }
-  .job .meta{ padding-top: 2px; }
-  .job .dates{ font-family: var(--mono); font-size: 12.5px; color: var(--ink-dim); }
-  .job .place{ font-size: 13.5px; color: var(--accent); margin-top: 6px; }
-  .job h3{ font-size: 19px; font-weight: 600; margin: 0 0 4px; }
-  .job .client{ font-size: 14px; color: var(--ink-dim); margin-bottom: 14px; }
-  .job ul{ margin: 0; padding-left: 18px; color: var(--ink-dim); font-size: 14.5px; }
+  .job{ display:grid; grid-template-columns: 190px 1fr; gap: 28px; padding: 28px 0; border-bottom: 1px solid var(--border); }
+  .job:last-child{ border-bottom:none; }
+  .job .dates{ font-family: var(--mono); font-size: 12.5px; color: var(--accent-2); }
+  .job .loc{ font-size: 13px; color: var(--text-dim); margin-top: 6px; }
+  .job h3{ font-size: 18.5px; margin: 0 0 4px; font-weight: 600; }
+  .job .client{ font-size: 14px; color: var(--text-dim); margin-bottom: 14px; }
+  .job ul{ margin:0; padding-left: 18px; color: var(--text-dim); font-size: 14.5px; }
   .job li{ margin-bottom: 8px; }
-  .job li b{ color: var(--ink); font-weight: 600; }
+  .job li b{ color: var(--text); }
 
   /* ---------- skills ---------- */
-  .skill-groups{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .skill-group h4{
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink-dim);
-    margin: 0 0 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .chip-row{ display:flex; flex-wrap: wrap; gap: 8px; }
-  .chip{
-    font-size: 13px;
-    padding: 6px 12px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: 8px;
-  }
+  .skill-groups{ display:grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .skill-group h4{ font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .03em; margin: 0 0 12px; }
+  .skill-group .chip-row{ margin-bottom: 0; }
 
   /* ---------- education ---------- */
-  .edu-row{
-    display:flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .edu-row:last-child{ border-bottom: none; }
-  .edu-row .deg{ font-size: 15.5px; font-weight: 600; }
-  .edu-row .school{ font-size: 14px; color: var(--ink-dim); }
-  .edu-row .yr{ font-family: var(--mono); font-size: 13px; color: var(--ink-dim); white-space: nowrap; }
+  .edu-row{ display:flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .edu-row:last-child{ border-bottom:none; }
+  .edu-row .deg{ font-weight: 600; font-size: 15px; }
+  .edu-row .school{ font-size: 13.5px; color: var(--text-dim); }
+  .edu-row .yr{ font-family: var(--mono); font-size: 12.5px; color: var(--text-dim); }
 
-  /* ---------- contact / footer ---------- */
-  footer{ padding: 56px 0 60px; }
-  footer h2{
-    font-family: var(--display);
-    font-size: 30px;
-    font-weight: 500;
-    margin: 0 0 24px;
-  }
-  .contact-grid{
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-  }
-  .contact-card{
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    text-decoration: none;
-    color: var(--ink);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-  }
+  /* ---------- contact ---------- */
+  footer{ padding: 60px 0 60px; }
+  footer h2{ font-family: var(--display); font-weight: 600; font-size: 28px; margin: 0 0 26px; }
+  .contact-grid{ display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+  .contact-card{ border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-decoration:none; color: var(--text); transition: border-color .2s ease, transform .2s ease; }
   .contact-card:hover{ border-color: var(--accent); transform: translateY(-2px); }
-  .contact-card .k{ font-family: var(--mono); font-size: 11px; color: var(--ink-dim); display:block; margin-bottom: 6px; }
-  .contact-card .v{ font-size: 13.5px; word-break: break-word; }
-
-  .fine{ font-family: var(--mono); font-size: 12px; color: var(--ink-dim); padding-top: 40px; }
+  .contact-card .k{ font-family: var(--mono); font-size: 10.5px; color: var(--text-dim); display:block; margin-bottom: 6px; }
+  .contact-card .v{ font-size: 13px; word-break: break-word; }
+  .fine{ font-family: var(--mono); font-size: 11.5px; color: var(--text-dim); padding-top: 36px; }
 
   @media (max-width: 780px){
-    .bento{ grid-template-columns: repeat(2, 1fr); }
     .job{ grid-template-columns: 1fr; gap: 8px; }
     .skill-groups{ grid-template-columns: 1fr; }
-    .contact-grid{ grid-template-columns: repeat(2, 1fr); }
+    .contact-grid{ grid-template-columns: repeat(2,1fr); }
     .navlinks{ display:none; }
+    .project-panel{ padding: 22px; }
   }
 </style>
 </head>
 <body>
 
+<div class="progress" id="scrollProgress"></div>
+
 <nav class="topnav">
   <div class="wrap">
-    <span class="logo">K. K. THAPA</span>
+    <span class="logo">kkt.dev</span>
     <div class="navlinks">
-      <a href="#impact">Impact</a>
+      <a href="#about">About</a>
+      <a href="#project">Project</a>
       <a href="#experience">Experience</a>
-      <a href="#skills">Skills</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
@@ -270,40 +215,147 @@
 <section class="hero">
   <div class="wrap">
     <p class="eyebrow reveal">Full-Stack Developer · Java &amp; React</p>
-    <h1 class="reveal">Kamal Kumar Thapa</h1>
-    <p class="lede reveal">Six years building and modernizing backend systems across banking and e-commerce — from migrating a payments platform off COBOL onto Spring Boot, to scaling order infrastructure for 500K+ daily users at Avon.</p>
+    <h1 class="reveal">Kamal Kumar Thapa — building <span>backend systems</span> that hold up under real load.</h1>
+    <p class="lede reveal">6+ years across banking and e-commerce, with Infosys and TCS — designing Spring Boot microservices, modernizing legacy COBOL into Java, and shipping features that move real money and real orders.</p>
     <div class="hero-links reveal">
-      <a class="pill-btn primary" href="mailto:kamal0496@gmail.com">Email me</a>
-      <a class="pill-btn" href="https://linkedin.com/in/kamal-kumar-thapa-74394178" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="pill-btn" href="tel:+919962875578">+91 99628 75578</a>
+      <a class="btn primary" href="mailto:kamal0496@gmail.com">Email me</a>
+      <a class="btn" href="https://linkedin.com/in/kamal-kumar-thapa-74394178" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="tel:+919962875578">+91 99628 75578</a>
     </div>
   </div>
 </section>
 
-<section id="impact">
+<section id="about" class="about">
   <div class="wrap">
-    <p class="section-tag reveal">// IMPACT</p>
-    <h2 class="section-title reveal">Numbers from the work</h2>
-    <div class="bento">
-      <div class="bento-card reveal"><p class="stat">500K+</p><p class="desc">Daily active users served by order &amp; profile microservices at Avon</p></div>
-      <div class="bento-card reveal"><p class="stat">20%</p><p class="desc">Faster API response times after re-architecting REST services</p></div>
-      <div class="bento-card reveal"><p class="stat">10K+</p><p class="desc">Concurrent transactions supported by scaled Spring Boot services</p></div>
-      <div class="bento-card reveal"><p class="stat">30+</p><p class="desc">COBOL-to-Java modules validated with 100% compile-free delivery</p></div>
-      <div class="bento-card reveal"><p class="stat">15%</p><p class="desc">Shorter release cycles after building CI/CD with Git &amp; Jenkins</p></div>
-      <div class="bento-card reveal"><p class="stat">85%+</p><p class="desc">Code coverage maintained via SonarQube quality gates</p></div>
+    <p class="tag reveal">// SUMMARY</p>
+    <h2 class="title reveal">About</h2>
+    <p class="reveal">I'm a full-stack developer with just over six years of experience, five of them designing, building, and deploying scalable web applications. My core strength is backend engineering with <strong>Java, Spring Boot, and microservices</strong>, with working experience in <strong>React</strong> on the frontend.</p>
+    <p class="reveal">Most of that experience sits across two domains that don't forgive sloppy engineering — banking and e-commerce. At TCS, I work on validating and modernizing COBOL-to-Java translations for a global payments client. At Infosys, I spent close to four years building order and profile services for Avon's e-commerce platform, serving 500K+ daily active users.</p>
+    <p class="reveal">Outside of client work, I build event-driven systems on my own time to go deeper on the patterns — Kafka, fraud detection, async payment flows — which is what the project below comes from.</p>
+  </div>
+</section>
+
+<section id="project">
+  <div class="wrap">
+    <p class="tag reveal">// FEATURED PROJECT</p>
+    <h2 class="title reveal">Banking Microservices Application</h2>
+
+    <div class="project-panel reveal">
+      <div class="project-head">
+        <div>
+          <h3>Event-driven digital banking platform</h3>
+          <p class="sub">Personal project — Spring Boot 3 · Kafka · PostgreSQL · Redis · Razorpay</p>
+        </div>
+        <span class="status-chip">6 services · Docker Compose</span>
+      </div>
+
+      <div class="project-links">
+        <a class="btn primary" href="https://your-app-url.example.com" target="_blank" rel="noopener">Open live app ↗</a>
+        <a class="btn" href="readme.html" target="_blank" rel="noopener">Read the full README ↗</a>
+      </div>
+
+      <p class="desc">A six-service banking system I built to go deep on event-driven microservices — account management, money transfers, fraud checks, Razorpay payment capture, and notifications, all coordinated through Kafka instead of tight synchronous coupling. Each service owns its own PostgreSQL database; Redis handles short-lived OTP verification.</p>
+
+      <div class="chip-row">
+        <span class="chip">Java 17 / Spring Boot 3</span>
+        <span class="chip">Apache Kafka</span>
+        <span class="chip">PostgreSQL</span>
+        <span class="chip">Redis</span>
+        <span class="chip">OpenFeign</span>
+        <span class="chip">Razorpay SDK</span>
+        <span class="chip">Docker Compose</span>
+        <span class="chip">API Gateway</span>
+      </div>
+
+      <div class="diagram-wrap">
+        <svg viewBox="0 0 1000 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture diagram: API Gateway connects to Transaction Service, which coordinates with Account, Fraud Detection, Payment, and Notification services via synchronous calls and async Kafka events.">
+          <defs>
+            <marker id="arrowSync" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--accent-2)"></path>
+            </marker>
+            <marker id="arrowAsync" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"></path>
+            </marker>
+          </defs>
+
+          <!-- edges -->
+          <path class="flow-sync" marker-end="url(#arrowSync)" d="M500,56 L500,108" />
+          <path class="flow-sync" marker-end="url(#arrowSync)" d="M450,154 L450,198 L120,198 L120,258" />
+          <path class="flow-async" marker-end="url(#arrowAsync)" d="M480,154 L480,208 L350,208 L350,258" />
+          <path class="flow-sync" marker-end="url(#arrowSync)" d="M520,154 L520,218 L660,218 L660,258" />
+          <path class="flow-async" marker-end="url(#arrowAsync)" d="M600,258 L600,232 L560,232 L560,154" />
+          <path class="flow-async" marker-end="url(#arrowAsync)" d="M595,154 L595,228 L885,228 L885,258" />
+
+          <!-- edge labels -->
+          <text class="edge-label" x="504" y="80">REST</text>
+          <text class="edge-label" x="140" y="192">Feign: credit / debit</text>
+          <text class="edge-label" x="356" y="202">transaction.initiated</text>
+          <text class="edge-label" x="522" y="212">create-order</text>
+          <text class="edge-label" x="566" y="226">payment.completed/failed</text>
+          <text class="edge-label" x="640" y="222">OTP · fraud · refund events</text>
+
+          <!-- nodes -->
+          <g class="node hub">
+            <rect x="380" y="10" width="240" height="46"></rect>
+            <text x="500" y="38" text-anchor="middle">API Gateway :9090</text>
+          </g>
+          <g class="node hub">
+            <rect x="380" y="110" width="240" height="46"></rect>
+            <text x="500" y="138" text-anchor="middle">Transaction Service :8082</text>
+          </g>
+          <g class="node">
+            <rect x="20" y="258" width="200" height="46"></rect>
+            <text x="120" y="286" text-anchor="middle">Account Service :8081</text>
+          </g>
+          <g class="node">
+            <rect x="250" y="258" width="200" height="46"></rect>
+            <text x="350" y="286" text-anchor="middle">Fraud Detection :8083</text>
+          </g>
+          <g class="node">
+            <rect x="560" y="258" width="200" height="46"></rect>
+            <text x="660" y="286" text-anchor="middle">Payment Service :8084</text>
+          </g>
+          <g class="node">
+            <rect x="790" y="258" width="190" height="46"></rect>
+            <text x="885" y="286" text-anchor="middle">Notification :8085</text>
+          </g>
+        </svg>
+        <div class="legend">
+          <span><i class="sync-swatch"></i>Synchronous (REST / Feign)</span>
+          <span><i class="async-swatch"></i>Asynchronous (Kafka event)</span>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar"><i></i><i></i><i></i></div>
+        <pre><span class="cmt"># transfer money between accounts</span>
+curl -X POST http://localhost:8082/api/v1/transactions/transfer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "senderAccountNumber": "123456789012",
+    "receiverAccountNumber": "987654321098",
+    "amount": 1000,
+    "currency": "INR"
+  }'
+
+<span class="cmt"># if flagged as suspicious, verify with the OTP sent via notification-service</span>
+curl -X POST "http://localhost:8082/api/v1/transactions/{id}/verify?otp=123456"</pre>
+      </div>
+
+      <p class="desc" style="margin-top: 22px; margin-bottom: 0;">A transfer that looks risky triggers an OTP flow automatically: fraud-detection-service flags it, transaction-service generates a 6-digit code with a 5-minute expiry in Redis, and the transfer only completes once it's verified — otherwise the sender's account is flagged and the transaction refunded.</p>
     </div>
   </div>
 </section>
 
 <section id="experience">
   <div class="wrap">
-    <p class="section-tag reveal">// EXPERIENCE</p>
-    <h2 class="section-title reveal">Where it happened</h2>
+    <p class="tag reveal">// EXPERIENCE</p>
+    <h2 class="title reveal">Where it happened</h2>
 
     <div class="job reveal">
-      <div class="meta">
+      <div>
         <div class="dates">07/2025 – 05/2026</div>
-        <div class="place">Chennai, TN</div>
+        <div class="loc">Chennai, TN</div>
       </div>
       <div>
         <h3>System Engineer</h3>
@@ -318,9 +370,9 @@
     </div>
 
     <div class="job reveal">
-      <div class="meta">
+      <div>
         <div class="dates">08/2021 – 06/2025</div>
-        <div class="place">Chennai, TN</div>
+        <div class="loc">Chennai, TN</div>
       </div>
       <div>
         <h3>Senior System Engineer</h3>
@@ -330,7 +382,7 @@
           <li>Built RESTful Spring Boot services that improved API response times by <b>20%</b> and supported <b>10K+ concurrent transactions</b></li>
           <li>Set up CI/CD with Git and Jenkins, cutting release cycle time by <b>15%</b></li>
           <li>Built an end-to-end order-replacement feature, reducing cart abandonment by an estimated <b>12%</b></li>
-          <li>Provided L2/L3 production support and shipped hotfixes; maintained <b>85%+</b> code coverage via SonarQube</li>
+          <li>Provided L2/L3 production support and maintained <b>85%+</b> code coverage via SonarQube</li>
         </ul>
       </div>
     </div>
@@ -339,44 +391,32 @@
 
 <section id="skills">
   <div class="wrap">
-    <p class="section-tag reveal">// STACK</p>
-    <h2 class="section-title reveal">Tools &amp; technologies</h2>
+    <p class="tag reveal">// STACK</p>
+    <h2 class="title reveal">Tools &amp; technologies</h2>
     <div class="skill-groups">
       <div class="skill-group reveal">
         <h4>Languages</h4>
-        <div class="chip-row">
-          <span class="chip">Java</span><span class="chip">Python</span><span class="chip">JavaScript</span>
-        </div>
+        <div class="chip-row"><span class="chip">Java</span><span class="chip">Python</span><span class="chip">JavaScript</span></div>
       </div>
       <div class="skill-group reveal">
         <h4>Frameworks</h4>
-        <div class="chip-row">
-          <span class="chip">Spring</span><span class="chip">Spring Boot</span><span class="chip">Hibernate/ORM</span><span class="chip">React</span><span class="chip">Node.js</span>
-        </div>
+        <div class="chip-row"><span class="chip">Spring</span><span class="chip">Spring Boot</span><span class="chip">Hibernate/ORM</span><span class="chip">React</span><span class="chip">Node.js</span></div>
       </div>
       <div class="skill-group reveal">
         <h4>Architecture</h4>
-        <div class="chip-row">
-          <span class="chip">Microservices</span><span class="chip">REST APIs</span><span class="chip">Kafka</span>
-        </div>
+        <div class="chip-row"><span class="chip">Microservices</span><span class="chip">REST APIs</span><span class="chip">Kafka</span></div>
       </div>
       <div class="skill-group reveal">
         <h4>Databases</h4>
-        <div class="chip-row">
-          <span class="chip">Oracle SQL</span>
-        </div>
+        <div class="chip-row"><span class="chip">Oracle SQL</span><span class="chip">PostgreSQL</span><span class="chip">Redis</span></div>
       </div>
       <div class="skill-group reveal">
         <h4>DevOps &amp; Tools</h4>
-        <div class="chip-row">
-          <span class="chip">Git</span><span class="chip">Jenkins</span><span class="chip">Docker</span>
-        </div>
+        <div class="chip-row"><span class="chip">Git</span><span class="chip">Jenkins</span><span class="chip">Docker</span></div>
       </div>
       <div class="skill-group reveal">
         <h4>Methodologies</h4>
-        <div class="chip-row">
-          <span class="chip">Agile</span><span class="chip">Scrum</span><span class="chip">CI/CD</span>
-        </div>
+        <div class="chip-row"><span class="chip">Agile</span><span class="chip">Scrum</span><span class="chip">CI/CD</span></div>
       </div>
     </div>
   </div>
@@ -384,20 +424,14 @@
 
 <section id="education">
   <div class="wrap">
-    <p class="section-tag reveal">// EDUCATION</p>
-    <h2 class="section-title reveal">Education</h2>
+    <p class="tag reveal">// EDUCATION</p>
+    <h2 class="title reveal">Education</h2>
     <div class="edu-row reveal">
-      <div>
-        <div class="deg">M.Sc. Information Technology</div>
-        <div class="school">SRM Institute of Science and Technology, Chennai</div>
-      </div>
+      <div><div class="deg">M.Sc. Information Technology</div><div class="school">SRM Institute of Science and Technology, Chennai</div></div>
       <div class="yr">05/2019</div>
     </div>
     <div class="edu-row reveal">
-      <div>
-        <div class="deg">B.C.A. (Bachelor of Computer Applications)</div>
-        <div class="school">Dwaraka Doss Goverdhan Doss Vaishnav College, Chennai</div>
-      </div>
+      <div><div class="deg">B.C.A. (Bachelor of Computer Applications)</div><div class="school">Dwaraka Doss Goverdhan Doss Vaishnav College, Chennai</div></div>
       <div class="yr">03/2016</div>
     </div>
   </div>
@@ -405,21 +439,13 @@
 
 <footer id="contact">
   <div class="wrap">
-    <p class="section-tag reveal">// CONTACT</p>
+    <p class="tag reveal">// CONTACT</p>
     <h2 class="reveal">Let's talk</h2>
     <div class="contact-grid">
-      <a class="contact-card reveal" href="mailto:kamal0496@gmail.com">
-        <span class="k">EMAIL</span><span class="v">kamal0496@gmail.com</span>
-      </a>
-      <a class="contact-card reveal" href="tel:+919962875578">
-        <span class="k">PHONE</span><span class="v">+91 99628 75578</span>
-      </a>
-      <a class="contact-card reveal" href="https://linkedin.com/in/kamal-kumar-thapa-74394178" target="_blank" rel="noopener">
-        <span class="k">LINKEDIN</span><span class="v">/in/kamal-kumar-thapa-74394178</span>
-      </a>
-      <div class="contact-card reveal">
-        <span class="k">LOCATION</span><span class="v">Chennai, Tamil Nadu</span>
-      </div>
+      <a class="contact-card reveal" href="mailto:kamal0496@gmail.com"><span class="k">EMAIL</span><span class="v">kamal0496@gmail.com</span></a>
+      <a class="contact-card reveal" href="tel:+919962875578"><span class="k">PHONE</span><span class="v">+91 99628 75578</span></a>
+      <a class="contact-card reveal" href="https://linkedin.com/in/kamal-kumar-thapa-74394178" target="_blank" rel="noopener"><span class="k">LINKEDIN</span><span class="v">/in/kamal-kumar-thapa-74394178</span></a>
+      <div class="contact-card reveal"><span class="k">LOCATION</span><span class="v">Chennai, Tamil Nadu</span></div>
     </div>
     <p class="fine reveal">Kamal Kumar Thapa — Full-Stack Developer, Java &amp; React.</p>
   </div>
@@ -427,6 +453,15 @@
 
 <script>
   (function(){
+    var bar = document.getElementById('scrollProgress');
+    function updateProgress(){
+      var h = document.documentElement;
+      var scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+      bar.style.width = scrolled + '%';
+    }
+    document.addEventListener('scroll', updateProgress);
+    updateProgress();
+
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var els = document.querySelectorAll('.reveal');
     var observer = new IntersectionObserver(function(entries){
