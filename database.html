@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Database Scaling: Replication &amp; Sharding – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:28px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card>h3:first-child{margin-top:0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid .card{margin:0}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.warn{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{padding:8px 12px;border-radius:10px;background:var(--code);border:1px solid var(--line);font-weight:600;font-size:.9rem}
+.chip small{display:block;color:var(--muted);font-weight:400}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.88rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--muted)}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Database Scaling: Replication &amp; Sharding</h1>
+  <p>Quick-revision cheat sheet for system design interviews.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#overview">Overview</a><a href="#replication">Replication</a><a href="#sharding">Sharding</a><a href="#combined">Combined</a><a href="#terms">Terms</a><a href="#qa">Quick Q&amp;A</a>
+</div></nav>
+
+<main>
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li><strong>Replication</strong> = same data copied to many DBs → scales <strong>reads</strong> and gives <strong>availability</strong>. It does <em>not</em> solve huge datasets or write scaling.</li>
+      <li><strong>Sharding</strong> = data split across DBs → scales <strong>writes</strong> and <strong>data volume</strong>, but adds query/transaction complexity.</li>
+      <li>Real systems <strong>combine both</strong>: shard router → shards, each with a leader + followers.</li>
+      <li><strong>Sync vs async</strong> replication is a consistency vs latency trade-off. Async can cause <strong>replication lag</strong> (stale reads).</li>
+      <li>If the leader fails, a follower is promoted (<strong>failover</strong>).</li>
+      <li>A good <strong>shard key</strong> is critical; poor choice → <strong>hotspots</strong>.</li>
+      <li>Queries without the shard key need <strong>scatter-gather</strong> across shards.</li>
+      <li>Cross-service consistency needs <strong>distributed transactions</strong> (2PC, Saga): next topic.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="overview">
+  <h2>1. System Architecture &amp; the Bottleneck</h2>
+  <div class="card">
+    <div class="flow"><span>Client</span><i>→</i><span>API Gateway</span><i>→</i><span>Load Balancer</span><i>→</i><span>Microservices</span><i>→</i><span>Cache</span><i>→</i><span>Database</span></div>
+    <ul>
+      <li><strong>API Gateway:</strong> authentication, authorization, rate limiting, routing</li>
+      <li><strong>Load Balancer:</strong> spreads requests across microservice instances</li>
+      <li><strong>Cache:</strong> quick data access, fewer direct DB lookups</li>
+      <li>The microservice layer scales horizontally, but the <strong>database remains the bottleneck</strong></li>
+    </ul>
+    <div class="warn"><strong>Problem:</strong> scale the DB for millions of requests/sec and TB to 100+ TB of data while keeping availability and performance.</div>
+  </div>
+</section>
+
+<section id="replication">
+  <h2>2. Replication</h2>
+  <p>Multiple copies of the same database, to scale reads and improve fault tolerance.</p>
+
+  <div class="card">
+    <span class="tag">2.1 Leader-Follower</span>
+    <ul>
+      <li><strong>Leader (primary):</strong> handles <strong>writes</strong></li>
+      <li><strong>Followers (read replicas):</strong> handle <strong>reads</strong></li>
+      <li>Updates replicate from leader to followers (sync or async)</li>
+    </ul>
+    <div class="flow"><span>Writes</span><i>→</i><span>Leader</span><i>→ replicates →</i><span>Follower 1</span><span>Follower 2</span><span>Follower N</span><i>←</i><span>Reads</span></div>
+    <div class="tip"><strong>Example:</strong> out of 100,000 requests, 10,000 are writes (leader) and 90,000 are reads spread across followers.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">2.2 Sync vs Async</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Type</th><th>How it works</th><th>Pros</th><th>Cons</th><th>Consistency</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Synchronous</strong></td><td>Leader waits for follower ack before success</td><td>Strong consistency</td><td>Higher write latency; failure-prone</td><td>Strong</td></tr>
+        <tr><td><strong>Asynchronous</strong></td><td>Leader replies immediately; replicates in background</td><td>Lower latency, better availability</td><td>Replication lag, possible inconsistency</td><td>Eventual</td></tr>
+      </tbody>
+    </table></div>
+    <p><strong>Replication lag:</strong> followers temporarily serve stale data. Choose based on consistency vs latency needs.</p>
+  </div>
+
+  <div class="card">
+    <span class="tag">2.3 Failover &amp; Leader Election</span>
+    <ul>
+      <li>Leader fails → <strong>promote a follower</strong> to leader</li>
+      <li>Automated by native DB tools or external coordination services</li>
+      <li>Keeps the system available and writes continuing</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <span class="tag">2.4 Leader-Leader (Multi-Master)</span>
+    <ul>
+      <li>Multiple leaders accept writes independently; changes replicate bidirectionally</li>
+      <li>Better write availability (no single leader bottleneck)</li>
+    </ul>
+    <div class="con"><strong>Challenge:</strong> <strong>write conflicts</strong> from concurrent updates; needs conflict-resolution logic and is more complex. Less common than leader-follower.</div>
+  </div>
+</section>
+
+<section id="sharding">
+  <h2>3. Sharding (Horizontal Partitioning)</h2>
+  <div class="card">
+    <p>Replication copies data; sharding <strong>partitions</strong> it. Each <strong>shard</strong> is an independent DB instance holding a subset. This scales <strong>writes and data volume</strong>.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Shard</th><th>Example range</th></tr></thead>
+      <tbody>
+        <tr><td>Shard 1</td><td>User ID 1 to 1,000,000</td></tr>
+        <tr><td>Shard 2</td><td>User ID 1,000,001 to 2,000,000</td></tr>
+        <tr><td>Shard 3</td><td>User ID 2,000,001 to 3,000,000</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Shard Key &amp; Strategies</h3>
+    <p>The <strong>shard key</strong> (e.g. user ID) decides which shard stores a record. A good key gives even distribution and efficient queries.</p>
+    <div class="grid" style="margin-top:12px">
+      <div class="card">
+        <span class="tag">Hash-based</span>
+        <p>Hash function on the shard key picks the shard.</p>
+        <div class="pro"><strong>Pro:</strong> even distribution</div>
+        <div class="con"><strong>Con:</strong> hard range queries</div>
+        <p><strong>Use:</strong> uniform access patterns</p>
+      </div>
+      <div class="card">
+        <span class="tag">Range-based</span>
+        <p>Dataset divided into contiguous ranges.</p>
+        <div class="pro"><strong>Pro:</strong> easy range queries</div>
+        <div class="con"><strong>Con:</strong> possible hotspots</div>
+        <p><strong>Use:</strong> range queries, localized data</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Hotspot Problem</h3>
+      <p>Common with range-based sharding: new writes (e.g. sequential new user IDs) all land on the same shard → uneven load.</p>
+    </div>
+    <div class="card">
+      <h3>Query Complexity</h3>
+      <p>Queries not using the shard key must hit multiple shards (<strong>scatter-gather</strong>), making cross-shard queries and transactions harder.</p>
+    </div>
+  </div>
+</section>
+
+<section id="combined">
+  <h2>4. Combining Replication + Sharding</h2>
+  <div class="card">
+    <p>Large-scale systems use both for write scaling <em>and</em> read scaling with high availability.</p>
+    <div class="flow"><span>App</span><i>→</i><span>Shard Router</span><i>→</i><span>Shard 1 (Leader + Followers)</span><span>Shard 2 (Leader + Followers)</span><span>Shard N (Leader + Followers)</span></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Component</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Shard Router</strong></td><td>Routes requests to the correct shard using the shard key</td></tr>
+        <tr><td><strong>Shard's Leader</strong></td><td>Handles all writes for that shard</td></tr>
+        <tr><td><strong>Shard's Followers</strong></td><td>Serve read requests for that shard</td></tr>
+      </tbody>
+    </table></div>
+    <div class="pro"><strong>Benefits:</strong> write scalability (data spread across shards), read scalability and availability (replication), large data volumes and high throughput.</div>
+  </div>
+</section>
+
+<section id="beyond">
+  <h2>5. Beyond DB Scaling</h2>
+  <div class="card">
+    <ul>
+      <li>Business transactions span services and DBs (order, payment, inventory)</li>
+      <li>Consistency across them is hard; partial failures (payment OK, inventory reservation fails) need advanced handling</li>
+      <li>Next topic: <strong>distributed transactions</strong>, <strong>two-phase commit</strong> and the <strong>Saga pattern</strong></li>
+    </ul>
+  </div>
+</section>
+
+<section id="terms">
+  <h2>Key Terms</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Replication</strong></td><td>Same data copied across multiple DB instances</td></tr>
+      <tr><td><strong>Sharding</strong></td><td>Data partitioned horizontally across shards</td></tr>
+      <tr><td><strong>Leader (Primary)</strong></td><td>Node handling writes</td></tr>
+      <tr><td><strong>Follower (Replica)</strong></td><td>Node handling reads, copies from leader</td></tr>
+      <tr><td><strong>Failover</strong></td><td>Promoting a follower to leader after leader failure</td></tr>
+      <tr><td><strong>Replication Lag</strong></td><td>Delay that leaves followers with stale data</td></tr>
+      <tr><td><strong>Write Conflict</strong></td><td>Inconsistency from concurrent writes in leader-leader setups</td></tr>
+      <tr><td><strong>Shard Key</strong></td><td>Attribute deciding which shard holds a record</td></tr>
+      <tr><td><strong>Hotspot</strong></td><td>Uneven load concentrated on one shard</td></tr>
+      <tr><td><strong>Scatter-Gather</strong></td><td>Query sent to many shards, results aggregated</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="qa">
+  <h2>Quick Q&amp;A (tap to reveal)</h2>
+  <details><summary>Replication vs sharding: what does each solve?</summary><p>Replication scales reads and availability. Sharding scales writes and data volume.</p></details>
+  <details><summary>Sync vs async replication?</summary><p>Sync: strong consistency but higher write latency and failure-prone. Async: low latency and better availability, but replication lag and eventual consistency.</p></details>
+  <details><summary>What happens when the leader dies?</summary><p>Failover: a follower is promoted to leader, automated by DB tools or a coordination service.</p></details>
+  <details><summary>Why is leader-leader less common?</summary><p>Concurrent writes cause conflicts that need conflict-resolution logic, making it complex to manage.</p></details>
+  <details><summary>Hash vs range sharding?</summary><p>Hash gives even distribution but poor range queries. Range gives easy range queries but risks hotspots.</p></details>
+  <details><summary>What is a hotspot and when does it occur?</summary><p>One shard takes most writes, typically in range-based sharding with sequential IDs.</p></details>
+  <details><summary>What is a scatter-gather query?</summary><p>A query lacking the shard key, sent to multiple shards with results aggregated.</p></details>
+  <details><summary>How do combined systems work?</summary><p>A shard router sends each request to the right shard; within a shard, the leader takes writes and followers serve reads.</p></details>
+</section>
+</main>
+<footer>Replication + sharding = scalable, highly available, resilient databases.</footer>
+</body>
+</html>

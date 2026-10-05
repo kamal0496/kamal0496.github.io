@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kafka Interview Prep</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7fb;--card:#fff;--tx:#1b1f2a;--mut:#5b6475;--ac:#2f5bea;--ac2:#e8eeff;--bd:#e1e5ee;--code:#f1f3f9;--warn:#fff4e0;--wb:#e8a33d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1218;--card:#181c25;--tx:#e6e9f0;--mut:#9aa3b5;--ac:#7c9bff;--ac2:#212a44;--bd:#2a3040;--code:#11141b;--warn:#2b2315;--wb:#c98a2b}}
+:root[data-theme="dark"]{--bg:#0f1218;--card:#181c25;--tx:#e6e9f0;--mut:#9aa3b5;--ac:#7c9bff;--ac2:#212a44;--bd:#2a3040;--code:#11141b;--warn:#2b2315;--wb:#c98a2b}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:960px;margin:auto}
+h1{margin:0 0 4px;font-size:clamp(1.6rem,4vw,2.3rem)}
+header p{margin:0;color:var(--mut)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--bd);padding:8px 16px}
+.bar>div{max-width:960px;margin:auto}
+.bar input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;scrollbar-width:thin}
+.chips a{white-space:nowrap;font-size:.82rem;padding:4px 11px;border-radius:99px;background:var(--ac2);color:var(--ac);text-decoration:none;font-weight:600}
+main{max-width:960px;margin:auto;padding:8px 16px 60px}
+h2{margin:32px 0 10px;font-size:1.35rem;display:flex;gap:8px;align-items:center}
+h2 span{background:var(--ac);color:#fff;border-radius:8px;font-size:.8rem;padding:2px 9px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:4px 16px;margin:10px 0}
+details{border-bottom:1px solid var(--bd);padding:10px 0}
+details:last-child{border:0}
+summary{cursor:pointer;font-weight:650;list-style:none;display:flex;gap:8px;align-items:flex-start}
+summary::before{content:"▸";color:var(--ac);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+summary::-webkit-details-marker{display:none}
+details>div{padding:6px 0 4px 18px}
+p{margin:.5em 0}ul{margin:.4em 0;padding-left:20px}li{margin:.2em 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:12px;border-radius:10px;overflow-x:auto;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace;margin:.6em 0}
+pre code{padding:0;background:none}
+.tbl{overflow-x:auto;margin:.6em 0}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.92rem}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--ac2)}
+.tip{background:var(--warn);border-left:4px solid var(--wb);padding:8px 12px;border-radius:8px;margin:.7em 0;font-size:.93rem}
+.tip b:first-child{color:var(--wb)}
+.ctl{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ctl button{border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit;font-size:.85rem}
+.empty{display:none;text-align:center;color:var(--mut);padding:30px}
+@media (max-width:600px){body{font-size:15px}.card{padding:2px 12px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Kafka Interview Prep</h1>
+<p>Concepts, trade-offs and "say this in the interview" notes. Tap any question to expand.</p>
+<div class="ctl"><button id="ex">Expand all</button><button id="co">Collapse all</button><button id="th">Toggle theme</button></div>
+</header>
+<div class="bar"><div>
+<input id="q" type="search" placeholder="Search concepts (e.g. ISR, rebalance, idempotent)…" aria-label="Search">
+<nav class="chips">
+<a href="#s1">Core</a><a href="#s2">Consumer Groups</a><a href="#s3">Brokers &amp; Replication</a><a href="#s4">Performance</a><a href="#s5">Producer</a><a href="#s6">Consumer</a><a href="#s7">Spring Kafka</a><a href="#s8">Errors &amp; DLT</a>
+</nav></div></div>
+
+<main>
+<div id="empty" class="empty">No matching concepts.</div>
+
+<section id="s1"><h2><span>1</span> Core Concepts</h2><div class="card">
+<details><summary>Why Kafka exists</summary><div>
+<p>Point-to-point integrations between many systems become a tangled mess, and traditional queues/DBs struggle with very high throughput, replay and fan-out. Kafka is a <b>distributed, durable, append-only commit log</b> acting as a central event backbone.</p>
+<ul><li>Decouples producers from consumers (async, independent scaling)</li><li>Handles millions of events/sec with horizontal scale</li><li>Durable and replayable: messages are retained by time/size, not deleted on consumption</li><li>Multiple independent consumers can read the same data</li></ul>
+<p>Use cases: event streaming, log aggregation, CDC, payments/transaction events, metrics, event sourcing.</p></div></details>
+<details><summary>What are partitions, and why partitions?</summary><div>
+<p>A topic is split into <b>partitions</b>; each is an ordered, immutable, append-only log stored on a broker.</p>
+<ul><li><b>Scalability:</b> data spread across brokers</li><li><b>Parallelism:</b> one consumer per partition within a group; max parallelism = partition count</li><li><b>Throughput:</b> parallel writes and reads</li></ul>
+<div class="tip"><b>Note:</b> Partitions can be increased but never decreased, and increasing breaks key→partition mapping for existing keys.</div></div></details>
+<details><summary>Ordering guarantee</summary><div>
+<p>Kafka guarantees order <b>only within a single partition</b>, never across partitions of a topic.</p>
+<ul><li>Need ordering per entity (e.g. account)? Use the entity ID as the message key so all its events land in one partition.</li><li>Global ordering = 1 partition (sacrifices parallelism).</li><li>With retries, set <code>enable.idempotence=true</code> (or <code>max.in.flight.requests.per.connection ≤ 5</code>) to avoid reordering.</li></ul></div></details>
+<details><summary>What is an offset?</summary><div>
+<p>A sequential, immutable number identifying a record's position <b>within a partition</b>. Uniqueness is the triple <code>(topic, partition, offset)</code>.</p></div></details>
+<details><summary>Why offsets matter</summary><div>
+<ul><li>Consumers track progress by committing offsets (stored in <code>__consumer_offsets</code>)</li><li>Enable resume after crash/restart without data loss</li><li>Enable <b>replay</b>: reset offsets to reprocess (bug fix, new service)</li><li>Define delivery semantics: commit timing decides at-least-once vs at-most-once</li><li>Committed offset = <i>next</i> record to read (last processed + 1)</li></ul></div></details>
+</div></section>
+
+<section id="s2"><h2><span>2</span> Consumer Groups</h2><div class="card">
+<details><summary>What is a consumer group?</summary><div>
+<p>A set of consumers sharing a <code>group.id</code> that cooperatively consume a topic. Partitions are divided among members, so each message is processed by <b>one</b> consumer in the group. Different groups each get the full stream (pub/sub).</p></div></details>
+<details><summary>Consumer group rule</summary><div>
+<p><b>One partition is consumed by at most one consumer within a group at a time</b> (a consumer may own many partitions).</p>
+<div class="tbl"><table><tr><th>Scenario</th><th>Result</th></tr>
+<tr><td>Consumers &lt; partitions</td><td>Some consumers handle multiple partitions</td></tr>
+<tr><td>Consumers = partitions</td><td>1:1, max parallelism</td></tr>
+<tr><td>Consumers &gt; partitions</td><td>Extra consumers sit idle</td></tr></table></div></div></details>
+<details><summary>Rebalancing</summary><div>
+<p>Redistribution of partitions among group members. Triggered by: consumer joins/leaves/crashes, missed heartbeat or poll timeout, topic partition count change, subscription change.</p>
+<ul><li><b>Eager:</b> all consumers revoke everything, then reassign ("stop-the-world")</li><li><b>Cooperative (incremental):</b> only affected partitions move; prefer <code>CooperativeStickyAssignor</code></li></ul>
+<p>Costs: processing pause, duplicate processing if offsets weren't committed. Deep dive in section 6.</p></div></details>
+<details><summary>Message key and partition selection</summary><div>
+<ul><li><b>Key present:</b> <code>partition = murmur2(keyBytes) % numPartitions</code>, so same key → same partition → ordered</li><li><b>No key:</b> sticky partitioner, fills a batch for one partition then switches (older: round-robin)</li><li><b>Custom:</b> implement <code>Partitioner</code></li><li>Explicit partition in <code>ProducerRecord</code> overrides all</li></ul>
+<div class="tip"><b>Watch for:</b> hot partitions from skewed keys; changing partition count remaps keys.</div></div></details>
+</div></section>
+
+<section id="s3"><h2><span>3</span> Brokers &amp; Replication</h2><div class="card">
+<details><summary>What is a broker?</summary><div>
+<p>A Kafka server that stores partition data on disk and serves producers/consumers. A <b>cluster</b> = multiple brokers; each partition lives on several brokers. Cluster metadata and controller election are handled by <b>KRaft</b> (ZooKeeper in legacy versions).</p></div></details>
+<details><summary>Replication</summary><div>
+<p>Each partition is copied to <code>replication.factor</code> brokers for fault tolerance. Production standard: RF = 3.</p></div></details>
+<details><summary>Leader and followers</summary><div>
+<ul><li><b>Leader:</b> one replica per partition handling all reads/writes</li><li><b>Followers:</b> fetch from the leader to stay in sync (hot standby)</li><li>Leaders are spread across brokers for load balance</li></ul></div></details>
+<details><summary>What happens if the leader crashes?</summary><div>
+<ol><li>Controller detects broker failure</li><li>Elects a new leader from the <b>ISR</b></li><li>Clients refresh metadata and redirect to the new leader</li></ol>
+<p>If ISR is empty: with <code>unclean.leader.election.enable=false</code> (default) the partition is unavailable; with <code>true</code> an out-of-sync replica may lead, risking <b>data loss</b>. Trade-off: consistency vs availability.</p></div></details>
+<details><summary>In-Sync Replicas (ISR)</summary><div>
+<p>The set of replicas (leader included) that are caught up with the leader within <code>replica.lag.time.max.ms</code>. Slow or dead followers are dropped from ISR and rejoin after catching up.</p>
+<p><code>min.insync.replicas</code>: minimum ISR size required to accept writes with <code>acks=all</code>. Else the producer gets <code>NotEnoughReplicas</code>.</p>
+<div class="tip"><b>Durable setup:</b> RF=3, <code>min.insync.replicas=2</code>, <code>acks=all</code>. Survives one broker loss with no data loss.</div></div></details>
+<details><summary>Acknowledgements (acks)</summary><div>
+<div class="tbl"><table><tr><th>acks</th><th>Meaning</th><th>Trade-off</th></tr>
+<tr><td><code>0</code></td><td>Fire and forget</td><td>Fastest; can lose data silently</td></tr>
+<tr><td><code>1</code></td><td>Leader wrote it</td><td>Loss if leader dies before replication</td></tr>
+<tr><td><code>all</code>/<code>-1</code></td><td>All ISR wrote it</td><td>Strongest durability, higher latency</td></tr></table></div></div></details>
+</div></section>
+
+<section id="s4"><h2><span>4</span> Performance &amp; Guarantees</h2><div class="card">
+<details><summary>Why is Kafka fast?</summary><div>
+<ul><li><b>Sequential disk I/O</b> (append-only log), comparable to memory-speed for sequential access</li><li><b>OS page cache</b> instead of heap caching; no GC pressure</li><li><b>Batching</b> of records on produce and fetch</li><li><b>Compression</b> per batch</li><li><b>Zero-copy</b> transfer</li><li><b>Partitioned parallelism</b></li><li>Simple dumb-broker/smart-client design, with binary protocol</li></ul></div></details>
+<details><summary>Zero-copy transfer</summary><div>
+<p>Uses <code>sendfile()</code> (Java <code>FileChannel.transferTo</code>) to move data from the page cache straight to the network socket in kernel space, skipping copies to user-space and context switches.</p>
+<pre><code>Traditional: disk → kernel buf → app buf → socket buf → NIC
+Zero-copy  : disk → page cache ────────────────→ NIC</code></pre>
+<p class="tip"><b>Caveat:</b> Not applicable with TLS encryption, since data must pass through user space.</p></div></details>
+<details><summary>Delivery guarantees</summary><div>
+<div class="tbl"><table><tr><th>Semantic</th><th>How</th><th>Risk</th></tr>
+<tr><td><b>At-most-once</b></td><td>Commit offset before processing; <code>acks=0</code></td><td>Message loss</td></tr>
+<tr><td><b>At-least-once</b> (default practical)</td><td>Process, then commit; <code>acks=all</code> + retries</td><td>Duplicates, so make consumers idempotent</td></tr>
+<tr><td><b>Exactly-once</b></td><td>Idempotent producer + transactions + <code>isolation.level=read_committed</code></td><td>Overhead; end-to-end only within Kafka (read-process-write)</td></tr></table></div>
+<p>For external side effects (DB, REST), use idempotency keys or the outbox pattern.</p></div></details>
+</div></section>
+
+<section id="s5"><h2><span>5</span> Producer Deep Dive</h2><div class="card">
+<details><summary>Producer architecture</summary><div>
+<pre><code>send() → Serializer → Partitioner → RecordAccumulator (per-partition batches)
+                                          ↓
+                             Sender thread (background) → Broker</code></pre>
+<p><code>send()</code> is async; it returns a <code>Future</code>/callback. The main thread appends to a buffer, and a separate I/O <b>Sender thread</b> ships batches.</p></div></details>
+<details><summary>Producer buffer</summary><div>
+<ul><li><code>buffer.memory</code> (default 32MB): total memory for unsent records</li><li>If full, <code>send()</code> blocks up to <code>max.block.ms</code>, then throws <code>TimeoutException</code></li><li>Signals producer is faster than broker/network</li></ul></div></details>
+<details><summary>Batching</summary><div>
+<ul><li><code>batch.size</code> (16KB): max bytes per partition batch</li><li><code>linger.ms</code> (0; set 5–20): wait to fill batch before sending</li><li>Larger batches → higher throughput, slightly higher latency</li></ul></div></details>
+<details><summary>Compression</summary><div>
+<p><code>compression.type</code>: <code>none | gzip | snappy | lz4 | zstd</code>. Applied per batch, so it works better with bigger batches. Brokers store compressed; consumers decompress. <code>lz4</code>/<code>zstd</code> are common picks (speed vs ratio).</p></div></details>
+<details><summary>Retries</summary><div>
+<ul><li><code>retries</code> (default huge) bounded by <code>delivery.timeout.ms</code> (120s default)</li><li><code>retry.backoff.ms</code> between attempts</li><li>Retriable: network errors, leader election. Non-retriable: record too large, serialization.</li><li>Risks: duplicates and reordering without idempotence</li></ul></div></details>
+<details><summary>Idempotent producer</summary><div>
+<p><code>enable.idempotence=true</code> (default since Kafka 3.0). Broker dedupes using <b>Producer ID (PID) + sequence number</b> per partition, so retries don't create duplicates and ordering is preserved. Requires <code>acks=all</code>, <code>retries&gt;0</code>, <code>max.in.flight ≤ 5</code>.</p>
+<p>Scope: single producer session, single partition. Cross-partition atomicity needs <b>transactions</b> (<code>transactional.id</code>).</p></div></details>
+<pre><code># Recommended durable producer
+acks=all
+enable.idempotence=true
+linger.ms=10
+batch.size=32768
+compression.type=lz4
+delivery.timeout.ms=120000</code></pre>
+</div></section>
+
+<section id="s6"><h2><span>6</span> Consumer Deep Dive</h2><div class="card">
+<details><summary>Consumer architecture &amp; poll model</summary><div>
+<p>Consumers <b>pull</b> (not push), controlling their own pace and backpressure. The loop:</p>
+<pre><code>while (true) {
+  records = consumer.poll(Duration.ofMillis(500));
+  for (r : records) process(r);
+  consumer.commitSync();
+}</code></pre>
+<p><code>poll()</code> fetches records, sends heartbeats via a background thread, and participates in group coordination. Single-threaded: <code>KafkaConsumer</code> is <b>not thread-safe</b>.</p></div></details>
+<details><summary>Consumer lag &amp; why it matters</summary><div>
+<p><b>Lag = log-end offset − committed offset</b>, per partition.</p>
+<ul><li>Growing lag = consumers can't keep up → delayed processing, stale data</li><li>If lag exceeds retention, data is deleted before it's read → <b>permanent loss</b></li><li>Primary health/SLA metric; monitor with Burrow, Prometheus, <code>kafka-consumer-groups.sh --describe</code></li><li>Fixes: add consumers (≤ partitions), speed up processing, increase partitions, tune fetch settings</li></ul></div></details>
+<details><summary>Heartbeats</summary><div>
+<p>A background thread sends heartbeats to the group coordinator every <code>heartbeat.interval.ms</code> (3s, ≈ ⅓ of session timeout) to prove liveness.</p></div></details>
+<details><summary>Rebalancing deep dive</summary><div>
+<ol><li>Group coordinator (a broker) detects change</li><li>Members rejoin (<code>JoinGroup</code>); one becomes group leader</li><li>Leader computes assignment (assignor); coordinator distributes (<code>SyncGroup</code>)</li></ol>
+<p>Mitigation: cooperative-sticky assignor, <b>static membership</b> (<code>group.instance.id</code>) so restarts don't trigger rebalance, tune timeouts, keep processing fast, commit in <code>onPartitionsRevoked</code>.</p></div></details>
+<details><summary>session.timeout.ms vs max.poll.interval.ms</summary><div>
+<div class="tbl"><table><tr><th>Setting</th><th>Detects</th><th>Default</th></tr>
+<tr><td><code>session.timeout.ms</code></td><td>Consumer <b>process dead</b> (no heartbeats)</td><td>45s</td></tr>
+<tr><td><code>max.poll.interval.ms</code></td><td>Consumer <b>stuck/slow</b> (too long between <code>poll()</code> calls)</td><td>5 min</td></tr></table></div>
+<p>Exceeding either → consumer removed → rebalance → <code>CommitFailedException</code> on late commit. Slow processing is the usual culprit: reduce <code>max.poll.records</code> or raise the interval.</p></div></details>
+<details><summary>Fetching records &amp; max.poll.records</summary><div>
+<ul><li><code>fetch.min.bytes</code> / <code>fetch.max.wait.ms</code>: broker waits for min data or timeout</li><li><code>fetch.max.bytes</code>, <code>max.partition.fetch.bytes</code>: size caps</li><li><code>max.poll.records</code> (500): max records returned per <code>poll()</code>. This is the knob for per-batch processing time.</li></ul></div></details>
+<details><summary>Consumer concurrency</summary><div>
+<ul><li>Scale by <b>more consumers in the group</b> (≤ partitions)</li><li>Or multiple threads: one consumer per thread, or a consumer + worker pool (careful with offset commits and ordering)</li><li>Spring: <code>concurrency</code> on the listener container = N consumer threads</li></ul></div></details>
+<details><summary>Offset management revisited</summary><div>
+<ul><li><b>Auto-commit</b> (<code>enable.auto.commit=true</code>, every 5s): simple but can lose or duplicate on crash</li><li><b>commitSync:</b> blocking, reliable, retries</li><li><b>commitAsync:</b> faster, no retry (ordering risk); use sync on shutdown</li><li><b>Per-record / per-partition</b> commits for finer control</li><li><code>auto.offset.reset</code>: <code>earliest | latest | none</code> applies only when no committed offset exists</li><li><code>seek()</code> to replay/skip manually</li></ul>
+<div class="tip"><b>Rule:</b> Commit <i>after</i> successful processing for at-least-once; store offsets with business data in the same DB transaction for effectively-once.</div></div></details>
+</div></section>
+
+<section id="s7"><h2><span>7</span> How Spring Kafka Works</h2><div class="card">
+<details open><summary>You write</summary><div>
+<pre><code>@Service
+class PaymentConsumer {
+  @KafkaListener(topics = "payments", groupId = "payment-svc", concurrency = "3")
+  public void handle(PaymentEvent event, Acknowledgment ack) {
+    process(event);
+    ack.acknowledge();
+  }
+}
+
+kafkaTemplate.send("payments", accountId, event); // key = accountId</code></pre></div></details>
+<details open><summary>Under the hood, Spring creates</summary><div>
+<ul><li><b>KafkaListenerAnnotationBeanPostProcessor</b> scans <code>@KafkaListener</code> methods and registers endpoints</li><li><b>ConcurrentKafkaListenerContainerFactory</b> builds containers</li><li><b>ConcurrentMessageListenerContainer</b> → spawns N child <b>KafkaMessageListenerContainer</b>s (= <code>concurrency</code>), each with its own <code>KafkaConsumer</code> thread</li><li>Each container runs the poll loop, deserializes, invokes your method via a message adapter, then handles offset commits per <b>AckMode</b></li><li><b>KafkaTemplate</b> wraps <code>KafkaProducer</code> (from <code>ProducerFactory</code>); <code>send()</code> returns <code>CompletableFuture&lt;SendResult&gt;</code></li></ul>
+<div class="tbl"><table><tr><th>AckMode</th><th>Commit</th></tr>
+<tr><td><code>BATCH</code> (default)</td><td>After all records from a poll are processed</td></tr>
+<tr><td><code>RECORD</code></td><td>After each record</td></tr>
+<tr><td><code>MANUAL / MANUAL_IMMEDIATE</code></td><td>When you call <code>ack.acknowledge()</code></td></tr>
+<tr><td><code>TIME / COUNT</code></td><td>Periodically / after N records</td></tr></table></div>
+<p>Note: Spring sets <code>enable.auto.commit=false</code> by default and manages commits itself. Concurrency can't usefully exceed partition count.</p></div></details>
+</div></section>
+
+<section id="s8"><h2><span>8</span> Error Handling, Retry &amp; DLT</h2><div class="card">
+<details><summary>Error handling</summary><div>
+<p>Spring Kafka uses <code>DefaultErrorHandler</code> (replaced <code>SeekToCurrentErrorHandler</code>). When the listener throws, the container seeks back to the failed record's offset and re-delivers it, so records aren't lost, and the rest of the batch is reprocessed.</p>
+<ul><li><b>Deserialization errors:</b> wrap with <code>ErrorHandlingDeserializer</code>, otherwise the poll loop gets stuck on a poison pill</li><li>Classify exceptions: <b>retryable</b> (timeouts, downstream down) vs <b>non-retryable</b> (validation, bad payload; <code>addNotRetryableExceptions(...)</code>)</li></ul></div></details>
+<details><summary>Retry mechanism</summary><div>
+<p><b>Blocking (in-place) retry</b> via <code>BackOff</code>:</p>
+<pre><code>@Bean
+DefaultErrorHandler errorHandler(KafkaTemplate&lt;Object,Object&gt; t) {
+  var recoverer = new DeadLetterPublishingRecoverer(t);
+  var backoff = new ExponentialBackOff(1000L, 2.0); // 1s,2s,4s…
+  backoff.setMaxElapsedTime(15000L);
+  var h = new DefaultErrorHandler(recoverer, backoff);
+  h.addNotRetryableExceptions(IllegalArgumentException.class);
+  return h;
+}</code></pre>
+<p><b>Non-blocking retry</b> with <code>@RetryableTopic</code>: failed messages are forwarded to retry topics (<code>-retry-0</code>, <code>-retry-1</code>…) with delays, so the main partition is not blocked.</p>
+<pre><code>@RetryableTopic(attempts = "4",
+  backoff = @Backoff(delay = 1000, multiplier = 2))
+@KafkaListener(topics = "payments")
+void handle(PaymentEvent e) { ... }
+
+@DltHandler
+void dlt(PaymentEvent e) { /* alert, store, manual fix */ }</code></pre>
+<div class="tbl"><table><tr><th></th><th>Blocking</th><th>Non-blocking</th></tr>
+<tr><td>Ordering</td><td>Preserved</td><td>Lost for retried records</td></tr>
+<tr><td>Throughput</td><td>Partition stalls during retries</td><td>Main flow continues</td></tr>
+<tr><td>Use when</td><td>Order matters, short transient errors</td><td>Long outages, independent events</td></tr></table></div></div></details>
+<details><summary>Dead Letter Topic (DLT)</summary><div>
+<p>A topic where records that exhausted retries (or are non-retryable) are published, so they don't block the pipeline or get lost. Default name: <code>&lt;topic&gt;.DLT</code> (or <code>-dlt</code> with <code>@RetryableTopic</code>) in the same partition number by default.</p>
+<ul><li>Headers carry original topic/partition/offset and exception stack trace</li><li>Process via a DLT consumer: alert, persist for analysis, fix and <b>replay</b> to the main topic</li><li>Monitor DLT volume; it signals bugs or bad upstream data</li></ul>
+<div class="tip"><b>Interview tip:</b> Pair retries with idempotent consumers, since re-delivery means duplicates are expected. If DLT publish itself fails, the record is retried again, never silently dropped.</div></div></details>
+</div></section>
+</main>
+<script>
+(function(){
+var ds=[].slice.call(document.querySelectorAll('details'));
+document.getElementById('ex').onclick=function(){ds.forEach(function(d){d.open=true})};
+document.getElementById('co').onclick=function(){ds.forEach(function(d){d.open=false})};
+document.getElementById('th').onclick=function(){
+var r=document.documentElement,dark=r.getAttribute('data-theme')==='dark'||(!r.getAttribute('data-theme')&&matchMedia('(prefers-color-scheme:dark)').matches);
+r.setAttribute('data-theme',dark?'light':'dark')};
+document.getElementById('q').oninput=function(e){
+var v=e.target.value.toLowerCase().trim(),any=false;
+ds.forEach(function(d){var m=!v||d.textContent.toLowerCase().indexOf(v)>-1;d.style.display=m?'':'none';if(m){any=true;if(v)d.open=true}});
+document.querySelectorAll('section').forEach(function(s){var vis=[].some.call(s.querySelectorAll('details'),function(d){return d.style.display!=='none'});s.style.display=vis?'':'none'});
+document.getElementById('empty').style.display=any?'none':'block'};
+})();
+</script>
+</body>
+</html>
