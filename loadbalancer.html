@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Load Balancers &amp; Routing Algorithms – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:28px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:0 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid .card{margin:0}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{padding:8px 12px;border-radius:10px;background:var(--code);border:1px solid var(--line);font-weight:600;font-size:.9rem}
+.chip small{display:block;color:var(--muted);font-weight:400}
+.seq{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.seq span{padding:4px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.85rem}
+.seq span.b{background:var(--code);color:var(--text)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Load Balancers &amp; Routing Algorithms</h1>
+  <p>Quick-revision cheat sheet for system design interviews.</p>
+</header>
+<nav><div class="row">
+  <a href="#what">What &amp; Why</a><a href="#algos">Algorithms</a><a href="#compare">Compare</a><a href="#session">Sessions</a><a href="#qa">Quick Q&amp;A</a>
+</div></nav>
+
+<main>
+<section id="what">
+  <h2>What &amp; Why</h2>
+  <div class="card">
+    <p>A load balancer is an intelligent intermediary between clients and a pool of servers. It receives every incoming request and decides which server handles it, like a <strong>traffic police officer</strong> sending vehicles to less crowded roads.</p>
+    <ul>
+      <li>Spreads requests so no single server is overwhelmed</li>
+      <li>Gives <strong>high availability</strong>, <strong>fault tolerance</strong> and better performance under spikes (e.g. a Cricket World Cup final)</li>
+      <li>Without it, traffic bottlenecks on one server → failure or degraded UX</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>What it monitors</h3>
+    <div class="chips">
+      <div class="chip">Availability<small>is the server up?</small></div>
+      <div class="chip">Health / status<small>is it responding well?</small></div>
+      <div class="chip">Current load<small>active connections</small></div>
+    </div>
+    <p style="margin:0">It combines these signals with the configured routing algorithm to pick a server per request.</p>
+  </div>
+</section>
+
+<section id="algos">
+  <h2>The 4 Routing Algorithms</h2>
+
+  <div class="card">
+    <span class="tag">1 · Round Robin</span>
+    <p>Requests go to servers in a circle; after the last server it wraps to the first.</p>
+    <div class="seq"><span>Req 1 → A</span><span>Req 2 → B</span><span>Req 3 → C</span><span>Req 4 → D</span><span class="b">Req 5 → A (repeat)</span></div>
+    <div class="pro"><strong>Pros:</strong> simple, easy to implement.</div>
+    <div class="con"><strong>Cons:</strong> assumes identical servers; ignores health and load; may overload a slow server.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">2 · Weighted Round Robin</span>
+    <p>Each server gets a weight proportional to its capacity; stronger servers get more requests.</p>
+    <div class="chips">
+      <div class="chip">A · 32 CPU<small>weight 4</small></div>
+      <div class="chip">B · 16 CPU<small>weight 3</small></div>
+      <div class="chip">C · 8 CPU<small>weight 2</small></div>
+      <div class="chip">D · 4 CPU<small>weight 1</small></div>
+    </div>
+    <p style="margin:0">Distribution: 4 requests to A, then 3 to B, 2 to C, 1 to D, and repeat.</p>
+    <div class="pro"><strong>Pros:</strong> suits heterogeneous servers.</div>
+    <div class="con"><strong>Cons:</strong> static; doesn't watch real-time CPU or connections, so a busy powerful server can still be overloaded while weaker ones sit idle.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">3 · Least Connections</span>
+    <p>Each new request goes to the server with the <strong>fewest active connections</strong>.</p>
+    <div class="pro"><strong>Pros:</strong> dynamic, accounts for real-time load and availability; more adaptive than the round-robin variants.</div>
+    <div class="con"><strong>Cons:</strong> needs the balancer to continuously track connection counts.</div>
+  </div>
+
+  <div class="card">
+    <span class="tag">4 · IP Hash (Sticky Sessions)</span>
+    <p>Hash of the client IP picks the server, so a given IP <strong>always</strong> lands on the same server. Also called <strong>session affinity</strong>.</p>
+    <div class="pro"><strong>Pros:</strong> keeps session state consistent without shared session storage.</div>
+    <div class="con"><strong>Cons:</strong> can distribute unevenly; ties users to one server.</div>
+  </div>
+</section>
+
+<section id="compare">
+  <h2>Side-by-Side</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Algorithm</th><th>Best when</th><th>Adapts to live load?</th><th>Main weakness</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Round Robin</strong></td><td>Homogeneous servers, equal capacity</td><td>No</td><td>Ignores health and load</td></tr>
+      <tr><td><strong>Weighted RR</strong></td><td>Heterogeneous servers, static capacity</td><td>No</td><td>Weights are fixed</td></tr>
+      <tr><td><strong>Least Connections</strong></td><td>Real-time balancing matters</td><td>Yes</td><td>Needs connection tracking</td></tr>
+      <tr><td><strong>IP Hash</strong></td><td>Session affinity required</td><td>No</td><td>Uneven spread, tied to one server</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tip"><strong>Remember:</strong> no algorithm is universally best. Production systems often default to round robin or least connections and add sticky sessions only when needed; hybrids are common.</div>
+</section>
+
+<section id="session">
+  <h2>Session Consistency Problem</h2>
+  <div class="card">
+    <p>If requests from one user bounce between servers, session state breaks.</p>
+    <p><strong>Example:</strong> user adds items to the cart on Server B; on refresh the request hits Server C, which has no session data → the cart looks empty.</p>
+    <p style="margin:0"><strong>Fix:</strong> IP hash / sticky sessions route that user to the same server every time. This matters when session data is stored locally on a server rather than in a central store.</p>
+  </div>
+</section>
+
+<section id="qa">
+  <h2>Quick Q&amp;A (tap to reveal)</h2>
+  <details><summary>Why use a load balancer?</summary><p>To distribute traffic, avoid single-server overload, and get availability, fault tolerance and performance at scale.</p></details>
+  <details><summary>When would round robin fail you?</summary><p>When servers differ in capacity or health: it sends equal traffic to a slow or overloaded node.</p></details>
+  <details><summary>Weighted RR vs Least Connections?</summary><p>Weighted RR uses static, pre-set capacity weights. Least Connections reacts to real-time active connections.</p></details>
+  <details><summary>When do you need sticky sessions?</summary><p>When session data lives locally on each server and the user must keep hitting the same one.</p></details>
+  <details><summary>Which algorithm do most apps default to?</summary><p>Round robin for simplicity; some choose least connections for better adaptation.</p></details>
+</section>
+</main>
+<footer>Load balancers keep large-scale systems reliable and scalable under heavy traffic.</footer>
+</body>
+</html>
