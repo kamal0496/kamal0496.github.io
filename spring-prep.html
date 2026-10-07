@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spring Boot &amp; Microservices Interview Prep (5 YOE)</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:30px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h2 .n{display:inline-block;min-width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;background:var(--accent);color:var(--bg);font-size:.9rem;margin-right:8px;padding:0 4px}
+h3{font-size:1.05rem;margin:22px 0 8px;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.def{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:10px;margin:0 0 14px}
+.def b.lbl{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.84rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.tag.q{background:var(--good-soft);color:var(--good)}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.86rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+.legend{font-size:.88rem;color:var(--muted);margin:10px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Spring Boot &amp; Microservices Interview Prep</h1>
+  <p>5 years experience · clear definitions first, then key points, examples, corrections, recruiter follow-ups and core Spring concept questions.</p>
+</header>
+<nav><div class="row">
+  <a href="#recall">Rapid Recall</a><a href="#t1">1 readOnly</a><a href="#t2">2 DI</a><a href="#t3">3 Auto-Config</a><a href="#t4">4 Propagation</a><a href="#t5">5 Bulkhead</a><a href="#t6">6 Singleton</a><a href="#t7">7 Conn Pool</a><a href="#t8">8 Filter/Interceptor</a><a href="#t9">9 AppContext</a><a href="#t10">10 Boot vs Spring</a><a href="#t11">11 Microservices</a><a href="#t12">12 API Gateway</a><a href="#t13">13 Starvation</a><a href="#t14">14 Bean Lifecycle</a><a href="#t15">15 JPA Queries</a><a href="#t16">16 ACID</a><a href="#core">Core Spring Q&amp;A</a>
+</div></nav>
+
+<main>
+<p class="legend"><span class="tag add">Added</span> missing from your notes · <span class="tag fix">Correction</span> inaccurate/outdated in your notes · <span class="tag q">Follow-up</span> what a recruiter asks next</p>
+
+<section id="recall">
+  <h2>Rapid Recall</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Topic</th><th>One-liner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1 readOnly</strong></td><td>A hint: skips Hibernate flush/dirty checking, lets DB/driver optimise. Not a security feature.</td></tr>
+      <tr><td><strong>2 DI types</strong></td><td>Constructor (preferred), setter (optional deps), field (avoid).</td></tr>
+      <tr><td><strong>3 Auto-config</strong></td><td>Conditional config classes applied from classpath, beans and properties; yours win.</td></tr>
+      <tr><td><strong>4 Propagation</strong></td><td>REQUIRED (default), REQUIRES_NEW, NESTED, SUPPORTS, NOT_SUPPORTED, MANDATORY, NEVER.</td></tr>
+      <tr><td><strong>5 Bulkhead</strong></td><td>Isolate resources so one failure can't sink everything. Semaphore vs thread-pool.</td></tr>
+      <tr><td><strong>6 Singleton beans</strong></td><td>One instance ≠ thread-safe. Stay stateless.</td></tr>
+      <tr><td><strong>7 Connection pool</strong></td><td>Reuse DB connections (HikariCP). <code>close()</code> returns to pool.</td></tr>
+      <tr><td><strong>8 Filter vs Interceptor</strong></td><td>Filter = servlet level; Interceptor = Spring MVC, knows the handler.</td></tr>
+      <tr><td><strong>9 ApplicationContext</strong></td><td>BeanFactory + enterprise features; eager singletons.</td></tr>
+      <tr><td><strong>10 Boot vs Spring</strong></td><td>Boot = opinionated layer: auto-config, starters, embedded server, actuator.</td></tr>
+      <tr><td><strong>11 Microservices</strong></td><td>Small independent services; trade code complexity for distributed complexity.</td></tr>
+      <tr><td><strong>12 API Gateway</strong></td><td>Single entry point: routing, auth, rate limiting, aggregation.</td></tr>
+      <tr><td><strong>13 Thread starvation</strong></td><td>Thread can progress but keeps losing the race for CPU/lock/pool slot.</td></tr>
+      <tr><td><strong>14 Bean lifecycle</strong></td><td>Instantiate → inject → Aware → BPP before → @PostConstruct → afterPropertiesSet → init → BPP after → destroy.</td></tr>
+      <tr><td><strong>15 JPA queries</strong></td><td>Derived, @Query, native, @Modifying, named, projections, Specifications, paging.</td></tr>
+      <tr><td><strong>16 ACID</strong></td><td>Atomicity, Consistency, Isolation, Durability.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 1 -->
+<section id="t1">
+  <h2><span class="n">1</span>@Transactional readOnly = true vs false</h2>
+  <div class="def"><b class="lbl">Definition</b><code>readOnly</code> is a hint on <code>@Transactional</code> declaring that the method only reads data. <code>false</code> (default) allows reads and writes; <code>true</code> lets Spring/Hibernate/the database apply read-only optimisations.</div>
+  <div class="card">
+    <ul>
+      <li><strong>readOnly=false (default):</strong> full transaction (begin/commit/rollback), Hibernate dirty checking on, flush mode AUTO (changes flushed before queries/commit).</li>
+      <li><strong>readOnly=true:</strong> Hibernate skips dirty checking, flush mode MANUAL (no auto flush), DB/driver may optimise or route to read replicas; writes may throw depending on the DB/driver.</li>
+      <li>Best practice: use <code>readOnly = true</code> for query methods. It signals intent and saves work. It is <strong>not</strong> a security feature.</li>
+    </ul>
+<pre><code>@Service
+@Transactional(readOnly = true)              // class-level default for queries
+public class OrderService {
+    public List&lt;Order&gt; findAll() { return repo.findAll(); }
+
+    @Transactional                            // method-level override → read-write
+    public Order place(Order o) { return repo.save(o); }
+}</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Corrections</span>
+    <ul>
+      <li>"readOnly=false <em>acquires write locks</em>" is imprecise. A read-write transaction doesn't lock anything by existing; row locks are taken when you actually update/delete (or use <code>SELECT ... FOR UPDATE</code>).</li>
+      <li>With Hibernate, writes in a readOnly transaction are usually <strong>silently not flushed</strong> (no exception) unless the DB enforces read-only (e.g. PostgreSQL does).</li>
+    </ul></div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li>Spring also calls <code>connection.setReadOnly(true)</code> and Hibernate sets the session read-only: loaded entities aren't snapshotted, saving memory.</li>
+      <li><strong>Joining a transaction:</strong> if a readOnly method is called inside an existing read-write transaction (REQUIRED), the outer settings win; readOnly is only honoured when the transaction starts there.</li>
+      <li>Typical use: route reads to replicas via a routing <code>DataSource</code> keyed on <code>TransactionSynchronizationManager.isCurrentTransactionReadOnly()</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Does <code>readOnly=true</code> prevent <code>repo.save()</code> from writing?</summary><div>Not reliably. Hibernate won't flush, but a driver/DB with read-only enforcement may throw. Never rely on it for protection.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why is it faster?</summary><div>No dirty-check pass over every loaded entity at flush time, no snapshot copies, no flush; the DB may use cheaper snapshots/locks.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> A readOnly method calls a read-write method on another bean. What happens?</summary><div>With REQUIRED the inner method joins the outer (read-only) transaction, so its writes may not be flushed. Use REQUIRES_NEW or restructure.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="t2">
+  <h2><span class="n">2</span>Types of Dependency Injection</h2>
+  <div class="def"><b class="lbl">Definition</b>Dependency Injection (DI) means the Spring container supplies an object's dependencies instead of the object creating them. Spring supports three styles: constructor, setter and field injection.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Constructor (recommended):</strong> dependencies can be <code>final</code> (immutability), easy unit testing, all dependencies present at construction, explicit contract.</li>
+      <li><strong>Setter:</strong> for optional dependencies or reconfiguration; object can be partially constructed.</li>
+      <li><strong>Field (avoid):</strong> hard to test (needs reflection/Spring), no <code>final</code>, hidden dependencies; only for prototypes/legacy.</li>
+    </ul>
+<pre><code>@Service
+public class OrderService {
+    private final PaymentClient payment;                    // final → immutable
+    public OrderService(PaymentClient payment) {            // @Autowired optional with ONE constructor
+        this.payment = payment;
+    }
+}
+// Lombok: @RequiredArgsConstructor generates the constructor for final fields</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Correction</span> Constructor injection doesn't prevent circular dependencies "at compile time". It <strong>fails fast at application startup</strong> (<code>BeanCurrentlyInCreationException</code>). Since Spring Boot 2.6, circular references are prohibited by default (<code>spring.main.allow-circular-references</code>).</div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Choosing among several beans of one type:</strong> <code>@Primary</code> (default choice) or <code>@Qualifier("name")</code>. Resolution is by type, then by name.</li>
+      <li>Errors: <code>NoSuchBeanDefinitionException</code> (none found), <code>NoUniqueBeanDefinitionException</code> (several, no tie-break).</li>
+      <li>Inject all implementations: <code>List&lt;PaymentStrategy&gt;</code> or <code>Map&lt;String, PaymentStrategy&gt;</code> (bean name → bean).</li>
+      <li>Optional dependency: <code>Optional&lt;X&gt;</code>, <code>@Autowired(required=false)</code> or <code>ObjectProvider&lt;X&gt;</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> A depends on B and B on A. How do you fix it?</summary><div>Redesign (extract a third bean or use events); as workarounds, setter injection or <code>@Lazy</code> on one dependency.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why is field injection hard to test?</summary><div>You can't pass mocks through a constructor; you need reflection (<code>@InjectMocks</code>/<code>ReflectionTestUtils</code>) or a Spring context.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Two beans implement the same interface. How does Spring pick one?</summary><div><code>@Primary</code> wins; otherwise <code>@Qualifier</code>; otherwise matching the parameter/field name to the bean name; otherwise it throws.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="t3">
+  <h2><span class="n">3</span>Spring Boot Auto-Configuration</h2>
+  <div class="def"><b class="lbl">Definition</b>Auto-configuration automatically registers Spring beans for you, based on <strong>what is on the classpath, which beans you've already defined, and which properties you've set</strong>. You override it simply by defining your own beans.</div>
+  <div class="card">
+    <div class="flow"><span>@SpringBootApplication</span><i>→</i><span>@EnableAutoConfiguration</span><i>→</i><span>AutoConfigurationImportSelector</span><i>→</i><span>Candidate config classes</span><i>→</i><span>@Conditional checks</span><i>→</i><span>Matching ones applied</span></div>
+    <ul>
+      <li>Each auto-config class is guarded by conditions, e.g. HikariCP on classpath → configure it; your own <code>DataSource</code> bean exists → skip; <code>spring.datasource.url</code> set → use it.</li>
+      <li>User configuration always takes precedence. Convention over configuration: opinionated but customisable.</li>
+      <li><strong>Debug:</strong> <code>debug=true</code> (or <code>--debug</code>) prints the conditions report. <strong>Exclude:</strong> <code>@SpringBootApplication(exclude=...)</code>.</li>
+    </ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Correction</span> Candidates are no longer read from <code>META-INF/spring.factories</code> in modern Boot. Spring Boot 2.7 introduced <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>, and <strong>Boot 3 uses only that file</strong> for auto-configuration (<code>spring.factories</code> remains for other extension points).</div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>@AutoConfiguration
+@ConditionalOnClass(DataSource.class)
+public class MyAutoConfig {
+    @Bean
+    @ConditionalOnMissingBean                       // back off if user defines their own
+    public MyService myService() { return new MyService(); }
+}
+// listed in META-INF/spring/...AutoConfiguration.imports</code></pre>
+    <ul>
+      <li><code>@SpringBootApplication</code> = <code>@SpringBootConfiguration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code>.</li>
+      <li>Common conditions: <code>@ConditionalOnClass</code>, <code>@ConditionalOnMissingBean</code>, <code>@ConditionalOnProperty</code>, <code>@ConditionalOnWebApplication</code>.</li>
+      <li>Exclude also via <code>spring.autoconfigure.exclude</code>. Starters bring the dependencies that trigger the conditions.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> How would you create your own starter?</summary><div>Write an auto-configuration class with conditions, register it in the <code>.imports</code> file, and publish it with a starter module (+ optional <code>@ConfigurationProperties</code>).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> An auto-configured bean isn't what you want. Options?</summary><div>Define your own bean (auto-config backs off via <code>@ConditionalOnMissingBean</code>), set properties, or exclude the auto-config class.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you find out why something was (not) configured?</summary><div>Run with <code>--debug</code> and read the "Positive matches / Negative matches" report, or use the Actuator <code>conditions</code> endpoint.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="t4">
+  <h2><span class="n">4</span>@Transactional Propagation</h2>
+  <div class="def"><b class="lbl">Definition</b>Propagation defines <strong>how a transactional method behaves when it is called while a transaction is already active</strong>: join it, start a new one, suspend it, or refuse to run.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Type</th><th>Behaviour</th><th>Typical use</th></tr></thead>
+    <tbody>
+      <tr><td><strong>REQUIRED</strong> (default)</td><td>Join existing, else create new</td><td>Normal service methods</td></tr>
+      <tr><td><strong>REQUIRES_NEW</strong></td><td>Always new; suspends the outer one</td><td>Audit logging that must commit even if the caller rolls back</td></tr>
+      <tr><td><strong>SUPPORTS</strong></td><td>Join if exists, else run non-transactionally</td><td>Optional-read helpers</td></tr>
+      <tr><td><strong>NOT_SUPPORTED</strong></td><td>Run without a transaction (suspends existing)</td><td>Long non-DB work</td></tr>
+      <tr><td><strong>MANDATORY</strong></td><td>Must have one, else exception</td><td>Methods that must never run standalone</td></tr>
+      <tr><td><strong>NEVER</strong></td><td>Must NOT have one, else exception</td><td>Guarding non-transactional code</td></tr>
+      <tr><td><strong>NESTED</strong></td><td>Savepoint inside the outer transaction</td><td>Partial rollback of a sub-step</td></tr>
+    </tbody>
+  </table></div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>@Transactional
+public void placeOrder(Order o) {
+    orderRepo.save(o);
+    auditService.log(o);          // REQUIRES_NEW: commits independently
+}
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void log(Order o) { auditRepo.save(new Audit(o)); }</code></pre>
+    <ul>
+      <li><strong>Rollback rules:</strong> by default only <code>RuntimeException</code> and <code>Error</code> roll back; checked exceptions don't. Use <code>rollbackFor = Exception.class</code>.</li>
+      <li><strong>Proxy limits:</strong> works through a Spring proxy, so <strong>self-invocation</strong> (<code>this.method()</code>) bypasses it; use public methods on Spring beans (not private/final).</li>
+      <li><code>REQUIRES_NEW</code> uses a <strong>second DB connection</strong>: risk of pool exhaustion/deadlock under load.</li>
+      <li><code>NESTED</code> needs savepoint support (JDBC <code>DataSourceTransactionManager</code>); <code>JpaTransactionManager</code> support is limited.</li>
+      <li>If an inner REQUIRED method throws a runtime exception, the shared transaction is marked rollback-only; the outer commit then fails with <code>UnexpectedRollbackException</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Your <code>@Transactional</code> method calls another method of the same class with REQUIRES_NEW. What happens?</summary><div>Nothing new starts: self-invocation bypasses the proxy, so the call runs in the same transaction. Move it to another bean.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> A checked exception is thrown. Is the transaction rolled back?</summary><div>No, it commits by default. Add <code>rollbackFor</code>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> REQUIRES_NEW vs NESTED?</summary><div>REQUIRES_NEW is a fully independent transaction (own connection, commits separately). NESTED is part of the outer transaction using a savepoint; if the outer rolls back, so does the nested one.</div></details>
+</section>
+
+<!-- 5 -->
+<section id="t5">
+  <h2><span class="n">5</span>Bulkhead Pattern</h2>
+  <div class="def"><b class="lbl">Definition</b>The Bulkhead pattern <strong>isolates resources (threads, connections, concurrency slots) into separate compartments</strong> so a failure or slowdown in one area can't exhaust shared resources and cascade to others, like watertight compartments on a ship.</div>
+  <div class="card">
+    <p><strong>Without:</strong> all requests share one pool; one slow downstream hogs the threads and everything fails. <strong>With:</strong> each dependency gets its own limited compartment (e.g. 5 threads for Service A, 5 for Service B).</p>
+    <div class="scroll"><table>
+      <thead><tr><th></th><th>SEMAPHORE (default)</th><th>THREADPOOL</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Runs in</strong></td><td>Caller's thread</td><td>Separate dedicated threads</td></tr>
+        <tr><td><strong>Limits</strong></td><td>Concurrent calls via permits</td><td>Pool size + queue</td></tr>
+        <tr><td><strong>Overhead</strong></td><td>Low</td><td>Higher (context switches)</td></tr>
+        <tr><td><strong>Isolation</strong></td><td>Limits concurrency, doesn't isolate threads</td><td>True thread isolation</td></tr>
+      </tbody>
+    </table></div>
+<pre><code>resilience4j.bulkhead.instances.semaphoreBulkhead.max-concurrent-calls=10
+resilience4j.bulkhead.instances.semaphoreBulkhead.max-wait-duration=5s
+
+resilience4j.thread-pool-bulkhead.instances.threadpoolBulkhead.core-thread-pool-size=5
+resilience4j.thread-pool-bulkhead.instances.threadpoolBulkhead.max-thread-pool-size=10
+resilience4j.thread-pool-bulkhead.instances.threadpoolBulkhead.queue-capacity=100</code></pre>
+    <ul><li>Rejected calls throw <code>BulkheadFullException</code>. Use for external calls, expensive operations, differing priorities; combine with Circuit Breaker.</li></ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Corrections</span>
+    <ul>
+      <li>A <code>THREADPOOL</code> bulkhead method must return <code>CompletableFuture&lt;T&gt;</code> (it runs asynchronously). Your example returning <code>User</code> works only for SEMAPHORE.</li>
+      <li>"THREADPOOL is recommended" is context-dependent: it adds overhead and loses ThreadLocal context (security, MDC). SEMAPHORE is often enough, especially with virtual threads.</li>
+    </ul></div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>@Bulkhead(name = "semaphoreBulkhead", fallbackMethod = "fallback")
+public User getUser(Long id) { return client.fetch(id); }
+
+@Bulkhead(name = "threadpoolBulkhead", type = Bulkhead.Type.THREADPOOL)
+public CompletableFuture&lt;User&gt; getUserAsync(Long id) {
+    return CompletableFuture.completedFuture(client.fetch(id));   // runs in the bulkhead's pool
+}
+User fallback(Long id, BulkheadFullException e) { return User.guest(); }</code></pre>
+    <ul>
+      <li>Other Resilience4j patterns: <strong>CircuitBreaker</strong> (CLOSED → OPEN → HALF_OPEN), <strong>Retry</strong>, <strong>RateLimiter</strong>, <strong>TimeLimiter</strong>. Default aspect order: Retry → CircuitBreaker → RateLimiter → TimeLimiter → Bulkhead.</li>
+      <li>Bulkhead protects <em>capacity</em>; Circuit Breaker stops calling a <em>failing</em> service; they complement each other.</li>
+      <li>You can also bulkhead with separate connection pools or Tomcat/executor pools per workload.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Bulkhead vs Circuit Breaker vs Rate Limiter?</summary><div>Bulkhead: caps concurrent usage of a resource. Circuit Breaker: stops calls after failure threshold, then probes. Rate Limiter: caps calls per time period.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What happens when the bulkhead is full?</summary><div>The call waits up to <code>max-wait-duration</code> (semaphore) or queues (thread pool); then <code>BulkheadFullException</code>, handled by a fallback.</div></details>
+</section>
+
+<!-- 6 -->
+<section id="t6">
+  <h2><span class="n">6</span>When Do Singleton Beans Cause Issues?</h2>
+  <div class="def"><b class="lbl">Definition</b>Spring's default <strong>singleton scope</strong> creates one bean instance per container (per bean definition) and shares it across all threads. It is <strong>not</strong> automatically thread-safe.</div>
+  <div class="card">
+    <ul>
+      <li>Problems arise with <strong>mutable shared state</strong>: counters, request-specific data, collections, caches without synchronisation, leading to race conditions and corruption.</li>
+      <li>Fix: keep beans <strong>stateless</strong>, use method-local variables for request data, and thread-safe structures (<code>ConcurrentHashMap</code>, <code>AtomicInteger</code>) when shared state is unavoidable.</li>
+    </ul>
+<pre><code>@Service class Bad  { private int count;                              void hit(){ count++; } }   // race
+@Service class Good { private final AtomicInteger count = new AtomicInteger(); void hit(){ count.incrementAndGet(); } }</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>@Component class Single {
+    @Autowired ObjectProvider&lt;Proto&gt; provider;   // prototype injected once otherwise!
+    void run(){ Proto p = provider.getObject(); }   // alternatives: @Lookup, @Scope(proxyMode = TARGET_CLASS)
+}</code></pre>
+    <ul>
+      <li>Spring singleton ≠ GoF singleton: one per container, not per JVM.</li>
+      <li>Typical bugs: current user stored in a field, shared <code>SimpleDateFormat</code>, mutable HashMap caches.</li>
+      <li>A stateless singleton with thread-safe dependencies is itself thread-safe.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Prototype bean injected into a singleton: how many instances?</summary><div>One, created at injection time. Use <code>ObjectProvider</code>, <code>@Lookup</code> or a scoped proxy.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you handle per-request data safely?</summary><div>Method parameters/locals or request-scoped beans (via proxy); never fields on singletons.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="t7">
+  <h2><span class="n">7</span>Connection Pooling</h2>
+  <div class="def"><b class="lbl">Definition</b>A connection pool keeps a set of <strong>open, reusable database connections</strong> that requests borrow and return, avoiding the cost of opening a new connection (TCP + authentication) for every request.</div>
+  <div class="card">
+    <div class="flow"><span>Init min connections</span><i>→</i><span>Borrow</span><i>→</i><span>Execute query</span><i>→</i><span>Return to pool</span></div>
+    <ul>
+      <li><strong>Idle timeout:</strong> idle connections are closed. <strong>Max size:</strong> grows up to max when all are busy. <strong>Validation:</strong> dead connections are removed.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added: HikariCP (Spring Boot default)</span>
+<pre><code>spring.datasource.hikari.maximum-pool-size=10      # default 10
+spring.datasource.hikari.minimum-idle=10           # default = max
+spring.datasource.hikari.connection-timeout=30000  # wait for a free connection
+spring.datasource.hikari.idle-timeout=600000       # trims idle conns above minimum-idle
+spring.datasource.hikari.max-lifetime=1800000      # retire before DB/firewall drops it
+spring.datasource.hikari.leak-detection-threshold=20000   # off by default</code></pre>
+    <ul>
+      <li><code>close()</code> on a pooled connection <strong>returns it to the pool</strong>; it doesn't close the socket.</li>
+      <li><strong>Exhausted pool:</strong> threads wait <code>connection-timeout</code>, then <code>SQLTransientConnectionException</code>. Causes: leaks, long transactions, slow queries, remote calls inside <code>@Transactional</code>, <code>spring.jpa.open-in-view=true</code> (default).</li>
+      <li><strong>Sizing:</strong> bigger isn't faster; start small (≈ cores × 2 + spindles). Total across instances must stay under DB <code>max_connections</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> 200 Tomcat threads, pool of 10. What happens under load?</summary><div>Up to 190 threads wait for a connection and may time out. Shorten transactions/queries rather than blindly raising the pool.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why does <code>REQUIRES_NEW</code> risk pool exhaustion?</summary><div>The suspended outer transaction keeps its connection while the inner takes a second one; many concurrent requests can deadlock the pool.</div></details>
+</section>
+
+<!-- 8 -->
+<section id="t8">
+  <h2><span class="n">8</span>Filter vs Interceptor</h2>
+  <div class="def"><b class="lbl">Definition</b>A <strong>Filter</strong> is a Servlet-spec component that intercepts requests/responses <em>before</em> they reach Spring's <code>DispatcherServlet</code>. An <strong>Interceptor</strong> is a Spring MVC component that runs <em>around the controller</em>, after the DispatcherServlet has chosen a handler.</div>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Filter</th><th>Interceptor</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Belongs to</strong></td><td>Servlet specification</td><td>Spring MVC</td></tr>
+      <tr><td><strong>Methods</strong></td><td><code>init()</code>, <code>doFilter()</code>, <code>destroy()</code></td><td><code>preHandle()</code>, <code>postHandle()</code>, <code>afterCompletion()</code></td></tr>
+      <tr><td><strong>Wrap request/response</strong></td><td>Yes</td><td>No (modify only)</td></tr>
+      <tr><td><strong>Spring context</strong></td><td>Limited</td><td>Full access</td></tr>
+      <tr><td><strong>Knows handler method</strong></td><td>No</td><td>Yes</td></tr>
+      <tr><td><strong>Use for</strong></td><td>CORS, encoding, compression, security headers, token validation, raw logging</td><td>Role-based authorization, per-endpoint metrics, model/view work</td></tr>
+    </tbody>
+  </table></div>
+  <div class="added"><span class="tag add">Added</span>
+    <div class="flow"><span>Filter chain</span><i>→</i><span>DispatcherServlet</span><i>→</i><span>preHandle</span><i>→</i><span>Controller</span><i>→</i><span>postHandle</span><i>→</i><span>afterCompletion</span><i>→</i><span>Filter (after)</span></div>
+<pre><code>@Component
+class TimingFilter extends OncePerRequestFilter {
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws ServletException, IOException {
+        long t = System.nanoTime();
+        chain.doFilter(req, res);                // forget this → request never proceeds
+        log.info("{} took {}ms", req.getRequestURI(), (System.nanoTime() - t) / 1_000_000);
+    }
+}
+@Configuration class WebConfig implements WebMvcConfigurer {
+    public void addInterceptors(InterceptorRegistry r) { r.addInterceptor(new AuthInterceptor()).addPathPatterns("/api/**"); }
+}</code></pre>
+    <ul>
+      <li><code>preHandle</code> returns <code>boolean</code> (false stops the chain). <code>postHandle</code> is skipped if the handler throws; <code>afterCompletion</code> always runs (if preHandle returned true).</li>
+      <li><strong>Spring Security</strong> is a filter chain. Exceptions in filters don't reach <code>@ControllerAdvice</code>.</li>
+      <li>The request body can be read once; wrap with <code>ContentCachingRequestWrapper</code> to log it.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Where do you validate a JWT?</summary><div>In a filter (Spring Security chain) so unauthenticated requests are rejected before MVC; fine-grained authorization can use interceptors or method security.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Filter vs Interceptor vs AOP?</summary><div>Filter: servlet request level. Interceptor: MVC handler level. AOP: any Spring bean method, independent of HTTP.</div></details>
+</section>
+
+<!-- 9 -->
+<section id="t9">
+  <h2><span class="n">9</span>ApplicationContext vs BeanFactory</h2>
+  <div class="def"><b class="lbl">Definition</b>Both are Spring IoC containers that create and wire beans. <strong>BeanFactory</strong> is the basic container (instantiation, configuration, DI). <strong>ApplicationContext</strong> extends it with enterprise features and is what you use in practice.</div>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>BeanFactory</th><th>ApplicationContext</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Initialisation</strong></td><td>Lazy (on request)</td><td>Eager for singletons at startup</td></tr>
+      <tr><td><strong>i18n</strong></td><td>No</td><td>Yes (<code>MessageSource</code>)</td></tr>
+      <tr><td><strong>Events</strong></td><td>No</td><td>Yes (<code>ApplicationEventPublisher</code>)</td></tr>
+      <tr><td><strong>AOP / post-processors</strong></td><td>Manual registration</td><td>Auto-detected</td></tr>
+      <tr><td><strong>Web support</strong></td><td>-</td><td><code>WebApplicationContext</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>ApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+OrderService s = ctx.getBean(OrderService.class);
+ctx.publishEvent(new OrderPlacedEvent(this, orderId));</code></pre>
+    <ul>
+      <li>Also: <code>ResourceLoader</code>, <code>Environment</code> (profiles/properties).</li>
+      <li><strong>Eager benefit:</strong> misconfiguration fails fast at startup. Opt into laziness with <code>@Lazy</code> or <code>spring.main.lazy-initialization=true</code> (faster startup, errors appear later).</li>
+      <li>In Boot you get e.g. <code>AnnotationConfigServletWebServerApplicationContext</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> When would you ever use BeanFactory directly?</summary><div>Rarely: very resource-constrained environments or framework internals. Normal applications use ApplicationContext.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do events work in Spring?</summary><div>Publish via <code>ApplicationEventPublisher</code>; consume with <code>@EventListener</code> (synchronous by default; <code>@Async</code> or <code>@TransactionalEventListener</code> for async/after-commit).</div></details>
+</section>
+
+<!-- 10 -->
+<section id="t10">
+  <h2><span class="n">10</span>Spring Boot vs Spring Framework</h2>
+  <div class="def"><b class="lbl">Definition</b><strong>Spring Framework</strong> is the core platform (IoC, DI, AOP, MVC, Data, Security...). <strong>Spring Boot</strong> is an opinionated layer on top of it that removes boilerplate configuration and makes apps runnable out of the box. It is not a replacement.</div>
+  <div class="card">
+    <p><strong>Plain Spring pain:</strong> manual XML/Java config (DispatcherServlet, pool, transaction manager), manual dependency version compatibility, deploying to an external Tomcat.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Boot mechanism</th><th>What it gives</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Auto-Configuration</strong></td><td>Beans configured from classpath/properties</td></tr>
+        <tr><td><strong>Starter dependencies</strong></td><td>One dependency pulls a compatible set (e.g. <code>spring-boot-starter-web</code>)</td></tr>
+        <tr><td><strong>Embedded server</strong></td><td>Tomcat/Jetty/Undertow inside an executable JAR</td></tr>
+        <tr><td><strong>Production-ready features</strong></td><td>Actuator: health, metrics, info</td></tr>
+      </tbody>
+    </table></div>
+<pre><code>@SpringBootApplication
+public class App { public static void main(String[] a) { SpringApplication.run(App.class, a); } }</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Dependency management:</strong> Boot's parent/BOM pins compatible versions.</li>
+      <li><strong>Externalised configuration:</strong> <code>application.yml</code>, profiles (<code>application-prod.yml</code>), env vars, command-line args.</li>
+      <li>Executable "fat" JAR (<code>java -jar</code>), DevTools, Docker/native image support.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Can you use Spring without Boot? Boot without Tomcat?</summary><div>Yes to both: Spring alone with manual config; Boot with Jetty/Undertow, or as a non-web app (<code>spring.main.web-application-type=none</code>).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Order of property precedence in Boot?</summary><div>Roughly: command-line args > system properties/env vars > profile-specific config files > <code>application.yml</code> > defaults.</div></details>
+</section>
+
+<!-- 11 -->
+<section id="t11">
+  <h2><span class="n">11</span>Microservices Architecture</h2>
+  <div class="def"><b class="lbl">Definition</b>Microservices is an architectural style where an application is a collection of <strong>small, independent, loosely coupled services</strong>, each owning one business capability, its own codebase and its own database, communicating over the network (REST, gRPC, or messaging like Kafka/RabbitMQ).</div>
+  <div class="card">
+    <ul>
+      <li><strong>Why:</strong> independent deployability, independent scalability, technology heterogeneity, fault isolation, easier to understand and maintain at scale.</li>
+      <li><strong>Honest trade-offs:</strong> network latency and partial failures; distributed data consistency; need for service discovery, API gateway, tracing, centralised logging; harder integration testing.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added: patterns you should name</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Concern</th><th>Pattern / tool</th></tr></thead>
+      <tbody>
+        <tr><td>Entry point</td><td>API Gateway</td></tr>
+        <tr><td>Locating services</td><td>Service discovery (Eureka, Consul, Kubernetes DNS)</td></tr>
+        <tr><td>Data consistency</td><td>Database per service, <strong>Saga</strong>, outbox, eventual consistency</td></tr>
+        <tr><td>Resilience</td><td>Circuit breaker, retry, timeout, bulkhead (Resilience4j)</td></tr>
+        <tr><td>Config</td><td>Config server / Kubernetes ConfigMaps</td></tr>
+        <tr><td>Observability</td><td>Distributed tracing (trace IDs), centralised logs, metrics</td></tr>
+        <tr><td>Communication</td><td>Synchronous (REST/gRPC) vs asynchronous (events)</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><strong>Idempotency:</strong> retries and at-least-once delivery mean handlers must tolerate duplicates.</li>
+      <li><strong>When NOT to use:</strong> small teams/simple domains; a <strong>modular monolith</strong> is often the better start.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> How do you keep data consistent across services?</summary><div>No distributed ACID transaction; use the Saga pattern (choreography or orchestration with compensating actions), outbox pattern for reliable events, and accept eventual consistency.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> A downstream service is slow. What protects you?</summary><div>Timeouts, circuit breaker, bulkhead, retries with backoff, fallbacks, and async messaging where possible.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you decide service boundaries?</summary><div>By business capability / bounded context (domain-driven design), not by technical layers; each service should change and deploy independently.</div></details>
+</section>
+
+<!-- 12 -->
+<section id="t12">
+  <h2><span class="n">12</span>API Gateway</h2>
+  <div class="def"><b class="lbl">Definition</b>An API Gateway is a <strong>single entry point between clients and the microservices</strong>. All external requests hit it first; it routes them to the right downstream service(s) and handles cross-cutting concerns.</div>
+  <div class="card">
+    <p><strong>Problems it solves:</strong> clients would need every service's address (tight coupling), auth/rate-limiting/logging would be duplicated in each service, and a screen needing data from 3 services would need 3 round trips.</p>
+    <ul>
+      <li><strong>Responsibilities:</strong> routing, authentication &amp; authorization, rate limiting/throttling, request aggregation, cross-cutting concerns (logging, trace-ID propagation, CORS, response transformation), load balancing.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added: Spring Cloud Gateway</span>
+<pre><code>spring:
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: lb://order-service            # load-balanced via service discovery
+          predicates: [ Path=/api/orders/** ]
+          filters:    [ StripPrefix=1 ]</code></pre>
+    <ul>
+      <li>Core concepts: <strong>Route</strong>, <strong>Predicate</strong> (match request), <strong>Filter</strong> (modify). It's reactive (WebFlux/Netty). Zuul 1 is retired.</li>
+      <li>Keep business logic out of the gateway. Avoid a single point of failure by running multiple gateway instances behind a load balancer.</li>
+      <li><strong>Gateway vs load balancer:</strong> an LB spreads traffic across identical instances; a gateway understands APIs (routing by path, auth, aggregation). <strong>BFF</strong> = a gateway tailored per client type.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Is the gateway a single point of failure? How do you mitigate it?</summary><div>Run it as a scaled, stateless cluster behind a load balancer, with health checks and rate limits.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Where do authentication and authorization belong?</summary><div>Authenticate (validate the token) at the gateway; each service still enforces its own authorization (zero trust).</div></details>
+</section>
+
+<!-- 13 -->
+<section id="t13">
+  <h2><span class="n">13</span>Thread Starvation</h2>
+  <div class="def"><b class="lbl">Definition</b>Thread starvation is when a thread is able to run but is <strong>repeatedly denied a resource</strong> (CPU time, a lock, a thread-pool slot) because other threads keep being favoured. It isn't deadlocked; it just keeps losing.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Causes:</strong> unfair lock scheduling, high-priority threads dominating CPU, thread-pool exhaustion / bad task design, greedy <code>synchronized</code> blocks, read-write lock imbalance.</li>
+      <li><strong>Mitigation:</strong> fair locks (<code>new ReentrantLock(true)</code>), short critical sections (no I/O while holding a lock), don't tweak thread priorities, check for fairness mode on read-write locks.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>ExecutorService pool = Executors.newFixedThreadPool(1);
+pool.submit(() -&gt; pool.submit(() -&gt; "inner").get());   // outer holds the only thread waiting for inner → hangs</code></pre>
+    <div class="scroll"><table>
+      <thead><tr><th>Problem</th><th>What happens</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Deadlock</strong></td><td>Threads wait on each other in a cycle; no progress ever</td></tr>
+        <tr><td><strong>Livelock</strong></td><td>Threads keep reacting to each other and change state, but make no progress</td></tr>
+        <tr><td><strong>Starvation</strong></td><td>One thread can progress in theory but never gets its turn</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li>In Spring apps: a small shared pool (e.g. <code>@Async</code>, Tomcat, a single executor) filled with slow/blocking tasks starves others. Use separate pools per workload (bulkhead idea).</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Starvation vs deadlock?</summary><div>Deadlock: a cycle of waiting, permanent. Starvation: no cycle; the thread is just perpetually deprioritised and may recover if contention drops.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How would you detect it in production?</summary><div>Thread dumps (<code>jstack</code>), pool metrics (active/queue size, rejected), lock contention profiling, and latency percentiles for specific request types.</div></details>
+</section>
+
+<!-- 14 -->
+<section id="t14">
+  <h2><span class="n">14</span>Spring Bean Lifecycle</h2>
+  <div class="def"><b class="lbl">Definition</b>The bean lifecycle is the sequence of steps the container performs for a bean, from <strong>creation and dependency injection, through initialisation callbacks, to use and finally destruction</strong> when the context closes.</div>
+  <div class="card">
+    <div class="flow"><span>1 Instantiate</span><i>→</i><span>2 Inject properties</span><i>→</i><span>3 Aware callbacks</span><i>→</i><span>4 BPP before-init</span><i>→</i><span>5 @PostConstruct</span><i>→</i><span>6 afterPropertiesSet</span><i>→</i><span>7 custom init-method</span><i>→</i><span>8 BPP after-init</span><i>→</i><span>Ready</span></div>
+    <div class="flow"><span>Shutdown:</span><span>@PreDestroy</span><i>→</i><span>DisposableBean.destroy</span><i>→</i><span>custom destroy-method</span></div>
+    <ul>
+      <li>Aware: <code>BeanNameAware</code>, <code>BeanFactoryAware</code>, <code>ApplicationContextAware</code>. <code>BeanPostProcessor</code>s apply to <strong>all</strong> beans.</li>
+      <li>Prefer <code>@PostConstruct</code>/<code>@PreDestroy</code> over implementing interfaces. <strong>Prototype</strong> beans: Spring doesn't call destroy callbacks. Singletons are destroyed when the context closes.</li>
+    </ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Correction (order)</span> Your list puts <code>@PostConstruct</code> together with the custom init method <em>after</em> <code>afterPropertiesSet</code>. Actual order: <strong>@PostConstruct → afterPropertiesSet() → @Bean(initMethod)</strong>. On destroy: <strong>@PreDestroy → destroy() → destroyMethod</strong>.</div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>@Component
+class CacheLoader {
+    private final Repo repo;
+    CacheLoader(Repo repo) { this.repo = repo; }      // 1-2: instantiate + inject
+    @PostConstruct void warmUp() { /* dependencies are ready here */ }
+    @PreDestroy   void close()   { /* release resources */ }
+}</code></pre>
+    <ul>
+      <li><strong>AOP proxies are created in <code>postProcessAfterInitialization</code></strong>, so <code>@PostConstruct</code> runs on the raw target (before the proxy); <code>@Transactional</code> isn't active inside it.</li>
+      <li>The constructor runs before injection of field/setter dependencies, so don't use them there.</li>
+      <li>Use <code>ApplicationReadyEvent</code>/<code>CommandLineRunner</code> for startup work needing a fully started app.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Can you use <code>@Transactional</code> in <code>@PostConstruct</code>?</summary><div>No, the proxy doesn't exist yet. Run it after startup (e.g. <code>ApplicationReadyEvent</code> listener) or call through another bean.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What is a BeanPostProcessor used for?</summary><div>Hooks into every bean's creation: AOP proxies, <code>@Autowired</code> processing, <code>@PostConstruct</code> handling, custom wrapping.</div></details>
+</section>
+
+<!-- 15 -->
+<section id="t15">
+  <h2><span class="n">15</span>Spring Data JPA Query Types</h2>
+  <div class="def"><b class="lbl">Definition</b>Spring Data JPA lets you query through repository interfaces. Besides built-in CRUD, it supports several ways to define queries, from method names to dynamic Specifications.</div>
+<pre><code>interface UserRepo extends JpaRepository&lt;User, Long&gt;, JpaSpecificationExecutor&lt;User&gt; {
+    List&lt;User&gt; findByStatusAndAgeGreaterThan(String status, int age);            // derived
+
+    @Query("select u from User u where u.email = :email")                      // JPQL
+    Optional&lt;User&gt; byEmail(@Param("email") String email);
+
+    @Query(value = "select * from users where created &gt; now() - interval '7 day'", nativeQuery = true)
+    List&lt;User&gt; recent();                                                        // native
+
+    @Modifying @Transactional
+    @Query("update User u set u.status = :s where u.id = :id")                 // update/delete
+    int updateStatus(@Param("id") Long id, @Param("s") String s);
+
+    Page&lt;User&gt; findByStatus(String status, Pageable pageable);                   // paging
+    interface Summary { String getName(); String getEmail(); }                  // interface projection
+    List&lt;Summary&gt; findByStatus(String status);
+}</code></pre>
+  <div class="card">
+    <ul>
+      <li><strong>Derived queries:</strong> generated from method names. <strong>@Query:</strong> JPQL (database-agnostic) with <code>@Param</code>. <strong>Native:</strong> DB-specific, less portable. <strong>@Modifying:</strong> UPDATE/DELETE, needs a transaction. <strong>Named queries:</strong> <code>@NamedQuery</code> on the entity. <strong>Projections:</strong> fetch only needed fields (interface/DTO/record). <strong>Specifications:</strong> dynamic conditional queries. <strong>Pageable/Page&lt;T&gt;:</strong> paging and sorting.</li>
+    </ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Nuance</span> Derived queries are <em>validated at startup</em> but aren't compile-time type-safe (they're method-name strings). Type safety comes from the JPA metamodel/QueryDSL.</div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>N+1 problem:</strong> 1 query for the parents + N lazy queries for children. Fix with <code>JOIN FETCH</code>, <code>@EntityGraph</code>, or batch fetching.
+<pre><code>@Query("select o from Order o join fetch o.items where o.id = :id")
+Optional&lt;Order&gt; withItems(@Param("id") Long id);</code></pre></li>
+      <li><code>@Modifying(clearAutomatically = true)</code> avoids stale persistence-context entities after a bulk update.</li>
+      <li><strong>Lazy loading:</strong> accessing a lazy association outside a session → <code>LazyInitializationException</code>. Prefer DTO projections or fetch joins over <code>open-in-view</code>.</li>
+      <li><code>findById</code> hits the DB; <code>getReferenceById</code> returns a lazy proxy. <code>JpaRepository</code> extends <code>PagingAndSortingRepository</code> → <code>CrudRepository</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> How do you spot and fix N+1?</summary><div>Enable SQL logging/Hibernate statistics, notice repeated selects, then use fetch join/<code>@EntityGraph</code>/batch size or a projection.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Pagination on a join-fetch collection?</summary><div>Hibernate pages in memory (warning HHH90003004); paginate the parent IDs first, then fetch the children.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> When choose native over JPQL?</summary><div>For DB-specific features, complex reports or performance hints; accept reduced portability.</div></details>
+</section>
+
+<!-- 16 -->
+<section id="t16">
+  <h2><span class="n">16</span>ACID</h2>
+  <div class="def"><b class="lbl">Definition</b>ACID is the set of four properties that make database transactions reliable: <strong>Atomicity, Consistency, Isolation, Durability</strong>.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Atomicity:</strong> all or nothing; no partial completion.</li>
+      <li><strong>Consistency:</strong> moves the DB from one valid state to another; constraints/rules are enforced.</li>
+      <li><strong>Isolation:</strong> concurrent transactions don't see each other's intermediate states.</li>
+      <li><strong>Durability:</strong> committed changes survive crashes (write-ahead logging).</li>
+    </ul>
+    <p><strong>Example:</strong> a bank transfer debits one account and credits another atomically, never leaves a negative balance, is isolated from concurrent transfers, and is permanent after commit.</p>
+  </div>
+  <div class="added"><span class="tag add">Added: isolation levels vs anomalies (SQL standard)</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Level</th><th>Dirty read</th><th>Non-repeatable read</th><th>Phantom read</th></tr></thead>
+      <tbody>
+        <tr><td><strong>READ_UNCOMMITTED</strong></td><td>Possible</td><td>Possible</td><td>Possible</td></tr>
+        <tr><td><strong>READ_COMMITTED</strong></td><td>Prevented</td><td>Possible</td><td>Possible</td></tr>
+        <tr><td><strong>REPEATABLE_READ</strong></td><td>Prevented</td><td>Prevented</td><td>Possible*</td></tr>
+        <tr><td><strong>SERIALIZABLE</strong></td><td>Prevented</td><td>Prevented</td><td>Prevented</td></tr>
+      </tbody>
+    </table></div>
+<pre><code>@Transactional(isolation = Isolation.REPEATABLE_READ)
+public void transfer(long from, long to, BigDecimal amt) { /* debit + credit */ }</code></pre>
+    <ul>
+      <li>*Some engines (InnoDB, PostgreSQL) prevent phantoms at REPEATABLE_READ via gap locks/snapshots.</li>
+      <li><strong>Dirty read:</strong> reading uncommitted data. <strong>Non-repeatable read:</strong> same row read twice gives different values. <strong>Phantom:</strong> same query returns different rows.</li>
+      <li>Higher isolation = fewer anomalies but more locking/contention.</li>
+      <li><code>@Transactional</code> gives ACID only within <strong>one database transaction</strong>. Across microservices use Saga (BASE/eventual consistency) or 2PC.</li>
+    </ul></div>
+  <div class="fixbox"><span class="tag fix">Nuance</span> "READ COMMITTED is the default in most databases" is true for PostgreSQL, Oracle and SQL Server, but <strong>MySQL InnoDB defaults to REPEATABLE READ</strong>. Spring's <code>Isolation.DEFAULT</code> uses the database's own default.</div>
+  <details><summary><span class="tag q">Follow-up</span> Which anomalies does READ_COMMITTED allow?</summary><div>Non-repeatable reads and phantom reads (not dirty reads).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How is durability implemented?</summary><div>Changes are written to a write-ahead/redo log and flushed to disk at commit before acknowledging; the DB replays it after a crash.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you get "ACID" across two microservices?</summary><div>You don't get a single ACID transaction; use Saga with compensating actions (eventual consistency) or, rarely, two-phase commit.</div></details>
+</section>
+
+<!-- CORE -->
+<section id="core">
+  <h2>🎯 More Core Spring Concept Questions (Recruiter Mode)</h2>
+  <p class="legend">Answer out loud first, then tap to check.</p>
+
+  <h3>IoC, Beans &amp; Configuration</h3>
+  <details><summary>IoC vs DI?</summary><div>IoC is the principle: the framework controls object creation and lifecycle. DI is the mechanism: it injects the dependencies.</div></details>
+  <details><summary><code>@Component</code> vs <code>@Service</code> vs <code>@Repository</code> vs <code>@Controller</code>?</summary><div>All are stereotypes registered by component scan. <code>@Service</code>/<code>@Controller</code> add semantics; <code>@Repository</code> also enables <strong>persistence exception translation</strong> to Spring's <code>DataAccessException</code>.</div></details>
+  <details><summary><code>@Bean</code> vs <code>@Component</code>?</summary><div><code>@Component</code> marks your own class for scanning. <code>@Bean</code> is a factory method in a <code>@Configuration</code> class, used for third-party classes or custom construction logic.</div></details>
+  <details><summary>Bean scopes?</summary><div><code>singleton</code> (default), <code>prototype</code>, and web scopes <code>request</code>, <code>session</code>, <code>application</code> (+ <code>websocket</code>). Use a scoped proxy when injecting a shorter-lived scope into a singleton.</div></details>
+  <details><summary>What does <code>@Configuration</code> do differently from <code>@Component</code>?</summary><div>Its class is CGLIB-proxied, so calling one <code>@Bean</code> method from another returns the same singleton (not a new instance each call).</div></details>
+  <details><summary><code>@Value</code> vs <code>@ConfigurationProperties</code>?</summary><div><code>@Value("${x}")</code> injects single values (supports SpEL). <code>@ConfigurationProperties</code> binds a group into a typed class, with relaxed binding and validation; preferred for structured config.</div></details>
+  <details><summary>How do Spring Profiles work?</summary><div>Activate with <code>spring.profiles.active</code>; <code>@Profile("dev")</code> beans and <code>application-dev.yml</code> load only for that profile.</div></details>
+
+  <h3>AOP</h3>
+  <details><summary>What is AOP? Name the terms.</summary><div>It modularises cross-cutting concerns (logging, transactions, security). <strong>Aspect</strong>: the module; <strong>Advice</strong>: the action (<code>@Before</code>, <code>@After</code>, <code>@Around</code>...); <strong>Pointcut</strong>: which methods; <strong>Join point</strong>: a method execution.
+<pre><code>@Aspect @Component
+class TimingAspect {
+    @Around("execution(* com.app.service..*(..))")
+    Object time(ProceedingJoinPoint pjp) throws Throwable {
+        long t = System.nanoTime();
+        try { return pjp.proceed(); } finally { log.info("{} took {}ns", pjp.getSignature(), System.nanoTime() - t); }
+    }
+}</code></pre></div></details>
+  <details><summary>JDK dynamic proxy vs CGLIB? Why does self-invocation skip AOP?</summary><div>JDK proxies work on interfaces; CGLIB subclasses the class (Boot default). Advice is applied by the proxy wrapper; an internal <code>this.method()</code> call bypasses the proxy, so <code>@Transactional</code>, <code>@Async</code>, <code>@Cacheable</code> don't apply. Call through another bean or inject self.</div></details>
+
+  <h3>MVC &amp; REST</h3>
+  <details><summary>Request flow through Spring MVC?</summary><div>Filters → <code>DispatcherServlet</code> → <code>HandlerMapping</code> → interceptors → controller → <code>HttpMessageConverter</code> (JSON) / <code>ViewResolver</code> → response.</div></details>
+  <details><summary><code>@Controller</code> vs <code>@RestController</code>? <code>@PathVariable</code> vs <code>@RequestParam</code> vs <code>@RequestBody</code>?</summary><div><code>@RestController</code> = <code>@Controller</code> + <code>@ResponseBody</code>. <code>@PathVariable</code>: <code>/users/{id}</code>; <code>@RequestParam</code>: <code>?page=1</code>; <code>@RequestBody</code>: JSON body mapped to an object.</div></details>
+  <details><summary>How do you handle exceptions globally?</summary><div>
+<pre><code>@RestControllerAdvice
+class GlobalHandler {
+    @ExceptionHandler(NotFoundException.class)
+    ResponseEntity&lt;ApiError&gt; notFound(NotFoundException e) { return ResponseEntity.status(404).body(new ApiError(e.getMessage())); }
+}</code></pre>
+    Also <code>ResponseStatusException</code>, and validation via <code>@Valid</code> (failures raise <code>MethodArgumentNotValidException</code> → 400).</div></details>
+  <details><summary>PUT vs PATCH vs POST? What is idempotency?</summary><div>PUT replaces a resource (idempotent), PATCH partially updates, POST creates (not idempotent). Idempotent = repeating the call has the same effect as once; vital for retries.</div></details>
+
+  <h3>Security</h3>
+  <details><summary>Authentication vs authorization? Typical JWT flow?</summary><div>Authentication: who are you. Authorization: what may you do. JWT flow: login → server issues signed token → client sends <code>Authorization: Bearer ...</code> → a filter validates signature/expiry and populates the <code>SecurityContext</code> → authorization via roles (<code>@PreAuthorize</code>). Store passwords hashed with BCrypt.</div></details>
+  <details><summary>What is CSRF and do stateless JWT APIs need it?</summary><div>CSRF tricks a browser into sending authenticated requests using cookies. Stateless APIs using bearer tokens in headers (not cookies) can usually disable it; cookie-based sessions need it.</div></details>
+
+  <h3>JPA &amp; Data</h3>
+  <details><summary>Entity lifecycle states? What is the persistence context?</summary><div>Transient → Managed (persistent) → Detached → Removed. The persistence context (first-level cache) tracks managed entities per session/transaction; changes are flushed on commit via dirty checking.</div></details>
+  <details><summary>LAZY vs EAGER fetching?</summary><div>LAZY loads associations on first access (default for collections); EAGER loads immediately. Prefer LAZY plus fetch joins/projections to avoid over-fetching and N+1.</div></details>
+  <details><summary>Why might <code>@Transactional</code> silently not work?</summary><div>Self-invocation, non-public/final methods, not a Spring-managed bean, checked exception without <code>rollbackFor</code>, wrong <code>@Transactional</code> import (javax vs Spring), or an exception swallowed in a try/catch.</div></details>
+
+  <h3>Microservices &amp; Boot Ops</h3>
+  <details><summary>What is Spring Boot Actuator?</summary><div>Production endpoints: <code>/actuator/health</code>, <code>metrics</code>, <code>info</code>, <code>env</code>, <code>conditions</code>... Expose selectively and secure them.</div></details>
+  <details><summary>CAP theorem in one line?</summary><div>In a network partition a distributed system must choose consistency or availability; you can't have all three of C, A and P.</div></details>
+  <details><summary>Saga: choreography vs orchestration?</summary><div>Choreography: services react to each other's events (decentralised, harder to follow). Orchestration: a central coordinator directs the steps and compensations (clearer, one more component).</div></details>
+  <details><summary>How do you trace one request across services?</summary><div>Propagate a trace ID (Micrometer Tracing / OpenTelemetry), include it in logs (MDC), and view in Zipkin/Jaeger; the gateway generates it.</div></details>
+</section>
+</main>
+<footer>Define it clearly, show a small example, state the trade-off, and be ready for the follow-up.</footer>
+</body>
+</html>

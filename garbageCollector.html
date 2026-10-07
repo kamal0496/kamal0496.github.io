@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java Garbage Collection – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:28px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card>h3:first-child{margin-top:0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.grid .card{margin:0}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.85rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.say{border-left:4px solid var(--good);background:var(--good-soft);padding:10px 14px;border-radius:8px;margin-top:12px}
+.say b.lbl{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--good);margin-bottom:2px}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.88rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+.heap{border:2px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:10px;grid-template-columns:2fr 1fr;margin:10px 0}
+.heap .box{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--code);font-size:.85rem}
+.heap .box b{display:block;margin-bottom:6px}
+.heap .sub{display:flex;gap:6px;flex-wrap:wrap}
+.heap .sub span{flex:1 1 70px;text-align:center;padding:6px 4px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+@media (max-width:520px){.heap{grid-template-columns:1fr}}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--muted)}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+.legend{font-size:.88rem;color:var(--muted);margin:0 0 12px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Java Garbage Collection</h1>
+  <p>JVM memory reclamation: quick-revision cheat sheet for interviews.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#what">What &amp; Heap</a><a href="#life">Lifecycle</a><a href="#types">GC Types</a><a href="#garbage">Garbage?</a><a href="#sysgc">System.gc()</a><a href="#extra">Often Missed</a><a href="#qa">Quick Q&amp;A</a>
+</div></nav>
+
+<main>
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li><strong>GC</strong> automatically reclaims memory of objects that are <strong>no longer reachable</strong>.</li>
+      <li>Heap = <strong>Young Gen</strong> (Eden + Survivor S0/S1) + <strong>Old Gen</strong> (Tenured).</li>
+      <li>New objects start in <strong>Eden</strong>. Eden full → <strong>Minor GC</strong> → survivors move to Survivor space.</li>
+      <li>Objects surviving <strong>multiple</strong> GCs are <strong>promoted</strong> to Old Gen.</li>
+      <li><strong>Major GC</strong> = Old Gen (slower). <strong>Full GC</strong> = whole heap (+ Metaspace, depending on collector), the most expensive, may cause noticeable pauses.</li>
+      <li>Garbage is detected by <strong>reachability analysis from GC Roots</strong>, not reference counting.</li>
+      <li><code>obj = null</code> only makes the object <strong>eligible</strong> for GC; it is not deleted immediately.</li>
+      <li><code>System.gc()</code> is just a <strong>request</strong>; avoid it (pauses, lower throughput).</li>
+    </ol>
+  </div>
+  <p class="legend"><span class="tag add">Added</span> marks fundamentals missing from your notes that interviewers commonly ask about.</p>
+</section>
+
+<section id="what">
+  <h2>1. What is GC &amp; Heap Structure</h2>
+  <div class="card">
+    <p>Garbage Collection is the JVM process that automatically reclaims memory occupied by objects that are no longer reachable.</p>
+    <div class="heap">
+      <div class="box"><b>Young Generation</b>
+        <div class="sub"><span>Eden</span><span>Survivor S0</span><span>Survivor S1</span></div>
+      </div>
+      <div class="box"><b>Old Generation (Tenured)</b>
+        <div class="sub"><span>Long-lived objects</span></div>
+      </div>
+    </div>
+    <p style="margin:0;color:var(--muted);font-size:.9rem">All of the above sits inside the <strong>Heap</strong>.</p>
+  </div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Why generations?</strong> Most objects die young (the "weak generational hypothesis"), so collecting the small Young Gen often is cheap and efficient.</li>
+      <li><strong>Metaspace</strong> (native memory, replaced PermGen in Java 8) stores <strong>class metadata</strong>; it is outside the heap.</li>
+      <li><strong>Heap vs stack:</strong> GC manages the heap. Stack frames are freed automatically when a method returns.</li>
+      <li><strong>Stop-the-world (STW):</strong> GC pauses application threads for at least part of its work.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="life">
+  <h2>2. Object Lifecycle</h2>
+  <div class="flow"><span>Eden</span><i>→ Minor GC →</i><span>Survivor S0/S1</span><i>→ survives multiple GCs →</i><span>Old Gen</span></div>
+
+  <div class="card">
+    <span class="tag">Step 1 · Creation</span>
+<pre><code>Employee emp = new Employee();   // allocated in Eden</code></pre>
+  </div>
+  <div class="card">
+    <span class="tag">Step 2 · Minor GC</span>
+    <p>Triggered when <strong>Eden is full</strong>. The JVM removes dead objects and moves survivors <strong>Eden → Survivor</strong>.</p>
+    <div class="pro">Usually fast because most newly created objects die quickly.</div>
+  </div>
+  <div class="card">
+    <span class="tag">Step 3 · Promotion</span>
+    <p>Objects that survive multiple GC cycles are promoted <strong>Survivor → Old Generation</strong>.</p>
+  </div>
+  <div class="added">
+    <span class="tag add">Added: how it really works</span>
+    <ul>
+      <li>Each object has an <strong>age</strong> that increases per Minor GC survived. When it passes the <strong>tenuring threshold</strong> (max 15), it's promoted.</li>
+      <li>Survivors are <strong>copied</strong> between S0 and S1; one survivor space is always empty. Copying also <strong>compacts</strong> memory (no fragmentation in Young Gen).</li>
+      <li>If a survivor space is too full, objects can be <strong>promoted early</strong>. Very large objects may be allocated <strong>directly in Old Gen</strong> (or as "humongous" objects in G1).</li>
+      <li>Old Gen → Young Gen references are tracked using a <strong>card table / remembered set</strong>, so Minor GC doesn't scan the whole Old Gen.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="types">
+  <h2>3. Minor vs Major vs Full GC</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Type</th><th>Triggered when</th><th>Cleans</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Minor GC</strong></td><td>Eden becomes full</td><td>Young Generation</td><td>Usually fast</td></tr>
+      <tr><td><strong>Major GC</strong></td><td>Old Gen becomes full</td><td>Old Generation (large, long-lived objects)</td><td>Slower than Minor</td></tr>
+      <tr><td><strong>Full GC</strong></td><td>Whole-heap collection (e.g. Old Gen/Metaspace pressure)</td><td>Young + Old + Metaspace (depending on collector); entire heap analyzed</td><td>Most expensive; noticeable pauses</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="added">
+    <span class="tag add">Added: collectors &amp; algorithms</span>
+    <ul>
+      <li><strong>Mark-Sweep-Compact:</strong> <em>mark</em> reachable objects, <em>sweep</em> unmarked ones, <em>compact</em> to remove fragmentation.</li>
+      <li><strong>Serial:</strong> single-threaded, small apps. <strong>Parallel:</strong> multi-threaded, throughput-focused (Java 8 default).</li>
+      <li><strong>G1:</strong> region-based, balances pause time and throughput (default since Java 9).</li>
+      <li><strong>ZGC / Shenandoah:</strong> low-latency, mostly concurrent collectors for large heaps.</li>
+      <li><strong>CMS</strong> was removed in Java 14.</li>
+      <li>"Major GC" is used loosely; precise meaning depends on the collector. Say "Old Gen collection" if asked to be exact.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="garbage">
+  <h2>4. How Does the JVM Decide an Object Is Garbage?</h2>
+  <div class="card">
+    <p>It uses <strong>Reachability Analysis</strong> starting from <strong>GC Roots</strong>:</p>
+    <ul>
+      <li>Thread stacks</li>
+      <li>Static variables</li>
+      <li>Active threads</li>
+      <li>JNI references</li>
+    </ul>
+    <div class="tip">If an object <strong>cannot be reached from any GC Root</strong> → eligible for GC.</div>
+  </div>
+  <div class="card">
+    <h3>Common misconception: <code>obj = null</code></h3>
+    <p>It does <strong>not</strong> immediately remove the object. It means <strong>eligible for GC</strong>, not <em>deleted now</em>. The JVM decides when to reclaim memory.</p>
+  </div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Reference counting</strong> (used by some languages) fails on <strong>circular references</strong>. Reachability analysis handles cycles, so two objects pointing only at each other are still collected.</li>
+      <li>Local variables in active stack frames are also roots.</li>
+      <li><strong>Reference types:</strong> strong (never collected while reachable), <strong>soft</strong> (collected under memory pressure; caches), <strong>weak</strong> (collected at next GC; e.g. <code>WeakHashMap</code>), <strong>phantom</strong> (post-collection cleanup).</li>
+      <li><code>finalize()</code> is deprecated; prefer <code>try-with-resources</code> / <code>Cleaner</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sysgc">
+  <h2>5. Why Avoid <code>System.gc()</code>?</h2>
+  <div class="card">
+<pre><code>System.gc();   // only a REQUEST to the JVM</code></pre>
+    <div class="con">It can trigger unnecessary GC, cause application pauses, and reduce throughput.</div>
+    <p>Modern JVM collectors are generally better at deciding when to run GC.</p>
+  </div>
+  <div class="say"><b class="lbl">Interview-ready answer</b>
+    Java Garbage Collection automatically reclaims memory occupied by unreachable objects. New objects are created in the Young Generation, primarily in Eden Space. When Eden fills up, Minor GC runs and moves surviving objects to Survivor spaces. Objects that survive multiple GC cycles are promoted to the Old Generation. Major GC targets the Old Generation, while Full GC cleans the entire heap and is the most expensive operation. The JVM determines garbage using reachability analysis starting from GC Roots rather than simple reference counting.
+  </div>
+</section>
+
+<section id="extra">
+  <h2>6. Often-Missed Fundamentals</h2>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Memory leaks still happen in Java:</strong> objects that stay <em>reachable</em> but are never used again (static collections, unremoved listeners, un-cleaned <code>ThreadLocal</code>s, unbounded caches).</li>
+      <li><strong>OutOfMemoryError</strong> appears when the JVM can't free enough memory, e.g. <em>Java heap space</em> or <em>Metaspace</em>.</li>
+      <li><strong>Throughput vs latency:</strong> Parallel favours throughput; G1/ZGC aim for shorter pauses.</li>
+      <li><strong>Common flags:</strong> <code>-Xms</code>/<code>-Xmx</code> (initial/max heap), <code>-XX:+UseG1GC</code>, <code>-Xlog:gc</code> (Java 9+) to log GC activity.</li>
+      <li><strong>Reduce GC pressure:</strong> avoid unnecessary object creation in hot paths, reuse objects where sensible, size heap appropriately, and profile before tuning.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="qa">
+  <h2>Quick Q&amp;A (tap to reveal)</h2>
+  <details><summary>What is garbage collection?</summary><p>The JVM process that automatically reclaims memory used by objects that are no longer reachable.</p></details>
+  <details><summary>Describe the heap structure.</summary><p>Young Gen (Eden, Survivor S0, Survivor S1) and Old/Tenured Gen.</p></details>
+  <details><summary>What triggers a Minor GC?</summary><p>Eden filling up. Dead objects are removed and survivors move to a Survivor space.</p></details>
+  <details><summary>When does an object get promoted?</summary><p>After surviving multiple GC cycles, it moves from Survivor to Old Gen.</p></details>
+  <details><summary>Minor vs Major vs Full GC?</summary><p>Minor: Young Gen, fast. Major: Old Gen, slower. Full: entire heap (+ Metaspace depending on collector), most expensive.</p></details>
+  <details><summary>How does the JVM know an object is garbage?</summary><p>Reachability analysis from GC Roots (thread stacks, statics, active threads, JNI refs). Unreachable means eligible.</p></details>
+  <details><summary>Does <code>obj = null</code> free memory immediately?</summary><p>No. It only makes the object eligible; the JVM decides when to reclaim it.</p></details>
+  <details><summary>Why avoid <code>System.gc()</code>?</summary><p>It's only a request but can trigger needless pauses and lower throughput; the JVM schedules GC better.</p></details>
+  <details><summary>Why not reference counting?</summary><p>It can't handle circular references; reachability analysis can.</p></details>
+</section>
+</main>
+<footer>Young objects die fast, old objects live long. Let the JVM decide when to collect.</footer>
+</body>
+</html>

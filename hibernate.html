@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hibernate &amp; JPA Interview Prep (5 YOE)</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:30px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h2 .n{display:inline-block;min-width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;background:var(--accent);color:var(--bg);font-size:.9rem;margin-right:8px;padding:0 4px}
+h3{font-size:1.05rem;margin:22px 0 8px;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.def{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:10px;margin:0 0 14px}
+.def b.lbl{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.84rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.tag.q{background:var(--good-soft);color:var(--good)}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.86rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+.legend{font-size:.88rem;color:var(--muted);margin:10px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Hibernate &amp; JPA Interview Prep</h1>
+  <p>5 years experience · clear definitions first, then key points, examples, corrections, recruiter follow-ups and core concept questions.</p>
+</header>
+<nav><div class="row">
+  <a href="#recall">Rapid Recall</a><a href="#t1">1 What is Hibernate</a><a href="#t2">2 Entity</a><a href="#t3">3 Session</a><a href="#t4">4 Lifecycle</a><a href="#t5">5 Dirty Check</a><a href="#t6">6 Relationships</a><a href="#t7">7 HQL</a><a href="#t8">8 N+1</a><a href="#t9">9 L1 Cache</a><a href="#t10">10 L2 Cache</a><a href="#t11">11 Propagation</a><a href="#t12">12 Isolation</a><a href="#core">Core Q&amp;A</a>
+</div></nav>
+
+<main>
+<p class="legend"><span class="tag add">Added</span> missing from your notes · <span class="tag fix">Correction</span> inaccurate/outdated in your notes · <span class="tag q">Follow-up</span> what a recruiter asks next</p>
+
+<section id="recall">
+  <h2>Rapid Recall</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Topic</th><th>One-liner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Hibernate</strong></td><td>ORM framework; the most popular JPA implementation (JPA = interface, Hibernate = engine).</td></tr>
+      <tr><td><strong>Entity</strong></td><td>Java class mapped to a table via <code>@Entity</code>, <code>@Id</code>, <code>@Column</code>.</td></tr>
+      <tr><td><strong>SessionFactory / Session</strong></td><td>Factory: one per app, thread-safe. Session: one per unit of work, not thread-safe.</td></tr>
+      <tr><td><strong>Lifecycle</strong></td><td>Transient → Persistent → Detached / Removed.</td></tr>
+      <tr><td><strong>Dirty checking</strong></td><td>Managed entities are compared to a snapshot; changed fields become UPDATEs at flush.</td></tr>
+      <tr><td><strong>Relationships</strong></td><td>OneToOne / OneToMany / ManyToOne / ManyToMany; LAZY vs EAGER; owning side holds the FK.</td></tr>
+      <tr><td><strong>HQL/JPQL</strong></td><td>Object-oriented queries on entities and fields, not tables.</td></tr>
+      <tr><td><strong>N+1</strong></td><td>1 query for parents + N for lazy children. Fix: JOIN FETCH, EntityGraph, BatchSize.</td></tr>
+      <tr><td><strong>L1 cache</strong></td><td>Per session, always on; same id = same object.</td></tr>
+      <tr><td><strong>L2 cache</strong></td><td>Per SessionFactory, opt-in, shared; lookup L1 → L2 → DB.</td></tr>
+      <tr><td><strong>Propagation</strong></td><td>How a transactional method joins/creates a transaction when called from another.</td></tr>
+      <tr><td><strong>Isolation</strong></td><td>What a transaction may see of concurrent ones: dirty/non-repeatable/phantom reads.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 1 -->
+<section id="t1">
+  <h2><span class="n">1</span>What is Hibernate?</h2>
+  <div class="def"><b class="lbl">Definition</b>Hibernate is a Java <strong>ORM (Object-Relational Mapping)</strong> framework that maps Java classes to database tables, so you work with objects instead of hand-written SQL and <code>ResultSet</code> mapping. It is also the most popular implementation of the <strong>JPA (Jakarta Persistence)</strong> specification: JPA is the interface, Hibernate is the engine.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Without Hibernate (JDBC):</strong> open connections, write SQL strings, map rows to objects manually.</li>
+      <li><strong>With Hibernate:</strong> map <code>User</code> to the <code>users</code> table; Hibernate generates the SQL.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Benefits:</strong> less boilerplate, database portability (dialects), caching, lazy loading, dirty checking, schema/relationship mapping.</li>
+      <li><strong>Costs:</strong> hidden SQL (N+1, over-fetching), learning curve, the "object-relational impedance mismatch" (inheritance, identity, associations).</li>
+      <li><strong>Spring Data JPA</strong> sits on top: repositories use JPA's <code>EntityManager</code>, which Hibernate implements.</li>
+      <li>Packages: <code>jakarta.persistence.*</code> (Boot 3 / JPA 3) vs <code>javax.persistence.*</code> (older). Using JPA types keeps you vendor-neutral.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> JPA vs Hibernate vs Spring Data JPA?</summary><div>JPA: specification (API). Hibernate: implementation with extra features. Spring Data JPA: abstraction that generates repository implementations on top of JPA.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> When would you avoid an ORM?</summary><div>Heavy reporting, bulk/batch SQL, complex hand-tuned queries; use native SQL, jOOQ or JDBC templates for those parts.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="t2">
+  <h2><span class="n">2</span>Entity &amp; Mapping</h2>
+  <div class="def"><b class="lbl">Definition</b>An <strong>Entity</strong> is a plain Java class that Hibernate maps to a database table; each instance represents a row, identified by a primary key.</div>
+<pre><code>@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "full_name", nullable = false, length = 100)
+    private String name;
+
+    @Enumerated(EnumType.STRING)          // not ORDINAL
+    private Status status;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List&lt;Post&gt; posts = new ArrayList&lt;&gt;();
+
+    protected User() {}                   // JPA requires a no-arg constructor
+}</code></pre>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Entity rules:</strong> <code>@Entity</code>, an <code>@Id</code>, a no-arg constructor (≥ protected), non-final class/fields (Hibernate creates proxies by subclassing).</li>
+      <li><strong>ID strategies:</strong> <code>IDENTITY</code> (DB auto-increment; <strong>disables JDBC insert batching</strong>), <code>SEQUENCE</code> (preferred on PostgreSQL/Oracle; allows batching), <code>AUTO</code>, <code>TABLE</code> (slow).</li>
+      <li><code>@Transient</code> excludes a field; <code>@Embeddable/@Embedded</code> reuses value objects; <code>@MappedSuperclass</code> shares fields; <code>@Inheritance</code> (SINGLE_TABLE, JOINED, TABLE_PER_CLASS) maps hierarchies.</li>
+      <li>Always use <code>EnumType.STRING</code> so reordering an enum doesn't corrupt data.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Why does Hibernate need a no-arg constructor and non-final classes?</summary><div>It instantiates entities reflectively and generates lazy-loading proxies as subclasses; final classes/methods can't be proxied.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> IDENTITY vs SEQUENCE?</summary><div>IDENTITY needs the INSERT executed immediately to get the id, blocking batching. SEQUENCE fetches ids ahead (allocation size) so inserts can be batched.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="t3">
+  <h2><span class="n">3</span>SessionFactory &amp; Session</h2>
+  <div class="def"><b class="lbl">Definition</b><strong>SessionFactory</strong> is Hibernate's heavyweight, thread-safe, application-wide object, built once at startup. <strong>Session</strong> is a lightweight, short-lived, <em>not thread-safe</em> unit of work used to talk to the database. JPA equivalents: <code>EntityManagerFactory</code> and <code>EntityManager</code>.</div>
+  <div class="card">
+    <ul>
+      <li><strong>SessionFactory:</strong> created once; expensive. <strong>Session:</strong> created per operation/request; wraps a JDBC connection and holds the first-level cache.</li>
+    </ul>
+<pre><code>try (Session session = sessionFactory.openSession()) {
+    Transaction tx = session.beginTransaction();
+    try { session.persist(user); tx.commit(); }
+    catch (Exception e) { tx.rollback(); throw e; }
+}</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Correction</span> SessionFactory isn't really "a factory for database connections". It is a factory for <strong>Sessions</strong>; it holds the compiled mapping metadata, the connection-provider/pool access, and the <strong>second-level cache</strong>. Connections come from the pool (HikariCP).</div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li>In Spring you inject <code>@PersistenceContext EntityManager</code>: a <strong>shared proxy</strong> that binds to the current transaction's Session, so it's safe in singletons.</li>
+      <li>In Spring the persistence context is normally <strong>transaction-scoped</strong> (request-scoped with Open-Session-In-View).</li>
+      <li><code>session.unwrap(Session.class)</code> / <code>em.unwrap(Session.class)</code> exposes Hibernate-specific API.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Why is Session not thread-safe, and how does Spring cope?</summary><div>It holds mutable state (persistence context, JDBC connection). Spring's <code>EntityManager</code> proxy resolves to a per-transaction (per-thread) instance.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why is SessionFactory expensive?</summary><div>It parses mappings, builds metadata, SQL and caches at startup; create it once.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="t4">
+  <h2><span class="n">4</span>Entity Lifecycle</h2>
+  <div class="def"><b class="lbl">Definition</b>The entity lifecycle describes an entity's relationship with the persistence context: <strong>Transient</strong> (new, unknown to Hibernate), <strong>Persistent/Managed</strong> (tracked by a Session), <strong>Detached</strong> (has a DB row but no Session), <strong>Removed</strong> (scheduled for deletion).</div>
+  <div class="card">
+    <div class="flow"><span>Transient</span><i>persist()</i><span>Persistent</span><i>detach/clear/close →</i><span>Detached</span><i>merge() →</i><span>Persistent</span></div>
+    <div class="flow"><span>Persistent</span><i>remove() →</i><span>Removed</span><i>flush/commit →</i><span>DELETE</span></div>
+    <ul>
+      <li><strong>Transient:</strong> created with <code>new</code>, only in heap, no DB row. Exit: <code>persist()</code>.</li>
+      <li><strong>Persistent:</strong> tied to an active Session; <strong>dirty checking</strong> auto-generates UPDATEs at flush/commit. Enter via <code>find()</code>/<code>get()</code> or persisting a transient.</li>
+      <li><strong>Detached:</strong> has a DB record but no Session; changes ignored. Enter via <code>detach()</code>, <code>clear()</code>, <code>close()</code>. Re-attach with <code>merge()</code> (use the <em>returned</em> instance).</li>
+      <li><strong>Removed:</strong> object still exists in memory; <code>DELETE</code> runs at next flush/commit.</li>
+    </ul>
+<pre><code>Employee emp = new Employee();       // Transient
+emp.setName("Alice");
+session.persist(emp);                // Persistent
+emp.setSalary(90000);                // synced to DB at commit
+session.detach(emp);                 // Detached
+emp.setSalary(95000);                // ignored
+Employee managed = session.merge(emp);   // new managed copy carries the change
+session.remove(managed);             // Removed (DELETE pending)</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Corrections / nuance</span>
+    <ul>
+      <li><code>save()</code>, <code>saveOrUpdate()</code>, <code>update()</code>, <code>delete()</code>, <code>get()</code>, <code>load()</code> are <strong>legacy Hibernate-native</strong> methods (deprecated in Hibernate 6). Prefer JPA-standard <code>persist</code>, <code>merge</code>, <code>remove</code>, <code>find</code>, <code>getReference</code>.</li>
+      <li>"Transient has no primary key" is the usual case, but entities with <em>assigned</em> IDs can have an id yet still be transient (unknown to the session).</li>
+      <li><code>merge()</code> doesn't re-attach <em>your</em> object. It copies its state onto a managed instance (loading it if needed) and returns that.</li>
+    </ul></div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>persist vs save:</strong> <code>persist</code> returns void and is JPA-standard; <code>save</code> returns the id. With IDENTITY, the INSERT happens immediately; with SEQUENCE it's deferred to flush.</li>
+      <li>Calling <code>persist()</code> on a detached entity throws <code>PersistenceException</code> ("detached entity passed to persist").</li>
+      <li><code>refresh()</code> reloads state from the DB, discarding unflushed changes.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> What does <code>merge()</code> do on a detached entity with changes?</summary><div>Loads the managed entity with that id, copies the detached state onto it, and returns the managed instance; the original object stays detached.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> You modify a detached entity and nothing is saved. Why?</summary><div>Hibernate only tracks managed entities. Call <code>merge()</code> inside a transaction (or load, modify, commit within one transaction).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Does <code>remove()</code> delete the row immediately?</summary><div>No, it schedules a DELETE executed at flush/commit.</div></details>
+</section>
+
+<!-- 5 -->
+<section id="t5">
+  <h2><span class="n">5</span>Dirty Checking &amp; Automatic Flushing</h2>
+  <div class="def"><b class="lbl">Definition</b><strong>Dirty checking</strong> is Hibernate's mechanism of detecting changes to managed entities automatically: it keeps a snapshot of each loaded entity, and at <strong>flush</strong> time compares current state to the snapshot, generating UPDATE statements for changed fields.</div>
+  <div class="card">
+<pre><code>User user = session.get(User.class, 1L);
+user.setName("New Name");          // no explicit save needed
+// commit → UPDATE users SET full_name='New Name' WHERE id=1</code></pre>
+    <ul>
+      <li>The snapshot lives in the L1 cache (persistence context). Triggered at <code>flush()</code> or transaction commit.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Flush ≠ commit:</strong> flush synchronises SQL with the DB inside the transaction (still rollback-able); commit makes it permanent.</li>
+      <li><strong>Flush modes:</strong> <code>AUTO</code> (default; flushes before commit and before queries that might be affected), <code>COMMIT</code>, <code>MANUAL</code> (only on explicit <code>flush()</code>; used by <code>readOnly=true</code>).</li>
+      <li>Hibernate updates <strong>all columns</strong> by default; <code>@DynamicUpdate</code> only updates changed ones (wide tables).</li>
+      <li>Cost: dirty checking compares every managed entity at flush; many loaded entities = slow. Use read-only transactions, projections, or <code>clear()</code> in batch jobs.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Why does a read-only query method perform better?</summary><div>No flush and no dirty-check pass, and entities may be loaded without snapshots.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> You changed an entity, then ran a JPQL query. Is the change visible to it?</summary><div>Yes with FlushMode AUTO: Hibernate flushes pending changes before executing the query so results are consistent.</div></details>
+</section>
+
+<!-- 6 -->
+<section id="t6">
+  <h2><span class="n">6</span>Relationships &amp; Fetch Types</h2>
+  <div class="def"><b class="lbl">Definition</b>Relationship annotations map associations between entities to foreign keys: <code>@OneToOne</code>, <code>@OneToMany</code>, <code>@ManyToOne</code>, <code>@ManyToMany</code>. <strong>Fetch type</strong> decides when related data loads: <strong>LAZY</strong> on first access, <strong>EAGER</strong> immediately.</div>
+<pre><code>@Entity class Post {
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id")   // OWNING side (holds the FK)
+    private User user;
+}
+@Entity class User {
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)  // inverse side
+    private List&lt;Post&gt; posts = new ArrayList&lt;&gt;();
+    void addPost(Post p) { posts.add(p); p.setUser(this); }   // keep both sides in sync
+}</code></pre>
+  <div class="fixbox"><span class="tag fix">Missing detail</span> "Default is lazy for collections" is true, but <strong><code>@ManyToOne</code> and <code>@OneToOne</code> default to EAGER</strong>, a frequent cause of hidden N+1 queries. Explicitly set <code>fetch = LAZY</code> on them.</div>
+  <div class="added"><span class="tag add">Added</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Annotation</th><th>Default fetch</th></tr></thead>
+      <tbody>
+        <tr><td><code>@OneToMany</code></td><td>LAZY</td></tr>
+        <tr><td><code>@ManyToMany</code></td><td>LAZY</td></tr>
+        <tr><td><code>@ManyToOne</code></td><td><strong>EAGER</strong></td></tr>
+        <tr><td><code>@OneToOne</code></td><td><strong>EAGER</strong></td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li><strong>Owning vs inverse side:</strong> the side with the foreign key (the "many" side) owns the relationship; <code>mappedBy</code> marks the inverse side. Only the owning side's changes are persisted.</li>
+      <li><strong>Cascade</strong> propagates operations (PERSIST, MERGE, REMOVE, ALL). <strong><code>orphanRemoval</code></strong> deletes children removed from the collection.</li>
+      <li>Prefer <code>Set</code> for <code>@ManyToMany</code>; avoid <code>CascadeType.REMOVE</code>/<code>ALL</code> on <code>@ManyToMany</code>. Prefer a bidirectional <code>@OneToMany</code> with a <code>@ManyToOne</code> owner over unidirectional <code>@OneToMany</code> (extra join table/updates).</li>
+      <li>Avoid <code>toString()</code>/JSON on both sides of a bidirectional link (infinite recursion).</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> What is <code>mappedBy</code>?</summary><div>It marks the inverse side and names the field on the owning side that holds the foreign key, so no duplicate join column/table is created.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why is EAGER usually a bad default?</summary><div>It always loads associations, even when unused, producing extra queries/joins and cartesian products; choose LAZY and fetch explicitly per use case.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="t7">
+  <h2><span class="n">7</span>HQL / JPQL</h2>
+  <div class="def"><b class="lbl">Definition</b><strong>JPQL</strong> (JPA) and <strong>HQL</strong> (Hibernate's superset) are object-oriented query languages: you query <em>entity classes and their fields</em>, not tables and columns, and Hibernate translates them into SQL for the target database.</div>
+<pre><code>List&lt;User&gt; users = session.createQuery(
+        "select u from User u where u.email = :email and u.status = :status", User.class)
+    .setParameter("email", email)            // always bind parameters (no SQL injection)
+    .setParameter("status", Status.ACTIVE)
+    .getResultList();
+
+// Spring Data JPA
+@Query("select u from User u join fetch u.posts where u.id = :id")
+Optional&lt;User&gt; findWithPosts(@Param("id") Long id);</code></pre>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li>Alternatives: <strong>Criteria API</strong> (type-safe, dynamic), <strong>native SQL</strong> (<code>createNativeQuery</code>), Spring Data derived queries/Specifications.</li>
+      <li>HQL is database-agnostic; native isn't. Bulk <code>UPDATE/DELETE</code> in HQL bypass the persistence context (entities in L1 can become stale).</li>
+      <li><strong>Projections:</strong> <code>select new com.app.UserDto(u.id, u.name) from User u</code> or interface/record projections avoid loading full entities.</li>
+      <li>Pagination: <code>setFirstResult()</code>/<code>setMaxResults()</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> JPQL vs native SQL?</summary><div>JPQL: portable, entity-based, supports fetch joins. Native: DB-specific features/performance, returns raw rows or mapped results, less portable.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you prevent SQL injection?</summary><div>Use named/positional parameters; never concatenate user input into the query string.</div></details>
+</section>
+
+<!-- 8 -->
+<section id="t8">
+  <h2><span class="n">8</span>The N+1 Problem</h2>
+  <div class="def"><b class="lbl">Definition</b>The N+1 problem occurs when you run <strong>1 query to load N parent entities</strong>, then trigger <strong>N additional queries</strong> (one per parent) as you access a lazy association in a loop.</div>
+<pre><code>List&lt;User&gt; users = em.createQuery("select u from User u", User.class).getResultList(); // 1 query
+for (User u : users) {
+    u.getPosts().size();        // +1 query per user → N more
+}</code></pre>
+  <div class="card">
+    <h3 style="margin-top:0">The 3 solutions</h3>
+<pre><code>// 1. JOIN FETCH (most common)
+select distinct u from User u join fetch u.posts
+
+// 2. @EntityGraph (JPA standard)
+@EntityGraph(attributePaths = "posts")
+List&lt;User&gt; findAll();
+
+// 3. @BatchSize (Hibernate-specific): load children in batches instead of one by one
+@BatchSize(size = 20)
+@OneToMany(mappedBy = "user") private List&lt;Post&gt; posts;
+// or globally: spring.jpa.properties.hibernate.default_batch_fetch_size=20</code></pre>
+    <p><strong>Detect it:</strong> enable SQL logging in development and look for repeated selects.</p>
+<pre><code>spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+logging.level.org.hibernate.type.descriptor.sql=TRACE</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Corrections</span>
+    <ul>
+      <li><strong>DISTINCT:</strong> needed to de-duplicate parents in Hibernate 5. <strong>Hibernate 6 de-duplicates entity results automatically</strong>, so DISTINCT is no longer required (it's harmless).</li>
+      <li><strong>Logging property:</strong> <code>org.hibernate.type.descriptor.sql=TRACE</code> is the Hibernate 5 way to see bound parameters. In Hibernate 6 use <code>logging.level.org.hibernate.SQL=DEBUG</code> and <code>logging.level.org.hibernate.orm.jdbc.bind=TRACE</code> (<code>show-sql</code> prints to stdout, not the logger).</li>
+    </ul></div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Other fixes:</strong> DTO projections (fetch only what you need), <code>@Fetch(FetchMode.SUBSELECT)</code>, and making <code>@ManyToOne</code>/<code>@OneToOne</code> LAZY.</li>
+      <li><strong>Pitfalls of JOIN FETCH on collections:</strong> pagination is applied <em>in memory</em> (warning HHH000104); fetching two <code>List</code> collections throws <code>MultipleBagFetchException</code> (use <code>Set</code>, or fetch in separate queries). Each extra collection join multiplies rows (cartesian product).</li>
+      <li>Production detection: Hibernate statistics (<code>hibernate.generate_statistics</code>), datasource-proxy, or APM query counts; assert query counts in tests.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Why does paging with JOIN FETCH on a collection misbehave?</summary><div>The join multiplies parent rows, so the DB can't limit parents; Hibernate loads everything and paginates in memory. Page parent IDs first, then fetch children for those IDs.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> JOIN FETCH vs @EntityGraph vs @BatchSize: when each?</summary><div>JOIN FETCH/EntityGraph: one query, best for a known needed association (watch cartesian products). BatchSize: cheaper to apply broadly, a few batched queries instead of N.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Can EAGER cause N+1 too?</summary><div>Yes. With <code>find()</code> eager associations are joined, but JPQL queries load parents first and then fetch eager associations with separate selects, causing N+1.</div></details>
+</section>
+
+<!-- 9 -->
+<section id="t9">
+  <h2><span class="n">9</span>First-Level (L1) Cache</h2>
+  <div class="def"><b class="lbl">Definition</b>The L1 cache is the <strong>persistence context</strong> built into every Session/EntityManager. It is always on and guarantees that within one session an entity with a given primary key is loaded <strong>once</strong> and is the <strong>same Java object</strong> every time.</div>
+  <div class="card">
+<pre><code>Session session = sessionFactory.openSession();
+User u1 = session.get(User.class, 1L);   // SELECT fired
+User u2 = session.get(User.class, 1L);   // NO query: served from L1
+System.out.println(u1 == u2);            // true: same object</code></pre>
+    <ul>
+      <li>Also stores the <strong>snapshot</strong> used for dirty checking. Cleared when the Session closes, so it helps within a request but not across requests.</li>
+      <li><code>session.evict(user)</code> removes one entity; <code>session.clear()</code> wipes the cache.</li>
+      <li>Bulk inserts: call <code>flush()</code> then <code>clear()</code> periodically so L1 doesn't grow and slow down.</li>
+    </ul>
+<pre><code>for (int i = 0; i &lt; 100_000; i++) {
+    session.persist(new Item(i));
+    if (i % 50 == 0) { session.flush(); session.clear(); }   // match hibernate.jdbc.batch_size=50
+}</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li>L1 serves lookups by <strong>primary key</strong> (<code>find</code>). A JPQL query always hits the DB, though returned rows resolve to the already-managed instances.</li>
+      <li>In Spring the persistence context is scoped to the transaction (or to the whole request with Open-Session-In-View).</li>
+      <li>Batch inserts also need <code>hibernate.jdbc.batch_size</code> and a non-IDENTITY id strategy.</li>
+      <li>Memory risk: loading huge result sets into one session; use pagination/streaming and <code>clear()</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Does a second <code>em.find()</code> in a different transaction hit the DB?</summary><div>Yes: a new transaction has a new persistence context (empty L1). Only L2 could serve it.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why can bulk JPQL updates leave stale entities?</summary><div>They execute directly in the DB and bypass L1; managed entities keep old values until refreshed/cleared (<code>@Modifying(clearAutomatically = true)</code>).</div></details>
+</section>
+
+<!-- 10 -->
+<section id="t10">
+  <h2><span class="n">10</span>Second-Level (L2) Cache</h2>
+  <div class="def"><b class="lbl">Definition</b>The L2 cache lives at the <strong>SessionFactory</strong> level and is <strong>shared across all sessions and threads</strong> (and across JVM nodes with a distributed provider). It is <strong>opt-in</strong>. Lookup order: <strong>L1 → L2 → database</strong>.</div>
+  <div class="card">
+    <div class="scroll"><table>
+      <thead><tr><th></th><th>L1 cache</th><th>L2 cache</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Scope</strong></td><td>One Session / transaction</td><td>SessionFactory (shared)</td></tr>
+        <tr><td><strong>Enabled</strong></td><td>Always</td><td>Opt-in + a provider</td></tr>
+        <tr><td><strong>Lifetime</strong></td><td>Until session closes</td><td>Until evicted/expired</td></tr>
+        <tr><td><strong>Stores</strong></td><td>Entity objects + snapshots</td><td>Dehydrated state (field values)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="added"><span class="tag add">Added (your notes cut off here)</span>
+<pre><code>spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+spring.jpa.properties.hibernate.cache.region.factory_class=jcache    # Ehcache/Caffeine/Infinispan/Hazelcast
+spring.jpa.properties.hibernate.cache.use_query_cache=true           # optional
+
+@Entity
+@Cacheable                                                            // jakarta.persistence
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class Country { ... }</code></pre>
+    <ul>
+      <li><strong>Concurrency strategies:</strong> <code>READ_ONLY</code> (never changes), <code>NONSTRICT_READ_WRITE</code>, <code>READ_WRITE</code> (soft locks; common), <code>TRANSACTIONAL</code> (JTA).</li>
+      <li><strong>Query cache</strong> is separate: caches result <em>ids</em> per query + parameters (<code>setCacheable(true)</code>); invalidated when the queried tables change. Collections need their own <code>@Cache</code>.</li>
+      <li><strong>Best for:</strong> read-mostly reference data (countries, config). <strong>Avoid for:</strong> frequently updated data.</li>
+      <li><strong>Pitfalls:</strong> stale data in clusters without a distributed/invalidating provider; native or bulk SQL may bypass or flush regions; extra memory; harder debugging.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> What exactly does L2 store?</summary><div>The "dehydrated" column values keyed by id, not entity instances; each session rebuilds its own entity objects from that state.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Would you enable L2 by default? Why/why not?</summary><div>No. Enable selectively for read-mostly data after measuring; otherwise it adds staleness risk and memory cost for little gain.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> L2 cache vs Spring Cache (<code>@Cacheable</code>)?</summary><div>L2 caches entity state transparently inside Hibernate; Spring Cache caches method results (any objects/DTOs) at the service layer with explicit control.</div></details>
+</section>
+
+<!-- 11 -->
+<section id="t11">
+  <h2><span class="n">11</span>Transaction Propagation</h2>
+  <div class="def"><b class="lbl">Definition</b>Propagation controls what happens when a <code>@Transactional</code> method is called while a transaction already exists: join it, start a new one, suspend it, or refuse to run.</div>
+  <div class="added"><span class="tag add">Added (your notes cut off here)</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Type</th><th>Behaviour</th></tr></thead>
+      <tbody>
+        <tr><td><strong>REQUIRED</strong> (default)</td><td>Join existing, else create new</td></tr>
+        <tr><td><strong>REQUIRES_NEW</strong></td><td>Always new; suspends the outer transaction</td></tr>
+        <tr><td><strong>SUPPORTS</strong></td><td>Join if exists, else run without</td></tr>
+        <tr><td><strong>NOT_SUPPORTED</strong></td><td>Run without a transaction (suspends existing)</td></tr>
+        <tr><td><strong>MANDATORY</strong></td><td>Must exist, else exception</td></tr>
+        <tr><td><strong>NEVER</strong></td><td>Must not exist, else exception</td></tr>
+        <tr><td><strong>NESTED</strong></td><td>Savepoint within the outer transaction</td></tr>
+      </tbody>
+    </table></div>
+<pre><code>@Transactional
+public void placeOrder(Order o) {
+    orderRepo.save(o);
+    audit.log(o);                      // REQUIRES_NEW: its own transaction and commit
+}
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void log(Order o) { auditRepo.save(new Audit(o)); }</code></pre>
+    <ul>
+      <li><strong>Hibernate angle:</strong> the Session/persistence context is bound to the transaction. REQUIRED shares one persistence context; <strong>REQUIRES_NEW gets a new one</strong>, so entities loaded in the outer one aren't managed in the inner one, and it uses a second DB connection.</li>
+      <li>Only <code>RuntimeException</code>/<code>Error</code> roll back by default; checked exceptions need <code>rollbackFor</code>.</li>
+      <li>It's proxy-based: self-invocation bypasses it.</li>
+      <li>An inner REQUIRED failure marks the shared transaction rollback-only → <code>UnexpectedRollbackException</code> at outer commit.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> A same-class method with REQUIRES_NEW is called via <code>this</code>. What happens?</summary><div>It runs in the existing transaction: self-invocation skips the proxy. Move it to another bean.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> REQUIRES_NEW vs NESTED?</summary><div>REQUIRES_NEW: independent transaction/connection that commits on its own. NESTED: savepoint inside the outer transaction; rolls back with it.</div></details>
+</section>
+
+<!-- 12 -->
+<section id="t12">
+  <h2><span class="n">12</span>Isolation Levels</h2>
+  <div class="def"><b class="lbl">Definition</b>Isolation controls <strong>what a transaction can see of changes made by other concurrent transactions</strong>. Higher isolation prevents more anomalies but costs concurrency.</div>
+  <div class="added"><span class="tag add">Added (your notes cut off here)</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Level</th><th>Dirty read</th><th>Non-repeatable read</th><th>Phantom read</th></tr></thead>
+      <tbody>
+        <tr><td><strong>READ_UNCOMMITTED</strong></td><td>Possible</td><td>Possible</td><td>Possible</td></tr>
+        <tr><td><strong>READ_COMMITTED</strong></td><td>Prevented</td><td>Possible</td><td>Possible</td></tr>
+        <tr><td><strong>REPEATABLE_READ</strong></td><td>Prevented</td><td>Prevented</td><td>Possible*</td></tr>
+        <tr><td><strong>SERIALIZABLE</strong></td><td>Prevented</td><td>Prevented</td><td>Prevented</td></tr>
+      </tbody>
+    </table></div>
+    <ul>
+      <li>*InnoDB/PostgreSQL prevent phantoms at REPEATABLE_READ via snapshots/gap locks. Defaults: PostgreSQL/Oracle/SQL Server = READ_COMMITTED; <strong>MySQL InnoDB = REPEATABLE_READ</strong>.</li>
+      <li><strong>Dirty read:</strong> reading uncommitted data. <strong>Non-repeatable:</strong> same row, different values. <strong>Phantom:</strong> same query, different rows.</li>
+    </ul>
+<pre><code>@Transactional(isolation = Isolation.REPEATABLE_READ)
+public void transfer(long from, long to, BigDecimal amt) { ... }</code></pre>
+    <p><strong>Beyond isolation: concurrency control in Hibernate</strong> (lost updates):</p>
+<pre><code>@Entity class Account { @Version private Long version; ... }       // optimistic locking
+// UPDATE account SET ..., version=2 WHERE id=? AND version=1  → OptimisticLockException if stale
+
+em.find(Account.class, id, LockModeType.PESSIMISTIC_WRITE);        // SELECT ... FOR UPDATE</code></pre>
+    <ul>
+      <li><strong>Optimistic:</strong> no DB lock; detect conflicts at commit (best for low contention). <strong>Pessimistic:</strong> lock rows up front (high contention, short transactions).</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Two users edit the same record. How do you stop silent overwrite?</summary><div>Add <code>@Version</code> for optimistic locking; the second commit fails with <code>OptimisticLockException</code> and the app retries or informs the user.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Which isolation level would you choose and why?</summary><div>Usually the DB default (READ_COMMITTED) plus optimistic locking where needed; raise isolation only for specific consistency-critical flows.</div></details>
+</section>
+
+<!-- CORE -->
+<section id="core">
+  <h2>🎯 More Core Hibernate Concept Questions (Recruiter Mode)</h2>
+  <p class="legend">Answer out loud first, then tap to check.</p>
+
+  <h3>Persistence Basics</h3>
+  <details><summary><code>get()</code>/<code>find()</code> vs <code>load()</code>/<code>getReference()</code>?</summary><div><code>find</code> hits the DB immediately and returns <code>null</code> if missing. <code>getReference</code> returns a lazy proxy without querying (throws <code>EntityNotFoundException</code> on first access if missing); handy for setting a foreign key without loading the entity.</div></details>
+  <details><summary><code>persist</code> vs <code>save</code> vs <code>merge</code> vs <code>update</code> vs <code>saveOrUpdate</code>?</summary><div><code>persist</code>: JPA, makes a <em>new</em> entity managed (void). <code>save</code>: Hibernate legacy, returns id. <code>merge</code>: copies state onto a managed instance (new or detached) and returns it. <code>update/saveOrUpdate</code>: legacy re-attach of the same instance.</div></details>
+  <details><summary>What is <code>LazyInitializationException</code> and how do you fix it?</summary><div>Accessing a lazy association after the Session closed. Fix: fetch what you need inside the transaction (JOIN FETCH, EntityGraph, DTO projection) or map to DTOs in the service layer. Don't switch everything to EAGER.</div></details>
+  <details><summary>What is Open-Session-In-View (OSIV)? Pros and cons?</summary><div>Keeps the Session open through the whole web request (Boot default <code>spring.jpa.open-in-view=true</code>), so lazy loading works in controllers/views. Cons: hidden queries outside the service layer, connection held longer (pool pressure). Many teams disable it.</div></details>
+  <details><summary>Entity vs DTO: why not expose entities from controllers?</summary><div>Entities are tied to the persistence model (lazy proxies, bidirectional cycles, over-exposure of fields). DTOs give a stable API contract and control exactly what's fetched.</div></details>
+
+  <h3>Mapping Details</h3>
+  <details><summary>How should <code>equals()</code>/<code>hashCode()</code> be implemented on entities?</summary><div>Avoid using all fields or a generated id that is null before persist. Use a stable business key, or an id-based equals that handles null (and a constant <code>hashCode</code> for the class). Needed for correct behaviour in <code>Set</code>s and across detached instances.</div></details>
+  <details><summary>Inheritance mapping strategies?</summary><div><code>SINGLE_TABLE</code> (one table, fast, nullable columns), <code>JOINED</code> (normalised, joins), <code>TABLE_PER_CLASS</code> (union queries, rarely used). <code>@MappedSuperclass</code> shares fields without being an entity.</div></details>
+  <details><summary>Cascade types and <code>orphanRemoval</code>?</summary><div>PERSIST, MERGE, REMOVE, REFRESH, DETACH, ALL propagate operations to children. <code>orphanRemoval=true</code> deletes children removed from the parent's collection. Use only for true parent-child ownership.</div></details>
+  <details><summary>What is <code>@Embeddable</code>? <code>@Transient</code>?</summary><div><code>@Embeddable</code>/<code>@Embedded</code>: a value object whose fields are stored in the owner's table (e.g. Address). <code>@Transient</code>: field not persisted.</div></details>
+
+  <h3>Performance &amp; Concurrency</h3>
+  <details><summary>How do you do efficient batch inserts/updates?</summary><div>Set <code>hibernate.jdbc.batch_size</code>, use SEQUENCE ids (IDENTITY blocks batching), order inserts/updates, and <code>flush()</code>+<code>clear()</code> every batch to keep L1 small.</div></details>
+  <details><summary>Optimistic vs pessimistic locking?</summary><div>Optimistic uses a <code>@Version</code> column and detects conflicts at commit (scalable, retry on failure). Pessimistic locks rows (<code>FOR UPDATE</code>) to block others (safer under heavy contention, risks deadlocks/waiting).</div></details>
+  <details><summary>Why can fetching two <code>List</code> collections fail?</summary><div><code>MultipleBagFetchException</code>: Hibernate can't fetch multiple unordered bags in one query. Use <code>Set</code>, <code>@OrderColumn</code>, or separate queries.</div></details>
+  <details><summary>How do you view/measure Hibernate's SQL in production-like environments?</summary><div>SQL logging via logger categories, Hibernate statistics, a datasource proxy, or APM tracing; add query-count assertions in tests to catch regressions.</div></details>
+  <details><summary>Hibernate Session vs JDBC Connection?</summary><div>A Session wraps a connection plus a persistence context (L1 cache, snapshots, action queue). It borrows a connection from the pool when needed and releases it afterwards.</div></details>
+</section>
+</main>
+<footer>Define it clearly, show a small example, state the trade-off, and be ready for the follow-up.</footer>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java Executor Framework &amp; ThreadPoolExecutor – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:28px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card>h3:first-child{margin-top:0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.grid .card{margin:0}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.85rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.88rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+.steps li{counter-increment:s;position:relative;margin:0 0 10px;padding:10px 12px 10px 48px;background:var(--code);border:1px solid var(--line);border-radius:10px}
+.steps li::before{content:counter(s);position:absolute;left:12px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:700;text-align:center;line-height:26px;font-size:.85rem}
+.tree{font:.85rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;white-space:pre;margin:10px 0}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--muted)}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+.legend{font-size:.88rem;color:var(--muted);margin:0 0 12px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Java Executor Framework &amp; ThreadPoolExecutor</h1>
+  <p>Thread pools, Executors, ForkJoinPool, scheduling and Spring TaskExecutor: quick-revision cheat sheet.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#hier">Hierarchy</a><a href="#tpe">ThreadPoolExecutor</a><a href="#flow">Task Flow</a><a href="#reject">Rejection</a><a href="#factory">Executors</a><a href="#fj">ForkJoin</a><a href="#sched">Scheduled</a><a href="#spring">Spring</a><a href="#extra">Often Missed</a><a href="#qa">Q&amp;A</a>
+</div></nav>
+
+<main>
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li><strong>Executor</strong> = basic interface, one method <code>execute(Runnable)</code>, no return value, no shutdown.</li>
+      <li><strong>ExecutorService</strong> = extends Executor with <code>submit()</code>, <code>invokeAll()</code>, <code>shutdown()</code> etc.</li>
+      <li><strong>ThreadPoolExecutor</strong> = the core implementation; full control over core/max threads, queue, keep-alive, thread factory and rejection policy.</li>
+      <li><strong>Task flow order:</strong> core threads → <strong>queue</strong> → extra threads up to max → <strong>reject</strong>. (Queue is used <em>before</em> extra threads.)</li>
+      <li><strong>corePoolSize</strong> = min threads kept alive; <strong>maximumPoolSize</strong> = hard cap; <strong>keepAliveTime</strong> = idle time before excess threads die.</li>
+      <li><strong>Rejection policies:</strong> Abort (default), CallerRuns, Discard, DiscardOldest, Custom.</li>
+      <li><strong>Executors</strong> = static factory helpers for pre-configured pools.</li>
+      <li><strong>ForkJoinPool</strong> = work-stealing for recursive divide-and-conquer. <strong>ScheduledExecutorService</strong> = delayed/periodic tasks.</li>
+      <li><strong>Spring TaskExecutor</strong> = Spring's abstraction, used with <code>@Async</code>.</li>
+    </ol>
+  </div>
+  <p class="legend"><span class="tag add">Added</span> = concept missing from your notes. <span class="tag fix">Correction</span> = something in the notes that is inaccurate; please read these.</p>
+</section>
+
+<section id="hier">
+  <h2>1. Executor Hierarchy</h2>
+  <div class="card">
+    <span class="tag">Java (java.util.concurrent)</span>
+<div class="tree">Executor                      execute(Runnable)
+  └─ ExecutorService          submit, invokeAll, shutdown...
+       ├─ AbstractExecutorService
+       │    ├─ ThreadPoolExecutor   (core implementation)
+       │    └─ ForkJoinPool
+       └─ ScheduledExecutorService
+            └─ ScheduledThreadPoolExecutor (extends ThreadPoolExecutor)</div>
+  </div>
+  <div class="fixbox">
+    <span class="tag fix">Correction</span>
+    <p>Your diagram showed ForkJoinPool and ScheduledExecutorService as direct "implementations" of ExecutorService. More precisely:</p>
+    <ul>
+      <li><code>ExecutorService extends Executor</code> (interface extends interface).</li>
+      <li><code>ThreadPoolExecutor</code> and <code>ForkJoinPool</code> both <strong>extend <code>AbstractExecutorService</code></strong>.</li>
+      <li><code>ScheduledExecutorService</code> is an <strong>interface</strong> extending ExecutorService; <code>ScheduledThreadPoolExecutor</code> <strong>extends ThreadPoolExecutor</strong> and implements it.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <span class="tag">Spring</span>
+<div class="tree">TaskExecutor (extends java.util.concurrent.Executor)
+  └─ AsyncTaskExecutor
+  Implementations:
+    SyncTaskExecutor          runs in the caller thread
+    SimpleAsyncTaskExecutor   new thread per task (no pooling)
+    ThreadPoolTaskExecutor    wraps ThreadPoolExecutor
+    ConcurrentTaskExecutor    adapts a java.util.concurrent.Executor</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <span class="tag">1 · Executor</span>
+      <ul><li>Single method: <code>execute(Runnable)</code></li><li>No return value, no shutdown control</li><li>Use: simple one-off tasks</li></ul>
+    </div>
+    <div class="card">
+      <span class="tag">2 · ExecutorService</span>
+      <ul><li>Extended Executor with more features</li><li><code>submit()</code>, <code>invokeAll()</code>, <code>shutdown()</code></li></ul>
+    </div>
+    <div class="card">
+      <span class="tag">3 · ThreadPoolExecutor</span>
+      <ul><li>Full implementation; manages core threads, max threads, queue, thread lifecycle, rejection policy</li></ul>
+    </div>
+  </div>
+  <div class="added" style="margin-top:14px">
+    <span class="tag add">Added: ExecutorService API</span>
+    <ul>
+      <li><code>submit(Runnable | Callable)</code> returns a <strong><code>Future</code></strong> (<code>get()</code>, <code>cancel()</code>, <code>isDone()</code>). <strong>Runnable</strong> returns nothing and can't throw checked exceptions; <strong>Callable</strong> returns a value.</li>
+      <li><code>invokeAll</code> runs a collection and waits for all. <code>invokeAny</code> returns the first successful result.</li>
+      <li><code>shutdown()</code>: stop accepting new tasks, finish queued ones. <code>shutdownNow()</code>: interrupt running tasks and return the queued ones. <code>awaitTermination()</code> waits for completion.</li>
+      <li><strong>Always shut pools down</strong>; non-daemon pool threads keep the JVM alive. Since Java 19, <code>ExecutorService</code> is <code>AutoCloseable</code>.</li>
+      <li><strong>execute vs submit:</strong> an exception inside <code>submit()</code> is captured in the Future (silently lost if you never call <code>get()</code>); with <code>execute()</code> it goes to the thread's uncaught exception handler.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="tpe">
+  <h2>2. ThreadPoolExecutor</h2>
+  <div class="card">
+<pre><code>new ThreadPoolExecutor(
+    10,                              // corePoolSize
+    20,                              // maximumPoolSize
+    60, TimeUnit.SECONDS,            // keepAliveTime
+    new LinkedBlockingQueue&lt;&gt;(100),  // workQueue
+    threadFactory,                   // how threads are created
+    new ThreadPoolExecutor.AbortPolicy() // rejection handler
+);</code></pre>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Parameter</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><strong>corePoolSize</strong></td><td>Minimum threads kept alive, even when idle. Fewer than core running → a new thread is created for each task, even if others are idle.</td></tr>
+      <tr><td><strong>maximumPoolSize</strong></td><td>Absolute max threads. Extra threads (above core) are only created when the queue is full.</td></tr>
+      <tr><td><strong>keepAliveTime + unit</strong></td><td>How long excess threads (above core) may stay idle before being destroyed.</td></tr>
+      <tr><td><strong>workQueue</strong></td><td>Holds tasks waiting for a free thread (see queue types below).</td></tr>
+      <tr><td><strong>threadFactory</strong></td><td>Controls thread name, priority, daemon status. Default: <code>Executors.defaultThreadFactory()</code>.</td></tr>
+      <tr><td><strong>handler</strong></td><td>Rejection policy when queue is full and pool is at max.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card">
+    <h3>Queue types</h3>
+    <ul>
+      <li><strong>LinkedBlockingQueue(100):</strong> FIFO linked list, bounded by the capacity given.</li>
+      <li><strong>ArrayBlockingQueue(50):</strong> array-based, bounded.</li>
+      <li><strong>SynchronousQueue:</strong> no capacity; direct handoff to a thread. Good for high throughput.</li>
+      <li><strong>Priority queue:</strong> tasks run by priority; not recommended (complex).</li>
+    </ul>
+  </div>
+  <div class="fixbox">
+    <span class="tag fix">Correction</span>
+    <ul>
+      <li><strong>Worked example is wrong.</strong> With core=10, max=20 and a <strong>queue of 100</strong>, submitting 30 tasks gives <strong>10 threads and 20 queued tasks</strong>. Extra threads (11-20) are created only after all <strong>100 queue slots</strong> are full. Rejection happens when 20 threads are busy <em>and</em> 100 are queued (task 121 onward, if none finish).</li>
+      <li>The "21st task is rejected" statement only holds if the queue is tiny or zero-capacity (e.g. <code>SynchronousQueue</code>).</li>
+      <li>The priority queue used with a pool must be <code>PriorityBlockingQueue</code> (a <code>BlockingQueue</code>).</li>
+      <li>The handler type is <code>RejectedExecutionHandler</code> (the "RejectionPolicy" in the notes is a conceptual name).</li>
+      <li>The claim that ArrayBlockingQueue is "slightly faster" isn't a reliable rule; choose by boundedness and contention needs.</li>
+    </ul>
+  </div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Unbounded queue gotcha:</strong> with an unbounded <code>LinkedBlockingQueue</code>, the queue never "fills", so <strong>maximumPoolSize is never used</strong> and the queue can grow until OutOfMemoryError.</li>
+      <li><code>allowCoreThreadTimeOut(true)</code> lets core threads time out too. <code>prestartAllCoreThreads()</code> starts them eagerly (by default threads start lazily).</li>
+      <li><strong>Sizing:</strong> CPU-bound ≈ number of cores (+1). I/O-bound: more threads, roughly <code>cores × (1 + wait/compute)</code>.</li>
+      <li><strong>Monitoring:</strong> <code>getPoolSize()</code>, <code>getActiveCount()</code>, <code>getQueue().size()</code>, <code>getCompletedTaskCount()</code>. Name your threads to make thread dumps readable.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="flow">
+  <h2>3. Task Submission Flow</h2>
+  <ol class="steps">
+    <li><strong>Threads &lt; corePoolSize?</strong> Yes → create a new thread and run the task immediately.</li>
+    <li><strong>Queue has space?</strong> Yes → add to queue and wait for a free thread.</li>
+    <li><strong>Threads &lt; maximumPoolSize?</strong> Yes → create a new thread above core.</li>
+    <li><strong>Otherwise</strong> → run the <strong>rejection policy</strong>.</li>
+  </ol>
+  <div class="tip"><strong>Memory hook:</strong> Core → Queue → Max → Reject.</div>
+</section>
+
+<section id="reject">
+  <h2>4. Rejection Policies</h2>
+  <p>Triggered when the queue is full, all threads are busy and the pool is at maximumPoolSize.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Policy</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><strong>AbortPolicy</strong> (default)</td><td>Throws <code>RejectedExecutionException</code></td></tr>
+      <tr><td><strong>CallerRunsPolicy</strong></td><td>The calling thread (e.g. main) runs the task itself</td></tr>
+      <tr><td><strong>DiscardPolicy</strong></td><td>Silently drops the task, no exception (task is lost)</td></tr>
+      <tr><td><strong>DiscardOldestPolicy</strong></td><td>Removes the oldest queued task, then adds the new one</td></tr>
+      <tr><td><strong>Custom</strong></td><td>Implement <code>RejectedExecutionHandler</code> (log, persist, retry...)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>CallerRuns = back-pressure:</strong> the submitter is slowed down because it executes the task itself. A common safe choice for services.</li>
+      <li><strong>Discard policies</strong> lose work silently; use only when tasks are truly droppable.</li>
+      <li>Rejection also happens for tasks submitted <strong>after shutdown</strong>.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="factory">
+  <h2>5. Executors (Factory Helper)</h2>
+  <div class="card">
+    <span class="tag">Definition</span>
+    <p><strong>Executors</strong> = a <strong>helper (utility) class</strong> with <strong>static factory methods</strong> that create pre-configured ExecutorServices.</p>
+    <ul>
+      <li>It is a class (note the "s"), not the <code>Executor</code> interface.</li>
+      <li>Internally it just builds a <code>ThreadPoolExecutor</code> (or ScheduledThreadPoolExecutor / ForkJoinPool) with preset parameters.</li>
+      <li>Convenient for quick setups, but it hides the queue, max-thread and rejection settings (see table below).</li>
+    </ul>
+    <div class="say" style="border-left:4px solid var(--good);background:var(--good-soft);padding:10px 14px;border-radius:8px;margin-top:12px"><strong>Interview line:</strong> Executors is a factory/utility class that gives ready-made thread pools such as fixed, cached, single-thread and scheduled; under the hood they are configured ThreadPoolExecutor instances.</div>
+  </div>
+  <div class="added">
+    <span class="tag add">Added: what each factory really builds</span>
+    <div class="scroll"><table>
+      <thead><tr><th>Factory</th><th>Configuration</th><th>Risk</th></tr></thead>
+      <tbody>
+        <tr><td><code>newFixedThreadPool(n)</code></td><td>core = max = n, <strong>unbounded</strong> LinkedBlockingQueue</td><td>Queue can grow until OOM</td></tr>
+        <tr><td><code>newCachedThreadPool()</code></td><td>core 0, max <strong>Integer.MAX_VALUE</strong>, 60s keep-alive, SynchronousQueue</td><td>Unlimited threads under load</td></tr>
+        <tr><td><code>newSingleThreadExecutor()</code></td><td>1 thread, unbounded queue; tasks run sequentially</td><td>Queue can grow until OOM</td></tr>
+        <tr><td><code>newScheduledThreadPool(n)</code></td><td>Scheduled pool for delayed/periodic tasks</td><td>-</td></tr>
+        <tr><td><code>newWorkStealingPool()</code></td><td>ForkJoinPool-based</td><td>-</td></tr>
+        <tr><td><code>newVirtualThreadPerTaskExecutor()</code></td><td>One virtual thread per task (Java 21+)</td><td>-</td></tr>
+      </tbody>
+    </table></div>
+    <div class="con"><strong>Production tip:</strong> prefer constructing <code>ThreadPoolExecutor</code> directly with a <strong>bounded queue</strong>, bounded max threads, named threads and an explicit rejection policy rather than relying on the Executors defaults.</div>
+  </div>
+</section>
+
+<section id="fj">
+  <h2>6. ForkJoinPool</h2>
+  <div class="card">
+    <p>Specialized pool for <strong>divide-and-conquer (recursive)</strong> tasks, using <strong>work-stealing</strong>.</p>
+    <div class="flow"><span>Split task (fork)</span><i>→</i><span>Compute subtasks in parallel</span><i>→</i><span>Combine (join)</span></div>
+  </div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Work-stealing:</strong> each worker has its own deque; an idle worker "steals" tasks from the tail of a busy worker's deque, keeping all cores busy.</li>
+      <li>Tasks extend <strong><code>RecursiveTask&lt;V&gt;</code></strong> (returns a value) or <strong><code>RecursiveAction</code></strong> (no result) and implement <code>compute()</code>.</li>
+      <li>The <strong>common pool</strong> (<code>ForkJoinPool.commonPool()</code>) backs <strong>parallel streams</strong> and the default async <code>CompletableFuture</code>. Avoid blocking I/O there.</li>
+      <li>Best for CPU-bound, divisible work; not for blocking tasks.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="sched">
+  <h2>7. ScheduledExecutorService</h2>
+  <div class="card">
+    <p>An ExecutorService with <strong>scheduling capabilities</strong> for delayed and periodic tasks.</p>
+  </div>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><code>schedule(task, delay, unit)</code>: run once after a delay.</li>
+      <li><code>scheduleAtFixedRate(task, initialDelay, period, unit)</code>: start times are <strong>fixed intervals</strong>; if a run takes longer than the period, later runs start late (no overlap).</li>
+      <li><code>scheduleWithFixedDelay(task, initialDelay, delay, unit)</code>: waits the delay <strong>after each run finishes</strong>.</li>
+      <li>If a periodic task <strong>throws an exception, later runs are suppressed</strong>; catch exceptions inside the task.</li>
+      <li>In Spring, <code>@Scheduled</code> uses a scheduler under the hood.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="spring">
+  <h2>8. Spring TaskExecutor Abstraction</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Java</th><th>Spring equivalent</th></tr></thead>
+    <tbody>
+      <tr><td><code>Executor</code></td><td><code>TaskExecutor</code> (interface)</td></tr>
+      <tr><td><code>ExecutorService</code></td><td><code>AsyncTaskExecutor</code> (interface)</td></tr>
+      <tr><td><code>ThreadPoolExecutor</code></td><td><code>ThreadPoolTaskExecutor</code> (class)</td></tr>
+      <tr><td>-</td><td><code>SimpleAsyncTaskExecutor</code>, <code>ConcurrentTaskExecutor</code>, <code>SyncTaskExecutor</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="fixbox">
+    <span class="tag fix">Correction</span>
+    <ul>
+      <li><code>AsyncTaskExecutor</code> is a loose analogue of ExecutorService (adds <code>submit()</code> returning a Future), not an exact equivalent.</li>
+      <li>In your hierarchy, <code>SimpleAsyncTaskExecutor</code> <strong>does not pool</strong>: it starts a <strong>new thread per task</strong>. <code>ThreadPoolTaskExecutor</code> wraps <code>ThreadPoolExecutor</code>; <code>ConcurrentTaskExecutor</code> adapts any existing <code>java.util.concurrent.Executor</code>.</li>
+    </ul>
+  </div>
+  <div class="added">
+    <span class="tag add">Added: @Async in practice</span>
+<pre><code>@EnableAsync
+@Configuration
+class AsyncConfig {
+  @Bean ThreadPoolTaskExecutor taskExecutor() {
+    var e = new ThreadPoolTaskExecutor();
+    e.setCorePoolSize(10);
+    e.setMaxPoolSize(20);
+    e.setQueueCapacity(100);
+    e.setThreadNamePrefix("async-");
+    e.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    e.initialize();
+    return e;
+  }
+}
+@Async CompletableFuture&lt;User&gt; load(long id) { ... }</code></pre>
+    <ul>
+      <li>Needs <code>@EnableAsync</code>. <code>@Async</code> methods return <code>void</code>, <code>Future</code> or <code>CompletableFuture</code>.</li>
+      <li>It works through a <strong>proxy</strong>: calling an <code>@Async</code> method from <strong>within the same class</strong> (self-invocation) runs synchronously.</li>
+      <li>Without a configured executor, Spring Boot auto-configures a <code>ThreadPoolTaskExecutor</code> (tunable via <code>spring.task.execution.pool.*</code>); plain Spring without Boot may fall back to <code>SimpleAsyncTaskExecutor</code>.</li>
+      <li>Exceptions from <code>void</code> <code>@Async</code> methods need an <code>AsyncUncaughtExceptionHandler</code>.</li>
+      <li>Thread-local context (security, MDC) isn't propagated automatically; use a <code>TaskDecorator</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="extra">
+  <h2>9. Often-Missed Fundamentals</h2>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Why thread pools?</strong> Reuse threads (creating a thread per task is costly), cap concurrency, queue work, and manage lifecycle in one place.</li>
+      <li><strong>Executor vs Thread:</strong> Executor separates <em>task submission</em> from <em>execution policy</em>.</li>
+      <li><strong>Future limitations:</strong> <code>get()</code> blocks and there is no chaining; <code>CompletableFuture</code> adds non-blocking composition (<code>thenApply</code>, <code>thenCompose</code>, <code>allOf</code>).</li>
+      <li><strong>Graceful shutdown pattern:</strong> <code>shutdown()</code> → <code>awaitTermination(timeout)</code> → if still running, <code>shutdownNow()</code>.</li>
+      <li><strong>Thread starvation:</strong> tasks that wait on other tasks in the same bounded pool can deadlock it.</li>
+      <li><strong>Separate pools</strong> for different workloads (e.g. slow I/O vs fast CPU tasks) so one cannot starve the other.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="qa">
+  <h2>Quick Q&amp;A (tap to reveal)</h2>
+  <details><summary>Executor vs ExecutorService?</summary><p>Executor only has <code>execute(Runnable)</code>. ExecutorService adds <code>submit()</code> (Futures), <code>invokeAll()</code>, and lifecycle control like <code>shutdown()</code>.</p></details>
+  <details><summary>Explain the ThreadPoolExecutor task flow.</summary><p>Fewer than core threads → new thread. Otherwise queue the task. If the queue is full and threads &lt; max → new thread. Otherwise reject.</p></details>
+  <details><summary>Difference between corePoolSize and maximumPoolSize?</summary><p>Core is the minimum kept alive. Max is the hard cap; threads above core are created only when the queue is full and die after keepAliveTime when idle.</p></details>
+  <details><summary>Name the rejection policies.</summary><p>Abort (default, throws), CallerRuns (caller executes), Discard (silently drops), DiscardOldest (drops oldest queued), or a custom handler.</p></details>
+  <details><summary>Why avoid Executors.newFixedThreadPool in production?</summary><p>It uses an unbounded queue, so tasks can pile up until OOM. <code>newCachedThreadPool</code> can create unlimited threads. Prefer a configured ThreadPoolExecutor.</p></details>
+  <details><summary>execute() vs submit()?</summary><p>execute takes a Runnable and returns nothing. submit takes Runnable/Callable and returns a Future that captures results and exceptions.</p></details>
+  <details><summary>What is ForkJoinPool good for?</summary><p>Recursive divide-and-conquer CPU-bound tasks, using work-stealing so idle workers take tasks from busy ones.</p></details>
+  <details><summary>scheduleAtFixedRate vs scheduleWithFixedDelay?</summary><p>Fixed rate starts runs at fixed intervals; fixed delay waits the given delay after each run completes.</p></details>
+  <details><summary>How does Spring's @Async use executors?</summary><p>It runs the method on a TaskExecutor (typically ThreadPoolTaskExecutor) via a proxy; requires @EnableAsync and doesn't work on self-invocation.</p></details>
+</section>
+</main>
+<footer>Core → Queue → Max → Reject. Use bounded queues, name your threads, and always shut pools down.</footer>
+</body>
+</html>

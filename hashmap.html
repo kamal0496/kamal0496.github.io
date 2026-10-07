@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HashMap vs ConcurrentHashMap – Java Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:28px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h3{font-size:1.05rem;margin:14px 0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card>h3:first-child{margin-top:0}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.grid .card{margin:0}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.85rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.say{border-left:4px solid var(--good);background:var(--good-soft);padding:10px 14px;border-radius:8px;margin-top:12px}
+.say b.lbl{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--good);margin-bottom:2px}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.88rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px}
+summary{cursor:pointer;font-weight:600}
+details p{margin:8px 0 0;color:var(--muted)}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+.legend{font-size:.88rem;color:var(--muted);margin:0 0 12px}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>HashMap vs ConcurrentHashMap</h1>
+  <p>Java concurrency &amp; collections: quick-revision cheat sheet for interviews.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#diff">HashMap vs CHM</a><a href="#internals">Internals</a><a href="#cia">computeIfAbsent</a><a href="#sync">synchronized?</a><a href="#resize">Resize</a><a href="#extra">Often Missed</a><a href="#qa">Quick Q&amp;A</a>
+</div></nav>
+
+<main>
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li><strong>HashMap</strong> is not thread-safe, allows <strong>1 null key + many null values</strong>, and is fastest single-threaded.</li>
+      <li><strong>ConcurrentHashMap</strong> is thread-safe, <strong>no null keys/values</strong>, using CAS + bucket-level locking (not a whole-map lock).</li>
+      <li>Java 7: <strong>segment locking</strong>. Java 8+: segments removed → <strong>CAS + synchronized on a bucket + tree bins</strong>.</li>
+      <li>Nulls banned in CHM because <code>get()</code> returning null would be <strong>ambiguous</strong> (absent vs mapped to null).</li>
+      <li><code>get()</code> then <code>put()</code> is a <strong>check-then-act race</strong>; <code>computeIfAbsent()</code> makes it <strong>atomic per key</strong>.</li>
+      <li>Prefer concurrent classes; use <code>synchronized</code> to guard a <strong>compound operation across multiple state changes</strong>.</li>
+      <li>HashMap resizes when <strong>size &gt; capacity × loadFactor</strong> (16 × 0.75 = 12 → resize on the 13th entry); capacity doubles to stay a <strong>power of two</strong>.</li>
+      <li>Resize is <strong>O(n)</strong>; normal put/get is O(1) average.</li>
+    </ol>
+  </div>
+  <p class="legend"><span class="tag add">Added</span> marks concepts that were missing from your notes and are commonly asked in interviews.</p>
+</section>
+
+<section id="diff">
+  <h2>1. HashMap vs ConcurrentHashMap</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Aspect</th><th>HashMap</th><th>ConcurrentHashMap</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Thread safety</strong></td><td>Not thread-safe; concurrent modification can corrupt data</td><td>Thread-safe</td></tr>
+      <tr><td><strong>Nulls</strong></td><td>One null key, multiple null values</td><td>No null keys or values</td></tr>
+      <tr><td><strong>Locking</strong></td><td>None (no sync overhead)</td><td>Fine-grained locking + CAS, not whole-map sync</td></tr>
+      <tr><td><strong>Performance</strong></td><td>Faster in single-threaded code</td><td>Scales better than Hashtable under multi-threading</td></tr>
+      <tr><td><strong>Best for</strong></td><td>Single-threaded / confined use</td><td>Caches, session management, shared lookup tables</td></tr>
+      <tr><td><span class="tag add">Added</span> <strong>Iterators</strong></td><td>Fail-fast (<code>ConcurrentModificationException</code>)</td><td>Weakly consistent; no CME</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="card">
+    <h3>Why no null values in ConcurrentHashMap?</h3>
+    <p>In a concurrent setting you can't tell the two cases apart:</p>
+    <ul><li>Key not present</li><li>Key present with value <code>null</code></li></ul>
+    <pre><code>String value = map.get(key);  // null → absent, or mapped to null?</code></pre>
+    <p>In a plain HashMap you can follow up with <code>containsKey()</code>, but in a concurrent map another thread could change things between the two calls, so the ambiguity can't be resolved safely.</p>
+  </div>
+
+  <div class="say"><b class="lbl">Short interview answer</b>
+    HashMap is not thread-safe and allows one null key and multiple null values. ConcurrentHashMap is thread-safe, doesn't allow null keys/values, and uses bucket-level locking and CAS operations for better performance in concurrent environments. For multi-threaded backend applications such as caching or session management, ConcurrentHashMap is preferred.
+  </div>
+</section>
+
+<section id="internals">
+  <h2>2. ConcurrentHashMap Internals</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Before Java 8</span>
+      <ul>
+        <li>Map divided into multiple <strong>segments</strong></li>
+        <li>Only the segment being modified is locked</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag">Java 8 and above</span>
+      <ul>
+        <li>Segments <strong>removed</strong></li>
+        <li><strong>CAS</strong> operations for updates</li>
+        <li><strong>Synchronization at bucket level</strong> when required</li>
+        <li><strong>Red-Black Tree</strong> conversion when collisions get high</li>
+      </ul>
+    </div>
+  </div>
+  <div class="added" style="margin-top:14px">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>Empty bucket:</strong> new node inserted with a lock-free <strong>CAS</strong>.</li>
+      <li><strong>Non-empty bucket:</strong> <code>synchronized</code> on the bucket's <strong>head node</strong>, so only that bucket is blocked.</li>
+      <li><strong>Reads (<code>get</code>)</strong> are generally lock-free (volatile reads).</li>
+      <li><strong><code>size()</code></strong> is built from a base counter plus striped counter cells, so it's an estimate under concurrent updates.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="cia">
+  <h2>3. The <code>computeIfAbsent</code> Race</h2>
+  <div class="card">
+    <h3>Problem: check-then-act</h3>
+<pre><code>ConcurrentHashMap&lt;Long, User&gt; cache = new ConcurrentHashMap&lt;&gt;();
+User user = cache.get(id);
+if (user == null) {
+    user = loadUserFromDB(id);
+    cache.put(id, user);
+}</code></pre>
+    <div class="flow"><span>T1: get(id) → null</span><span>T2: get(id) → null</span><i>→</i><span>both call loadUserFromDB(id)</span></div>
+    <div class="con">Same user loaded twice from the DB → unnecessary work and a performance hit. Each call is atomic, but the <strong>sequence</strong> isn't.</div>
+  </div>
+  <div class="card">
+    <h3>Fix: atomic compute</h3>
+<pre><code>User user = cache.computeIfAbsent(id, key -&gt; loadUserFromDB(key));</code></pre>
+    <ol>
+      <li>T1 and T2 both call <code>computeIfAbsent(100)</code></li>
+      <li>T1 gets control of that bucket/key and runs the mapping function</li>
+      <li>Value is inserted</li>
+      <li>T2 re-checks, finds the value, and returns it</li>
+    </ol>
+    <div class="pro">Only one thread runs <code>loadUserFromDB(100)</code>.</div>
+  </div>
+  <div class="added">
+    <span class="tag add">Added: pitfalls</span>
+    <ul>
+      <li>Keep the mapping function <strong>short and non-blocking</strong>: it holds the bucket while running, blocking other updates to that bucket.</li>
+      <li><strong>Never modify the same map</strong> inside the mapping function (can deadlock or throw <code>IllegalStateException: Recursive update</code>).</li>
+      <li>Atomicity is <strong>per key</strong>; operations spanning multiple keys are not atomic.</li>
+      <li>Related atomic methods: <code>putIfAbsent</code>, <code>computeIfPresent</code>, <code>compute</code>, <code>merge</code>.</li>
+      <li><code>HashMap.computeIfAbsent</code> exists too but is <strong>not thread-safe</strong>.</li>
+    </ul>
+  </div>
+  <div class="say"><b class="lbl">Interview-ready answer</b>
+    computeIfAbsent() prevents the check-then-act race condition. Instead of separately calling get() and put(), it atomically checks whether a key exists and computes the value only when absent. In ConcurrentHashMap, concurrent threads trying to insert the same key coordinate internally so that only one value gets associated with the key, avoiding duplicate object creation and unnecessary database calls. It's commonly used in caches, lazy initialization, and lookup tables.
+  </div>
+</section>
+
+<section id="sync">
+  <h2>4. <code>synchronized</code> vs Concurrent Classes</h2>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Concurrent classes</span>
+      <p>Prefer when they solve the problem directly: optimized for scalability, less locking overhead.</p>
+      <ul><li>Thread-safe collections (<code>ConcurrentHashMap</code>)</li><li>Counters (<code>AtomicInteger</code>)</li><li>Queues</li></ul>
+    </div>
+    <div class="card">
+      <span class="tag">synchronized</span>
+      <p>Use to protect a <strong>compound business operation</strong> with multiple state changes that must execute atomically.</p>
+      <ul><li>Guards critical sections spanning several operations</li></ul>
+    </div>
+  </div>
+  <div class="added" style="margin-top:14px">
+    <span class="tag add">Added</span>
+    <ul>
+      <li>Atomic classes make <strong>one variable</strong> atomic via CAS. Once an invariant spans <strong>multiple variables/collections</strong>, you need a lock.</li>
+      <li>Individually atomic calls don't compose: <code>if (!map.containsKey(k)) map.put(k, v)</code> is still a race.</li>
+      <li><code>Hashtable</code> and <code>Collections.synchronizedMap()</code> lock the <strong>whole map</strong> on every call, so they scale poorly.</li>
+    </ul>
+  </div>
+  <div class="say"><b class="lbl">Interview-ready answer</b>
+    I prefer concurrent classes whenever they solve the problem directly because they're optimized for scalability and reduce locking overhead. I use synchronized when I need to protect a compound business operation involving multiple state changes that must execute atomically. Concurrent classes are ideal for thread-safe collections, counters, and queues, while synchronized is suitable for guarding critical sections spanning multiple operations.
+  </div>
+</section>
+
+<section id="resize">
+  <h2>5. HashMap Resize &amp; Why Capacity Doubles</h2>
+  <div class="card">
+<pre><code>threshold = capacity * loadFactor
+default: capacity = 16, loadFactor = 0.75
+threshold = 16 * 0.75 = 12</code></pre>
+    <p>Inserting the <strong>13th entry</strong> triggers a resize.</p>
+    <div class="flow"><span>Step 1: create new array (2× capacity)</span><i>→</i><span>Step 2: rehash / redistribute existing entries</span></div>
+    <ul>
+      <li>Capacity stays a <strong>power of two</strong> → bucket index via a fast bitwise AND instead of modulo</li>
+      <li>put/get is O(1) average, but resize is <strong>O(n)</strong> since every entry is relocated</li>
+    </ul>
+  </div>
+  <div class="added">
+    <span class="tag add">Added: fills in Step 2</span>
+<pre><code>index = (n - 1) &amp; hash     // n = capacity (power of two)</code></pre>
+    <ul>
+      <li>When capacity doubles, each entry either <strong>stays at the same index</strong> or moves to <strong>oldIndex + oldCapacity</strong>, decided by one extra hash bit (<code>hash &amp; oldCap</code>). No full recomputation needed.</li>
+      <li>Java 8 splits each bucket into a "low" and "high" list and <strong>preserves order</strong>.</li>
+      <li>Java 7 reversed the order during transfer; concurrent resizes could create a <strong>cyclic list → infinite loop</strong>. Another reason HashMap must not be shared across threads.</li>
+      <li>HashMap hashes with <code>h ^ (h &gt;&gt;&gt; 16)</code> to spread high bits into the low bits used for the index.</li>
+      <li><strong>Treeification:</strong> a bucket becomes a Red-Black tree when its chain reaches <strong>8</strong> nodes <em>and</em> capacity is at least <strong>64</strong> (otherwise it just resizes). It reverts to a list at <strong>6</strong>.</li>
+      <li><strong>Pre-size</strong> when you know the count: <code>new HashMap&lt;&gt;(expected / 0.75f + 1)</code> avoids repeated resizes. A requested capacity is rounded up to the next power of two.</li>
+    </ul>
+  </div>
+  <div class="say"><b class="lbl">Interview-ready answer</b>
+    A HashMap resizes when its size exceeds the threshold, which is capacity × loadFactor. During resizing, a new bucket array with double the capacity is created, and existing entries are redistributed. Capacity is always doubled so that it remains a power of two, allowing HashMap to compute bucket indexes efficiently using bitwise operations. Although normal put/get operations are O(1) on average, resizing is an O(n) operation because all existing entries must be relocated.
+  </div>
+</section>
+
+<section id="extra">
+  <h2>6. Often-Missed Follow-ups</h2>
+  <div class="added">
+    <span class="tag add">Added</span>
+    <ul>
+      <li><strong>HashMap null key:</strong> stored in bucket 0 (hash of null is 0).</li>
+      <li><strong>Mutable keys:</strong> changing a key's fields that feed <code>hashCode()</code>/<code>equals()</code> after insertion makes the entry unfindable. Prefer immutable keys.</li>
+      <li><strong><code>equals</code>/<code>hashCode</code> contract:</strong> equal objects must have equal hash codes.</li>
+      <li><strong>Why not Hashtable:</strong> legacy, whole-map locking, no nulls.</li>
+      <li><strong>Visibility:</strong> CHM guarantees a write happens-before later reads of that key.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="qa">
+  <h2>Quick Q&amp;A (tap to reveal)</h2>
+  <details><summary>HashMap vs ConcurrentHashMap in one line?</summary><p>HashMap: not thread-safe, allows nulls, fastest single-threaded. CHM: thread-safe via CAS and bucket-level locking, no nulls, built for concurrent use.</p></details>
+  <details><summary>How did CHM change in Java 8?</summary><p>Segment locking was removed in favour of CAS, bucket-level synchronization, and Red-Black tree bins for heavy collisions.</p></details>
+  <details><summary>Why can't CHM store null values?</summary><p>get() returning null can't distinguish "absent" from "mapped to null", and in a concurrent map you can't safely disambiguate with a second call.</p></details>
+  <details><summary>What race does computeIfAbsent solve?</summary><p>The check-then-act race of get() then put(): it atomically checks and computes, so only one thread loads the value (e.g. one DB call).</p></details>
+  <details><summary>When use synchronized over concurrent classes?</summary><p>For compound operations with multiple state changes that must be atomic together.</p></details>
+  <details><summary>When does HashMap resize?</summary><p>When size exceeds capacity × loadFactor (default 12 for 16 × 0.75), i.e. on the 13th insert.</p></details>
+  <details><summary>Why is capacity always a power of two?</summary><p>Bucket index becomes a cheap bitwise AND, <code>(n-1) &amp; hash</code>, instead of a modulo, and doubling keeps that property.</p></details>
+  <details><summary>Cost of resizing?</summary><p>O(n): all entries are relocated, though put/get are O(1) on average.</p></details>
+</section>
+</main>
+<footer>Prefer concurrent classes, use computeIfAbsent for atomic caches, and synchronize compound operations.</footer>
+</body>
+</html>

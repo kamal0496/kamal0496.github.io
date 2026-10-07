@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java Interview Prep (5 YOE) – Definitions, Follow-ups &amp; Core Concepts</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:30px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h2 .n{display:inline-block;min-width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;background:var(--accent);color:var(--bg);font-size:.9rem;margin-right:8px}
+h3{font-size:1.05rem;margin:22px 0 8px;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.def{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:10px;margin:0 0 14px}
+.def b.lbl{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.84rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.tag.q{background:var(--good-soft);color:var(--good)}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.86rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+.legend{font-size:.88rem;color:var(--muted);margin:10px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Java Interview Prep · 5 Years Experience</h1>
+  <p>Clear definitions first, then key points, examples, recruiter follow-ups and core concept questions.</p>
+</header>
+<nav><div class="row">
+  <a href="#recall">Rapid Recall</a><a href="#t1">1 Polymorphism</a><a href="#t2">2 Abstract</a><a href="#t3">3 JMM</a><a href="#t4">4 ClassLoader</a><a href="#t5">5 Mem Leak</a><a href="#t6">6 GC</a><a href="#t7">7 ReentrantLock</a><a href="#t8">8 RWLock</a><a href="#t9">9 ThreadLocal</a><a href="#core">Core Concepts</a>
+</div></nav>
+
+<main>
+<p class="legend"><span class="tag add">Added</span> missing from your notes · <span class="tag fix">Correction</span> outdated/imprecise in your notes · <span class="tag q">Follow-up</span> what a recruiter asks next</p>
+
+<section id="recall">
+  <h2>Rapid Recall</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Topic</th><th>One-liner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Polymorphism</strong></td><td>One type, many behaviours. Overloading = compile-time; overriding = runtime.</td></tr>
+      <tr><td><strong>Abstract class</strong></td><td>Can't be instantiated; shares state + code; may force subclasses to implement methods.</td></tr>
+      <tr><td><strong>JMM</strong></td><td>Rules for visibility and ordering across threads (happens-before).</td></tr>
+      <tr><td><strong>ClassLoader</strong></td><td>Loads classes on demand: Load → Link → Initialize; parent delegation.</td></tr>
+      <tr><td><strong>Memory leak</strong></td><td>Still referenced, never used again, so GC can't free it.</td></tr>
+      <tr><td><strong>GC</strong></td><td>Frees objects unreachable from GC roots. Parallel (8), G1 (9+), ZGC/Shenandoah low-latency.</td></tr>
+      <tr><td><strong>ReentrantLock</strong></td><td>Explicit lock with tryLock, timeout, fairness, Conditions.</td></tr>
+      <tr><td><strong>ReadWriteLock</strong></td><td>Many readers OR one writer.</td></tr>
+      <tr><td><strong>ThreadLocal</strong></td><td>Per-thread copy of a variable. <code>remove()</code> in pools.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 1 -->
+<section id="t1">
+  <h2><span class="n">1</span>Polymorphism</h2>
+  <div class="def"><b class="lbl">Definition</b>Polymorphism means "many forms": code written against a parent type or interface behaves differently depending on the actual object it receives (runtime), or on the arguments passed (compile-time).</div>
+  <div class="card">
+    <ul>
+      <li><strong>Compile-time (static):</strong> method <strong>overloading</strong>; the compiler picks the method from the reference type and argument types.</li>
+      <li><strong>Runtime (dynamic):</strong> method <strong>overriding</strong> with <strong>dynamic method dispatch</strong>; the JVM picks the implementation from the actual object type.</li>
+      <li><strong>In Spring Boot:</strong> interfaces + dependency injection, strategy pattern, service abstractions → loose coupling and extensibility.</li>
+    </ul>
+<pre><code>interface PaymentStrategy { void pay(double amt); }
+class CardPayment implements PaymentStrategy { public void pay(double a){ /* card */ } }
+class UpiPayment  implements PaymentStrategy { public void pay(double a){ /* upi  */ } }
+
+PaymentStrategy p = new UpiPayment();
+p.pay(100);   // UpiPayment.pay runs: decided at runtime</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>class A { String name="A"; static String s(){return "A";} String who(){return "A";} }
+class B extends A { String name="B"; static String s(){return "B";} String who(){return "B";} }
+A a = new B();
+a.who();   // "B"  runtime dispatch
+a.name;    // "A"  fields are hidden, not overridden
+a.s();     // "A"  static methods are hidden, not overridden
+
+void p(Object o){}  void p(String s){}
+Object o = "x";  p(o);   // Object version (compile-time type)
+p(null);                 // String version (most specific)</code></pre>
+    <ul>
+      <li><strong>Override rules:</strong> same signature; covariant return allowed; access can't be narrower; checked exceptions can't be broader; no overriding <code>final</code>/<code>static</code>/<code>private</code>.</li>
+      <li>Not polymorphic: fields, static methods, private methods, constructors.</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> Overloading vs overriding: key differences?</summary><div>Overloading: same name, different parameters, resolved at compile time. Overriding: subclass, same signature, resolved at runtime, needs inheritance.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> <code>p(String)</code> and <code>p(Integer)</code>: what does <code>p(null)</code> do?</summary><div>Compile error: ambiguous call. With <code>p(Object)</code> and <code>p(String)</code> it picks <code>String</code> (most specific).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> A constructor calls an overridable method. What's the risk?</summary><div>The subclass override runs before subclass fields are initialised, so it sees defaults (null/0).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How does the JVM do dynamic dispatch internally?</summary><div>Each class has a virtual method table; <code>invokevirtual</code> looks up the method for the object's actual class at runtime.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="t2">
+  <h2><span class="n">2</span>Abstract Class</h2>
+  <div class="def"><b class="lbl">Definition</b>An abstract class is a class declared <code>abstract</code> that cannot be instantiated. It acts as a partially built base class: it provides shared fields and code, and can declare abstract methods that every concrete subclass must implement.</div>
+  <div class="card">
+    <ul>
+      <li>Can contain constructors, instance variables, concrete methods and abstract methods.</li>
+      <li><strong>Use when</strong> implementations share state and behaviour but need specialisation: template method, base services, workflow frameworks, payment and notification frameworks.</li>
+    </ul>
+<pre><code>abstract class Payment {
+    public final void process() { validate(); execute(); notifyUser(); }  // template method
+    protected void validate() { /* common */ }
+    protected abstract void execute();                                    // subclass specialises
+    private void notifyUser() { /* common */ }
+}
+class CardPayment extends Payment { protected void execute() { /* charge card */ } }</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added: abstract class vs interface</span>
+    <div class="scroll"><table>
+      <thead><tr><th></th><th>Abstract class</th><th>Interface</th></tr></thead>
+      <tbody>
+        <tr><td><strong>State</strong></td><td>Instance fields</td><td>Only <code>public static final</code> constants</td></tr>
+        <tr><td><strong>Constructors</strong></td><td>Yes (via <code>super()</code>)</td><td>No</td></tr>
+        <tr><td><strong>Inheritance</strong></td><td>Single</td><td>Multiple</td></tr>
+        <tr><td><strong>Methods</strong></td><td>Abstract + concrete</td><td>Abstract, <code>default</code>/<code>static</code> (Java 8), <code>private</code> (9)</td></tr>
+        <tr><td><strong>Models</strong></td><td>"is-a" with shared state</td><td>Capability / contract</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> Can an abstract class have a constructor? Why?</summary><div>Yes. It runs when a subclass is created (via <code>super()</code>) to initialise the shared fields.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Can it have no abstract methods?</summary><div>Yes; it just prevents direct instantiation. Illegal combos: <code>abstract</code> with <code>final</code>, <code>private</code> or <code>static</code>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Java 8 added default methods. Is the abstract class now obsolete?</summary><div>No. Interfaces still can't hold instance state or constructors. Choose an abstract class when subclasses share state.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Two interfaces have the same <code>default hello()</code>. What happens?</summary><div>Compile error until you override it; choose one with <code>A.super.hello()</code>.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="t3">
+  <h2><span class="n">3</span>Java Memory Model (JMM)</h2>
+  <div class="def"><b class="lbl">Definition</b>The JMM is the part of the Java specification that defines <strong>when a write by one thread is guaranteed to be visible to another thread</strong>, and which instruction reorderings are allowed. It's what makes multi-threaded code predictable.</div>
+  <div class="card">
+    <ul>
+      <li>Specifies: visibility of writes, ordering of reads/writes, synchronization rules.</li>
+      <li>Each thread has working memory (fast, cache-like); shared variables live in main memory. Changes must be synchronised out; other threads must refresh.</li>
+      <li><strong>Happens-before:</strong> if A happens-before B, A's results are visible to B and A is ordered before B.</li>
+      <li><strong>Rules:</strong> program order, monitor unlock → lock, volatile write → read, <code>Thread.start()</code>, <code>Thread.join()</code>, transitivity.</li>
+      <li><code>volatile</code> = visibility + ordering, <strong>not atomicity</strong>. <code>synchronized</code> = visibility + atomicity.</li>
+      <li>Without guarantees: stale values and reordered operations. Memory barriers enforce ordering at the CPU level.</li>
+    </ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Nuance</span> "Working memory = CPU cache" is a simplification. The JMM is an abstraction over registers, caches and compiler/CPU reordering, not a literal hardware model.</div>
+  <div class="added"><span class="tag add">Added: three concurrency problems</span> <strong>Atomicity</strong> (compound ops), <strong>Visibility</strong> (stale reads), <strong>Ordering</strong> (reordering).
+<pre><code>class Worker {
+    private volatile boolean running = true;     // without volatile, the loop may never stop
+    void loop() { while (running) { /* work */ } }
+    void stop() { running = false; }
+}
+
+class Singleton {                                // double-checked locking
+    private static volatile Singleton inst;
+    static Singleton get() {
+        if (inst == null) {
+            synchronized (Singleton.class) { if (inst == null) inst = new Singleton(); }
+        }
+        return inst;
+    }
+}</code></pre>
+    <ul>
+      <li><strong>Why volatile in DCL:</strong> <code>new</code> = allocate → construct → assign; reordering can publish a non-null, half-built object.</li>
+      <li>Alternatives: static holder idiom, <code>enum</code> singleton. Safe publication: static initialiser, volatile/final field, or lock.</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> <code>volatile int count; count++</code> from 10 threads: correct?</summary><div>No. <code>count++</code> is read-modify-write, not atomic. Use <code>AtomicInteger</code> or <code>synchronized</code>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Is <code>synchronized</code> only about mutual exclusion?</summary><div>No, it also gives visibility: unlock → lock is a happens-before edge, so the next thread sees all prior writes.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Are <code>long</code> writes atomic?</summary><div>The spec doesn't guarantee it for non-volatile 64-bit values (two 32-bit writes possible). Use <code>volatile</code> if shared; modern 64-bit JVMs usually behave atomically.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What is instruction reordering and why is it allowed?</summary><div>Compilers/CPUs reorder instructions for speed when single-thread results don't change. In multi-threaded code this can expose inconsistent states, hence happens-before rules.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="t4">
+  <h2><span class="n">4</span>ClassLoader</h2>
+  <div class="def"><b class="lbl">Definition</b>A ClassLoader is the JVM component that finds a class's bytecode (<code>.class</code> data) and turns it into a <code>Class</code> object in memory, <strong>on demand at runtime</strong>.</div>
+  <div class="card">
+    <ul>
+      <li>Responsibilities: find/load <code>.class</code> files, convert bytecode to classes, load each class once (per loader), manage namespaces.</li>
+    </ul>
+    <div class="flow"><span>1. Loading</span><i>→</i><span>2. Linking: verify · prepare · resolve</span><i>→</i><span>3. Initialization</span></div>
+    <ul>
+      <li><strong>Verification:</strong> bytecode valid. <strong>Preparation:</strong> memory for statics (default values). <strong>Resolution:</strong> symbolic → direct references. <strong>Initialization:</strong> run static initialisers and assign static values.</li>
+    </ul>
+    <div class="flow"><span>Bootstrap</span><i>→</i><span>Platform (was Extension)</span><i>→</i><span>Application</span><i>→</i><span>Custom</span></div>
+    <p><strong>Parent delegation:</strong> a loader asks its parent first and loads the class itself only if the parent can't. This protects core classes (nobody can replace <code>java.lang.String</code>) and keeps them unique.</p>
+  </div>
+  <div class="fixbox"><span class="tag fix">Correction</span> Since <strong>Java 9</strong> the Extension ClassLoader was replaced by the <strong>Platform ClassLoader</strong>. Your 3-tier list is the Java 8 view.</div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>String.class.getClassLoader();   // null → Bootstrap
+MyApp.class.getClassLoader();    // AppClassLoader
+
+class P { static { print("P static"); } { print("P instance"); } P(){ print("P ctor"); } }
+class C extends P { static { print("C static"); } { print("C instance"); } C(){ print("C ctor"); } }
+new C();  // P static, C static, P instance, P ctor, C instance, C ctor</code></pre>
+    <ul>
+      <li><strong>Class identity = fully qualified name + loader.</strong> Same class from two loaders = two different types.</li>
+      <li>Loading is <strong>lazy</strong>. Initialization triggers: <code>new</code>, static method call, non-constant static field access.</li>
+      <li><code>Class.forName(n)</code> loads <em>and initialises</em>; <code>loadClass(n)</code> doesn't initialise.</li>
+      <li>Use cases: Tomcat per-webapp isolation and hot redeploy, plugins, OSGi. Leaked loaders → <strong>Metaspace</strong> OOM.</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> <code>ClassNotFoundException</code> vs <code>NoClassDefFoundError</code>?</summary><div><code>ClassNotFoundException</code>: checked; dynamic load by name failed. <code>NoClassDefFoundError</code>: class was there at compile time but missing at runtime, or its static init failed earlier.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why can't you ship your own <code>java.lang.String</code>?</summary><div>Parent delegation: Bootstrap supplies the real one first.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why would you write a custom ClassLoader?</summary><div>Load classes from non-standard sources (network, DB, encrypted files), isolate modules/plugins, or hot-reload code.</div></details>
+</section>
+
+<!-- 5 -->
+<section id="t5">
+  <h2><span class="n">5</span>Memory Leak in Java</h2>
+  <div class="def"><b class="lbl">Definition</b>A memory leak is when objects are <strong>no longer needed but still referenced</strong>, so the garbage collector can't reclaim them. Memory use grows until performance degrades or <code>OutOfMemoryError</code> occurs.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Result:</strong> rising memory, OOM, slowdown, crashes.</li>
+      <li><strong>Causes:</strong> unclosed resources (most common), static collections, listeners/callbacks not removed, ThreadLocals not removed, inner classes holding the outer reference, mutable static fields.</li>
+      <li><strong>Detect:</strong> heap dump, VisualVM, JConsole.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>static final List&lt;byte[]&gt; CACHE = new ArrayList&lt;&gt;();      // grows forever → leak
+try (Connection c = ds.getConnection()) { ... }            // fix: always close resources
+try { tl.set(ctx); work(); } finally { tl.remove(); }      // ThreadLocal in thread pools
+
+class Key { int id; }                                      // no equals/hashCode
+map.put(new Key(1), v); map.get(new Key(1));               // null → duplicates pile up</code></pre>
+    <ul>
+      <li><strong>Capture:</strong> <code>-XX:+HeapDumpOnOutOfMemoryError</code> or <code>jmap -dump:live,format=b,file=heap.hprof &lt;pid&gt;</code>; analyse with <strong>Eclipse MAT</strong> (Leak Suspects, Dominator Tree) or JFR.</li>
+      <li><strong>Symptom:</strong> heap after each Full GC keeps rising.</li>
+      <li><strong>Fixes:</strong> bounded caches (Caffeine, LRU <code>LinkedHashMap</code>), <code>WeakHashMap</code>, deregister listeners, <code>static</code> nested classes.</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> Java has GC. How can it still leak?</summary><div>GC frees <em>unreachable</em> objects only. A leak is <em>reachable but useless</em>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Does every OOM mean a leak? How do you tell?</summary><div>No: could be an undersized heap or real load. Check whether post-GC heap trends up over time, and which OOM type: heap space, Metaspace, direct memory, or native thread creation.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Walk me through diagnosing a production leak.</summary><div>Confirm the trend (GC logs/metrics) → take heap dumps (or enable on-OOM) → open in MAT → find the dominator holding memory → trace the GC-root path → fix the reference → verify under load.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How can an inner class leak?</summary><div>Non-static inner classes hold an implicit reference to the outer instance; a long-lived inner object keeps the whole outer object alive.</div></details>
+</section>
+
+<!-- 6 -->
+<section id="t6">
+  <h2><span class="n">6</span>Garbage Collector</h2>
+  <div class="def"><b class="lbl">Definition</b>Garbage collection is the JVM's automatic memory management: it finds objects that can no longer be reached from <strong>GC roots</strong> (stack variables, static fields, active threads, JNI refs) and reclaims their memory.</div>
+  <div class="card">
+    <div class="flow"><span>Mark reachable</span><i>→</i><span>Sweep unmarked</span><i>→</i><span>Compact (optional)</span></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Collector</th><th>Flag</th><th>Traits</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Serial</strong></td><td><code>-XX:+UseSerialGC</code></td><td>Single thread; small heaps, single core</td></tr>
+        <tr><td><strong>Parallel</strong></td><td><code>-XX:+UseParallelGC</code></td><td>Throughput; Java 8 default; batch</td></tr>
+        <tr><td><strong>CMS</strong></td><td><code>-XX:+UseConcMarkSweepGC</code></td><td>Low pause; <strong>removed in Java 14</strong></td></tr>
+        <tr><td><strong>G1</strong></td><td><code>-XX:+UseG1GC</code></td><td>Region-based, predictable pauses; default Java 9+</td></tr>
+        <tr><td><strong>ZGC</strong></td><td><code>-XX:+UseZGC</code></td><td>Ultra-low latency, very large heaps</td></tr>
+        <tr><td><strong>Shenandoah</strong></td><td><code>-XX:+UseShenandoahGC</code></td><td>Ultra-low latency, similar to ZGC</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="fixbox"><span class="tag fix">Corrections</span>
+    <ul>
+      <li><strong>CMS:</strong> deprecated in 9, <strong>removed in 14</strong>.</li>
+      <li><strong>ZGC:</strong> experimental in 11, <strong>production in 15</strong>; pauses now typically sub-millisecond; generational ZGC in 21.</li>
+      <li><strong>Shenandoah:</strong> production since 15, but in OpenJDK builds, not Oracle JDK.</li>
+    </ul></div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Choosing:</strong> batch throughput → Parallel; general services → G1; strict latency / huge heaps → ZGC or Shenandoah.</li>
+      <li>Heap = Young (Eden + S0/S1, copying collector) + Old (mark-sweep-compact). Minor GC: young. Full GC: whole heap, most expensive.</li>
+      <li>Flags: <code>-Xms</code>/<code>-Xmx</code>, <code>-XX:MaxGCPauseMillis=200</code> (G1), <code>-Xlog:gc*</code> (Java 9+).</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Service has latency spikes. How do you investigate GC?</summary><div>Enable GC logging, look for long pauses/Full GCs, check allocation rate and heap sizing, then consider G1 tuning or ZGC.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What is stop-the-world?</summary><div>A phase where all application threads are paused so GC can work safely. Low-latency collectors minimise it by working concurrently.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why generational GC? What is promotion?</summary><div>Most objects die young, so collecting the small young gen often is cheap. Objects surviving several minor GCs are promoted to old gen.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Strong, soft, weak, phantom references?</summary><div>Strong: never collected while reachable. Soft: collected under memory pressure (caches). Weak: collected at next GC (<code>WeakHashMap</code>). Phantom: for post-collection cleanup.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Does calling <code>System.gc()</code> force collection?</summary><div>It's only a request and often harmful. Avoid it.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="t7">
+  <h2><span class="n">7</span>ReentrantLock</h2>
+  <div class="def"><b class="lbl">Definition</b><code>ReentrantLock</code> is a mutual-exclusion lock from <code>java.util.concurrent.locks</code> with <strong>explicit</strong> <code>lock()</code>/<code>unlock()</code>. "Reentrant" means the thread that owns the lock can acquire it again without blocking.</div>
+  <div class="card">
+    <div class="scroll"><table>
+      <thead><tr><th></th><th>synchronized</th><th>ReentrantLock</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Acquire/release</strong></td><td>Implicit, automatic</td><td>Manual</td></tr>
+        <tr><td><strong>Timeout / tryLock</strong></td><td>No</td><td>Yes</td></tr>
+        <tr><td><strong>Interruptible</strong></td><td>No</td><td><code>lockInterruptibly()</code></td></tr>
+        <tr><td><strong>Fairness</strong></td><td>No</td><td>Optional</td></tr>
+        <tr><td><strong>Conditions</strong></td><td>Single wait-set</td><td>Multiple <code>Condition</code>s</td></tr>
+        <tr><td><strong>Style</strong></td><td>Simpler</td><td>More flexible, more control</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>private final ReentrantLock lock = new ReentrantLock();
+void update() {
+    lock.lock();
+    try { /* critical section */ } finally { lock.unlock(); }   // ALWAYS in finally
+}
+if (lock.tryLock(2, TimeUnit.SECONDS)) {                         // avoids waiting forever
+    try { /* work */ } finally { lock.unlock(); }
+}</code></pre>
+    <ul>
+      <li><code>synchronized</code> is <strong>also reentrant</strong>; reentrancy isn't the difference.</li>
+      <li>Fair mode (<code>new ReentrantLock(true)</code>) reduces starvation but lowers throughput.</li>
+      <li><code>Condition.await()</code> belongs in a <code>while</code> loop (spurious wakeups).</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> Forgot <code>unlock()</code>, or unlocked without owning it?</summary><div>Forgetting blocks every other thread forever. Unlocking without ownership throws <code>IllegalMonitorStateException</code>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> When would you pick ReentrantLock over synchronized?</summary><div>When you need <code>tryLock</code>/timeouts, interruptible waits, fairness, multiple conditions, or lock/unlock across different methods. Otherwise prefer <code>synchronized</code> for simplicity.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you prevent deadlocks?</summary><div>Consistent lock ordering, <code>tryLock</code> with timeout, short critical sections, no calls to unknown code while holding a lock.</div></details>
+</section>
+
+<!-- 8 -->
+<section id="t8">
+  <h2><span class="n">8</span>ReadWriteLock</h2>
+  <div class="def"><b class="lbl">Definition</b>A <code>ReadWriteLock</code> is a pair of locks: a <strong>shared read lock</strong> (many threads at once) and an <strong>exclusive write lock</strong> (one thread, no readers). The standard implementation is <code>ReentrantReadWriteLock</code>.</div>
+  <div class="card">
+    <ul>
+      <li><strong>Use case:</strong> cache with many readers and few writers. Readers don't block each other; the writer waits for readers, then gets exclusive access.</li>
+      <li>Without it, 100 readers take turns (bottleneck); with it, they read simultaneously.</li>
+    </ul>
+<pre><code>private final ReadWriteLock rw = new ReentrantReadWriteLock();
+V get(K k)         { rw.readLock().lock();  try { return map.get(k); } finally { rw.readLock().unlock(); } }
+void put(K k, V v) { rw.writeLock().lock(); try { map.put(k, v); }     finally { rw.writeLock().unlock(); } }</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Downgrade</strong> (write → read) is allowed; <strong>upgrade</strong> (read → write) is <strong>not</strong>: it deadlocks.</li>
+      <li>Non-fair mode can starve writers. <code>StampedLock</code> adds optimistic reads for higher read throughput (not reentrant).</li>
+      <li>Worth it only when reads ≫ writes and read sections aren't trivial; <code>ConcurrentHashMap</code> is often simpler for caches.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> A thread holding a read lock requests the write lock. What happens?</summary><div>It waits for all read locks, including its own, to release: self-deadlock.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Is ReadWriteLock always faster than a plain lock?</summary><div>No. It has more overhead, and with frequent writes or tiny critical sections a plain lock or concurrent collection can win.</div></details>
+</section>
+
+<!-- 9 -->
+<section id="t9">
+  <h2><span class="n">9</span>ThreadLocal</h2>
+  <div class="def"><b class="lbl">Definition</b><code>ThreadLocal</code> gives <strong>each thread its own independent copy</strong> of a variable. A value set by one thread is visible only to that thread.</div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>private static final ThreadLocal&lt;SimpleDateFormat&gt; FMT =
+        ThreadLocal.withInitial(() -&gt; new SimpleDateFormat("yyyy-MM-dd"));   // per-thread copy
+
+static final ThreadLocal&lt;String&gt; USER = new ThreadLocal&lt;&gt;();
+try { USER.set("alice"); service.run(); }
+finally { USER.remove(); }                       // critical in thread pools</code></pre>
+    <ul>
+      <li><strong>Internals:</strong> each <code>Thread</code> has a <code>ThreadLocalMap</code>; keys are weak refs to the ThreadLocal, <strong>values are strong</strong>. Pool threads live long, so stale values leak.</li>
+      <li><strong>Real uses:</strong> <code>SecurityContextHolder</code>, <code>RequestContextHolder</code>, transaction sync, SLF4J <code>MDC</code>, per-thread non-thread-safe objects.</li>
+      <li><strong>Not propagated</strong> to new/executor/<code>@Async</code> threads; <code>InheritableThreadLocal</code> copies only at thread creation. Use a <code>TaskDecorator</code>.</li>
+      <li>Heavy per-thread data is costly with many virtual threads; <code>ScopedValue</code> is a newer alternative.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Keys are weak, so why does it still leak?</summary><div>Only the key is weak. The value stays strongly referenced by the thread's map until <code>remove()</code> or cleanup, and pool threads never die.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> You store the user in a ThreadLocal and call an <code>@Async</code> method. What breaks?</summary><div>The async thread has an empty ThreadLocal. Copy context with a <code>TaskDecorator</code> or pass data explicitly.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> ThreadLocal vs synchronization?</summary><div>Synchronization shares one object safely; ThreadLocal avoids sharing by giving each thread its own copy.</div></details>
+</section>
+
+<!-- CORE -->
+<section id="core">
+  <h2>🎯 More Core Java Concept Questions (Recruiter Mode)</h2>
+  <p class="legend">Tap each question, answer out loud first, then check.</p>
+
+  <h3>OOP &amp; Design</h3>
+  <details><summary>Explain the 4 pillars of OOP with one example each.</summary><div>
+    <strong>Encapsulation:</strong> private fields + getters/setters. <strong>Abstraction:</strong> expose what, hide how (interfaces). <strong>Inheritance:</strong> reuse via <code>extends</code>. <strong>Polymorphism:</strong> one type, many behaviours.</div></details>
+  <details><summary>Composition vs inheritance: which do you prefer and why?</summary><div>
+    Prefer composition ("has-a"): looser coupling, swappable at runtime, avoids the fragile-base-class problem. Use inheritance only for true "is-a" with stable base classes.</div></details>
+  <details><summary>How do you create an immutable class?</summary><div>
+    Make the class <code>final</code>, fields <code>private final</code>, no setters, set everything in the constructor, and <strong>defensively copy</strong> mutable inputs/outputs (e.g. <code>Date</code>, collections).
+<pre><code>public final class Money {
+    private final BigDecimal amount;
+    private final List&lt;String&gt; tags;
+    public Money(BigDecimal a, List&lt;String&gt; t){ this.amount=a; this.tags=List.copyOf(t); }
+    public List&lt;String&gt; tags(){ return tags; }        // already immutable
+}</code></pre>
+    Benefits: thread safety, safe map keys, caching. Java 16+ <code>record</code> gives a shallowly immutable data carrier.</div></details>
+  <details><summary>Shallow copy vs deep copy? Problem with <code>clone()</code>?</summary><div>
+    Shallow copies references (both objects share nested objects); deep copies nested objects too. <code>Object.clone()</code> is shallow and awkward (<code>Cloneable</code> marker, checked exception); prefer copy constructors or factory methods.</div></details>
+  <details><summary>Are constructors inherited? <code>this()</code> vs <code>super()</code>?</summary><div>
+    Not inherited. <code>this()</code> calls another constructor in the same class; <code>super()</code> calls the parent constructor. Both must be the first statement. If you define any constructor, the compiler no longer adds the default one.</div></details>
+
+  <h3>Collections</h3>
+  <details><summary>How does HashMap work internally?</summary><div>
+    Array of buckets; index = <code>(n-1) &amp; hash(key)</code>; collisions chain as a linked list that becomes a Red-Black tree at 8 nodes (and table ≥ 64); resizes (doubles) when size exceeds capacity × 0.75. <code>equals()</code> finds the exact key within a bucket.</div></details>
+  <details><summary>ArrayList vs LinkedList?</summary><div>
+    ArrayList: dynamic array, O(1) index access, amortised O(1) append, O(n) middle insert/remove. LinkedList: doubly linked, O(1) at ends, O(n) access by index. In practice ArrayList wins most of the time (cache locality).</div></details>
+  <details><summary>Comparable vs Comparator?</summary><div>
+    <code>Comparable</code>: natural order inside the class (<code>compareTo</code>), one ordering. <code>Comparator</code>: external, many orderings (<code>compare</code>).
+<pre><code>people.sort(Comparator.comparing(Person::getAge).thenComparing(Person::getName));</code></pre></div></details>
+  <details><summary>HashSet, LinkedHashMap, TreeMap: how do they differ?</summary><div>
+    <code>HashSet</code> is backed by a <code>HashMap</code> (elements are keys). <code>LinkedHashMap</code> keeps insertion (or access) order, handy for LRU caches. <code>TreeMap</code> is a Red-Black tree: sorted, O(log n); it uses <code>compareTo</code>/<code>Comparator</code> for equality, not <code>equals</code>.</div></details>
+  <details><summary>Fail-fast vs fail-safe iterators?</summary><div>
+    Fail-fast (<code>ArrayList</code>, <code>HashMap</code>) throw <code>ConcurrentModificationException</code> on structural change (best effort, via <code>modCount</code>). Fail-safe/weakly consistent (<code>CopyOnWriteArrayList</code> snapshot, <code>ConcurrentHashMap</code>) don't throw.</div></details>
+
+  <h3>Strings &amp; Types</h3>
+  <details><summary>Why is <code>String</code> immutable? <code>StringBuilder</code> vs <code>StringBuffer</code>?</summary><div>
+    Enables the string pool, cached hash code, thread safety and security. <code>StringBuilder</code> is fast and not thread-safe; <code>StringBuffer</code> is synchronized. Avoid <code>+=</code> in loops.
+<pre><code>String a = "hi", c = new String("hi");
+a == c;  a.equals(c);  a == c.intern();   // false, true, true</code></pre></div></details>
+  <details><summary>What is autoboxing and what can go wrong?</summary><div>
+    Automatic primitive ↔ wrapper conversion. Pitfalls: <code>Integer i = null; int j = i;</code> throws NPE; <code>==</code> on wrappers compares references (cache only for -128..127); boxing in hot loops creates garbage.</div></details>
+  <details><summary>Explain the <code>equals()</code>/<code>hashCode()</code> contract.</summary><div>
+    Equal objects must have equal hash codes (the reverse isn't required). Override both together using the same fields. Mutating those fields after inserting into a hash collection makes the entry unfindable.</div></details>
+  <details><summary>What is type erasure in generics?</summary><div>
+    Generic type info is removed at compile time, so <code>List&lt;String&gt;</code> and <code>List&lt;Integer&gt;</code> are the same class at runtime. Hence no <code>new T()</code>, no <code>List&lt;int&gt;</code>, no <code>instanceof List&lt;String&gt;</code>. PECS: Producer Extends, Consumer Super.</div></details>
+
+  <h3>Exceptions</h3>
+  <details><summary>Checked vs unchecked exceptions vs Errors?</summary><div>
+    Checked (<code>Exception</code> but not <code>RuntimeException</code>): compiler forces handle/declare; for recoverable conditions. Unchecked (<code>RuntimeException</code>): programming errors (NPE, IllegalArgument). <code>Error</code> (OOM, StackOverflow): JVM problems, don't catch.</div></details>
+  <details><summary>How does try-with-resources work? Does <code>finally</code> always run?</summary><div>
+    Resources implementing <code>AutoCloseable</code> close automatically in <strong>reverse</strong> order; exceptions from <code>close()</code> become <em>suppressed</em>. <code>finally</code> runs unless <code>System.exit()</code> or a JVM crash; a <code>return</code> in <code>finally</code> overrides the try's return.</div></details>
+
+  <h3>Java 8+ Features</h3>
+  <details><summary>What is a functional interface? Name the common ones.</summary><div>
+    An interface with exactly one abstract method (<code>@FunctionalInterface</code>), usable with lambdas. Common: <code>Predicate</code> (T→boolean), <code>Function</code> (T→R), <code>Consumer</code> (T→void), <code>Supplier</code> (()→T), <code>UnaryOperator</code>, <code>BiFunction</code>. Lambdas can only capture <strong>effectively final</strong> locals.</div></details>
+  <details><summary>Stream <code>map</code> vs <code>flatMap</code>? Intermediate vs terminal?</summary><div>
+    <code>map</code> transforms 1→1; <code>flatMap</code> flattens 1→many.
+<pre><code>List&lt;String&gt; all = lists.stream().flatMap(List::stream).toList();
+Map&lt;String, List&lt;Emp&gt;&gt; byDept = emps.stream().collect(Collectors.groupingBy(Emp::dept));</code></pre>
+    Intermediate ops (<code>filter</code>, <code>map</code>) are <strong>lazy</strong>; nothing runs until a terminal op (<code>collect</code>, <code>forEach</code>). A stream can be consumed only once.</div></details>
+  <details><summary><code>Optional.orElse</code> vs <code>orElseGet</code>? Where not to use Optional?</summary><div>
+    <code>orElse(x)</code> always evaluates <code>x</code>; <code>orElseGet(supplier)</code> evaluates lazily. Use <code>Optional</code> as a return type; avoid it for fields, parameters and collections.</div></details>
+  <details><summary>Which modern Java features should a 5-year dev know?</summary><div>
+    <code>var</code> (10), switch expressions (14), text blocks (15), <code>record</code> and pattern-matching <code>instanceof</code> (16), sealed classes (17), virtual threads (21).</div></details>
+
+  <h3>Concurrency Basics</h3>
+  <details><summary>Thread lifecycle states?</summary><div>
+    <code>NEW</code> → <code>RUNNABLE</code> → <code>BLOCKED</code> (waiting for a monitor) / <code>WAITING</code> (<code>wait()</code>, <code>join()</code>) / <code>TIMED_WAITING</code> (<code>sleep</code>, timed waits) → <code>TERMINATED</code>.</div></details>
+  <details><summary><code>wait()</code> vs <code>sleep()</code>?</summary><div>
+    <code>wait()</code>: on an object, must hold its monitor (inside <code>synchronized</code>), <strong>releases</strong> the lock, woken by <code>notify</code>; call in a <code>while</code> loop. <code>sleep()</code>: on <code>Thread</code>, <strong>keeps</strong> locks, just pauses.</div></details>
+  <details><summary>What causes a deadlock? How do you detect it?</summary><div>
+    Four conditions together: mutual exclusion, hold-and-wait, no preemption, circular wait. Break one (e.g. lock ordering). Detect with <code>jstack</code> thread dumps or JVisualVM.</div></details>
+  <details><summary><code>Runnable</code> vs <code>Callable</code>? What is CAS?</summary><div>
+    <code>Callable</code> returns a value and may throw checked exceptions; <code>Runnable</code> doesn't. <strong>CAS</strong> (compare-and-swap) is a lock-free atomic update used by <code>Atomic*</code> classes: update only if the current value equals the expected one, else retry. Caveat: the ABA problem (<code>AtomicStampedReference</code>).</div></details>
+
+  <h3>JVM Basics</h3>
+  <details><summary>Stack vs heap? <code>StackOverflowError</code> vs <code>OutOfMemoryError</code>?</summary><div>
+    Stack: per-thread frames with locals and references. Heap: shared, holds objects, managed by GC. <code>StackOverflowError</code>: too-deep recursion (stack size, <code>-Xss</code>). <code>OutOfMemoryError</code>: heap/Metaspace/native exhausted.</div></details>
+  <details><summary>What is Metaspace and the JIT compiler?</summary><div>
+    Metaspace (native memory, replaced PermGen in Java 8) stores class metadata. The <strong>JIT</strong> compiles hot bytecode to native code at runtime (tiered C1/C2) for speed.</div></details>
+</section>
+</main>
+<footer>Define it clearly, give an example, state the trade-off, and be ready for the follow-up.</footer>
+</body>
+</html>
