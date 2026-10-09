@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reverse Proxy, Load Balancer &amp; API Gateway – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:30px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h2 .n{display:inline-block;min-width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;background:var(--accent);color:var(--bg);font-size:.9rem;margin-right:8px;padding:0 4px}
+h3{font-size:1.05rem;margin:22px 0 8px;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.grid .card{margin:0}
+.def{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:10px;margin:0 0 14px}
+.def b.lbl{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.84rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.tag.q{background:var(--good-soft);color:var(--good)}
+.pro{border-left:4px solid var(--good);background:var(--good-soft);padding:8px 12px;border-radius:8px;margin-top:10px;font-size:.93rem}
+.con{border-left:4px solid var(--bad);background:var(--bad-soft);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.93rem}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.86rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+.legend{font-size:.88rem;color:var(--muted);margin:10px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Reverse Proxy, Load Balancer &amp; API Gateway</h1>
+  <p>System design cheat sheet · definitions first, then key points, examples, corrections, recruiter follow-ups and core questions.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#t1">1 The Problem</a><a href="#t2">2 Forward vs Reverse</a><a href="#t3">3 Reverse Proxy</a><a href="#t4">4 Load Balancer</a><a href="#t5">5 API Gateway</a><a href="#t6">6 CDN</a><a href="#t7">7 Spectrum &amp; Layering</a><a href="#t8">8 Choosing</a><a href="#t9">9 Service Mesh</a><a href="#core">Core Q&amp;A</a>
+</div></nav>
+
+<main>
+<p class="legend"><span class="tag add">Added</span> missing from your notes · <span class="tag fix">Correction</span> imprecise in your notes · <span class="tag q">Follow-up</span> what a recruiter asks next</p>
+
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li><strong>Reverse proxy</strong> sits in front of servers and acts on <em>their</em> behalf: SSL termination, caching, compression, security filtering, simple routing.</li>
+      <li><strong>Forward proxy</strong> acts on behalf of <em>clients</em> (hides client identity); reverse proxy hides the <em>servers</em>.</li>
+      <li><strong>Load balancer</strong> distributes traffic across multiple servers, runs <strong>health checks</strong> and routes around failures → scalability + high availability.</li>
+      <li>Algorithms: <strong>round robin, least connections, weighted, IP hash</strong>. <strong>L4</strong> (TCP, fast, content-blind) vs <strong>L7</strong> (HTTP-aware, content-based routing).</li>
+      <li><strong>API Gateway</strong> = reverse proxy that understands APIs: authentication, authorization, rate limiting, transformation, versioned routing, analytics.</li>
+      <li><strong>CDN</strong> = globally distributed reverse proxy caching static content near users.</li>
+      <li>Roles <strong>overlap in real tools</strong> (Nginx, Kong, AWS ALB). Think in terms of <em>problems solved</em>, not product labels.</li>
+      <li>Typical layering: <strong>CDN → API Gateway → Load Balancer → services → internal proxies/mesh</strong>. Don't over-engineer: small apps may only need a reverse proxy.</li>
+    </ol>
+  </div>
+  <p class="legend">Edge → <strong>Reverse Proxy</strong> (edge concerns) → <strong>Load Balancer</strong> (distribution + failover) → <strong>API Gateway</strong> (API policies).</p>
+</section>
+
+<!-- 1 -->
+<section id="t1">
+  <h2><span class="n">1</span>The Problem: Exposing a Single Backend Directly</h2>
+  <div class="def"><b class="lbl">Definition</b>A single application server exposed straight to the internet must do everything itself: encrypt/decrypt traffic, serve every request, fend off attacks and run business logic. As traffic grows, it becomes slow, fragile and a single point of failure.</div>
+  <div class="card">
+    <ul>
+      <li><strong>SSL/TLS overhead:</strong> crypto handshakes consume CPU.</li>
+      <li><strong>Traffic spikes:</strong> sudden surges overload the CPU.</li>
+      <li><strong>No caching:</strong> identical requests repeatedly hit the app.</li>
+      <li><strong>Security exposure:</strong> servers' IPs and ports are directly reachable (DDoS, malformed requests).</li>
+      <li><strong>No failover:</strong> one server down means the system is down.</li>
+    </ul>
+    <div class="flow"><span>Client</span><i>→</i><span>Backend server (does everything)</span></div>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> Why not just scale the backend vertically?</summary><div>There is a ceiling, cost grows non-linearly, it remains a single point of failure, and it doesn't solve edge concerns (TLS, caching, filtering) cleanly. Horizontal scaling needs something to distribute traffic.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="t2">
+  <h2><span class="n">2</span>Forward Proxy vs Reverse Proxy</h2>
+  <div class="def"><b class="lbl">Definition</b>A <strong>forward proxy</strong> sits in front of <em>clients</em> and makes requests to the internet on their behalf. A <strong>reverse proxy</strong> sits in front of <em>servers</em> and receives requests from the internet on their behalf.</div>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Forward proxy</th><th>Reverse proxy</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Acts for</strong></td><td>Clients</td><td>Servers</td></tr>
+      <tr><td><strong>Hides</strong></td><td>Client identity/IP</td><td>Server identity/topology</td></tr>
+      <tr><td><strong>Who configures it</strong></td><td>Client side (aware of it)</td><td>Server side (transparent to clients)</td></tr>
+      <tr><td><strong>Typical use</strong></td><td>Corporate filtering, anonymity, client-side caching</td><td>TLS termination, caching, load balancing, protection</td></tr>
+    </tbody>
+  </table></div>
+  <div class="fixbox"><span class="tag fix">Nuance</span> VPNs are often mentioned with forward proxies, but a VPN creates an encrypted <strong>network-level tunnel</strong> for all traffic, whereas a forward proxy relays <strong>application-level</strong> requests (e.g. HTTP). They overlap in "hiding the client" but aren't the same thing.</div>
+  <details><summary><span class="tag q">Follow-up</span> Which one does the client know about?</summary><div>The forward proxy (client is configured to use it). A reverse proxy is transparent: the client thinks it is talking to the real server.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="t3">
+  <h2><span class="n">3</span>Reverse Proxy</h2>
+  <div class="def"><b class="lbl">Definition</b>A reverse proxy is a server that sits between clients and backend servers, accepts client requests on behalf of the backends, and forwards them, <strong>offloading generic edge work</strong> (TLS, caching, compression, filtering). It operates at the connection/routing layer and knows nothing about business logic or API rules.</div>
+  <div class="card">
+    <ul>
+      <li><strong>SSL/TLS termination:</strong> decrypts at the proxy, so backends skip expensive crypto.</li>
+      <li><strong>Caching:</strong> serves repeated identical responses without hitting the backend.</li>
+      <li><strong>Compression:</strong> gzip/Brotli reduce bandwidth and speed delivery.</li>
+      <li><strong>Security filtering:</strong> rate limiting, blocking malformed requests, hiding server IPs.</li>
+      <li><strong>Tools:</strong> Nginx, HAProxy, Envoy, Caddy.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added: example &amp; concepts</span>
+<pre><code>upstream app {
+    least_conn;                                             # load-balancing algorithm
+    server 10.0.0.1:8080 weight=3 max_fails=3 fail_timeout=30s;   # passive health check
+    server 10.0.0.2:8080;
+}
+server {
+    listen 443 ssl;
+    ssl_certificate     /etc/ssl/site.crt;
+    ssl_certificate_key /etc/ssl/site.key;
+    gzip on;
+    location /api/ {
+        proxy_pass http://app;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;   # preserve client IP
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</code></pre>
+    <ul>
+      <li><strong>Client IP:</strong> backends see the proxy's IP, so rely on <code>X-Forwarded-For</code>/<code>X-Forwarded-Proto</code> (in Spring Boot: <code>server.forward-headers-strategy=framework</code>).</li>
+      <li><strong>TLS options:</strong> <em>termination</em> (decrypt at proxy), <em>passthrough</em> (L4, backend decrypts), <em>re-encryption / mTLS</em> to backends for zero-trust internal traffic.</li>
+      <li>Also: connection pooling/keep-alive to backends, buffering slow clients, static file serving, request IDs (<code>X-Request-ID</code>) for tracing, WAF integration.</li>
+    </ul></div>
+  <div class="tip"><strong>Remember:</strong> a reverse proxy doesn't <em>need</em> multiple servers; with one backend it still gives security, TLS and caching.</div>
+  <details><summary><span class="tag q">Follow-up</span> What's the security benefit of a reverse proxy?</summary><div>Backend IPs/ports aren't exposed, malformed or abusive traffic is filtered early, and only the proxy needs hardened public exposure.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What's the downside of TLS termination at the proxy?</summary><div>Traffic between proxy and backend is plain unless you re-encrypt (mTLS). In sensitive environments, encrypt internal hops too.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="t4">
+  <h2><span class="n">4</span>Load Balancer</h2>
+  <div class="def"><b class="lbl">Definition</b>A load balancer distributes incoming requests across multiple backend servers, <strong>monitors their health</strong>, and stops sending traffic to failed ones, providing <strong>horizontal scalability, high availability and fault tolerance</strong>. It is essentially a reverse proxy specialised in intelligent traffic distribution.</div>
+  <div class="card">
+    <h3 style="margin-top:0">Algorithms</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>Algorithm</th><th>How it works</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Round Robin</strong></td><td>Cycles through servers equally</td><td>Assumes identical servers</td></tr>
+        <tr><td><strong>Least Connections</strong></td><td>Sends to server with fewest active requests</td><td>Dynamic; good for uneven request cost</td></tr>
+        <tr><td><strong>Weighted</strong></td><td>More traffic to more powerful servers</td><td>Static weights</td></tr>
+        <tr><td><strong>IP Hash</strong></td><td>Same client IP → same backend</td><td>Session affinity, but limits scalability/evenness</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Layer 4 vs Layer 7</h3>
+    <div class="grid">
+      <div class="card"><span class="tag">Layer 4 (transport)</span><ul><li>Balances raw TCP/UDP connections</li><li>Doesn't inspect HTTP</li><li>Very fast, limited intelligence</li></ul></div>
+      <div class="card"><span class="tag">Layer 7 (application)</span><ul><li>Inspects headers, URLs, cookies</li><li>Content-based routing (e.g. <code>/api/v2</code> → new service)</li><li>More flexible, more CPU</li></ul></div>
+    </div>
+  </div>
+  <div class="fixbox"><span class="tag fix">Nuance</span> "Load balancers are reverse proxies" is true for L7 (they terminate the connection and open a new one to the backend). Many <strong>L4 balancers</strong> (NAT / direct server return) just forward packets and don't terminate connections, so they are not proxies in the strict sense.</div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Health checks:</strong> <em>active</em> (LB probes <code>/health</code> periodically) and <em>passive</em> (marks a server bad after failed requests).</li>
+      <li><strong>Sticky sessions</strong> (cookie or IP hash) vs stateless services: prefer stateless + shared session store (Redis/JWT) so any server can handle any request.</li>
+      <li><strong>Connection draining:</strong> finish in-flight requests before removing a server (graceful deploys).</li>
+      <li><strong>LB itself must be highly available:</strong> active-passive pair (VRRP/keepalived), managed cloud LB, or DNS/anycast. Otherwise it's a single point of failure.</li>
+      <li><strong>Global load balancing:</strong> DNS-based/GSLB routes users to the nearest region. Types: hardware (F5), software (HAProxy, Nginx), cloud (AWS ALB/NLB, GCP LB).</li>
+      <li>AWS: <strong>ALB = L7</strong>, <strong>NLB = L4</strong>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> A server is slow but not down. Which algorithm helps?</summary><div>Least connections (or response-time based), since round robin keeps sending it equal traffic.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you handle user sessions behind a load balancer?</summary><div>Make services stateless: store sessions in Redis or use JWT. Sticky sessions work but hurt even distribution and failover.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Isn't the load balancer a single point of failure?</summary><div>Yes unless made redundant: multiple instances with failover (VRRP), managed cloud LBs, or DNS/anycast across several.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> When would you pick L4 over L7?</summary><div>Non-HTTP protocols (databases, gRPC over raw TCP), maximum throughput/low latency, or TLS passthrough. L7 when you need path/header-based routing.</div></details>
+</section>
+
+<!-- 5 -->
+<section id="t5">
+  <h2><span class="n">5</span>API Gateway</h2>
+  <div class="def"><b class="lbl">Definition</b>An API gateway is a specialised reverse proxy that <strong>understands API semantics</strong> and is the single entry point for API clients. It centralises cross-cutting concerns (authentication, rate limiting, transformation, versioning, analytics) so individual microservices don't each duplicate them.</div>
+  <div class="card">
+    <p><strong>Why:</strong> in microservices, auth, rate limiting, logging, request transformation and versioning would otherwise be re-implemented in every service: inconsistent and hard to maintain.</p>
+    <ul>
+      <li><strong>Centralised authentication:</strong> token validation in one place.</li>
+      <li><strong>Rate limiting/throttling:</strong> by client or tier.</li>
+      <li><strong>Request/response transformation:</strong> backward compatibility, smooth API evolution.</li>
+      <li><strong>Routing:</strong> by path, version or metadata (gradual migration, canary tests).</li>
+      <li><strong>Analytics &amp; observability:</strong> usage patterns, performance bottlenecks.</li>
+      <li><strong>Tools:</strong> Kong, AWS API Gateway, Apigee, Tyk (also Spring Cloud Gateway).</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+<pre><code>spring:
+  cloud:
+    gateway:
+      routes:
+        - id: orders
+          uri: lb://order-service                 # load-balanced via service discovery
+          predicates: [ Path=/api/v1/orders/** ]
+          filters:
+            - StripPrefix=2
+            - name: RequestRateLimiter            # token-bucket via Redis
+              args: { redis-rate-limiter.replenishRate: 10, redis-rate-limiter.burstCapacity: 20 }</code></pre>
+    <ul>
+      <li><strong>Rate limiting algorithms:</strong> fixed window, sliding window, <strong>token bucket</strong> (allows bursts), leaky bucket.</li>
+      <li><strong>Auth split:</strong> authenticate (validate JWT/OAuth token) at the gateway; each service still authorises its own resources (zero trust).</li>
+      <li><strong>Other features:</strong> request aggregation (fewer client round trips), response caching, circuit breaking, trace-ID injection, CORS, WAF, protocol translation (REST ↔ gRPC).</li>
+      <li><strong>Pitfalls:</strong> it can become a <strong>bottleneck / single point of failure</strong> (run it clustered and stateless), and a "god component" if you put business logic in it. Keep it thin.</li>
+      <li><strong>BFF (Backend-for-Frontend):</strong> a gateway tailored per client type (web/mobile).</li>
+      <li><strong>North-south traffic</strong> (client ↔ system) goes through the gateway; <strong>east-west</strong> (service ↔ service) is handled by internal proxies/service mesh.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> API gateway vs load balancer?</summary><div>A load balancer spreads traffic across identical instances (L4/L7). A gateway understands APIs: auth, rate limits, transformations, version routing. Gateways usually sit in front of load-balanced service instances.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Should business logic live in the gateway?</summary><div>No. Only cross-cutting infrastructure concerns; business rules belong in services.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How do you avoid the gateway becoming a bottleneck?</summary><div>Stateless horizontal scaling behind a load balancer, async/non-blocking stack (e.g. Netty), cache where possible, and keep filters lightweight.</div></details>
+</section>
+
+<!-- 6 -->
+<section id="t6">
+  <h2><span class="n">6</span>CDN (Content Delivery Network)</h2>
+  <div class="def"><b class="lbl">Definition</b>A CDN is a <strong>globally distributed network of reverse proxies</strong> (edge servers) that caches and serves content close to users, cutting latency and shielding the origin from traffic spikes.</div>
+  <div class="card">
+    <ul>
+      <li>Caches and serves static content near the user; reduces latency.</li>
+      <li>Handles SSL termination early; absorbs spike traffic (and DDoS) before it hits core infrastructure.</li>
+    </ul>
+  </div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Cache control:</strong> driven by headers like <code>Cache-Control: public, max-age=3600</code>, <code>ETag</code>; versioned file names for cache busting; <strong>purge/invalidate</strong> when content changes.</li>
+      <li><strong>Origin shield</strong> adds a mid-tier cache to reduce origin hits. Edge also provides WAF and bot protection.</li>
+      <li>Can accelerate some dynamic content via optimised routes, but personalised/non-cacheable requests still reach origin.</li>
+      <li>Examples: Cloudflare, Akamai, CloudFront, Fastly.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> How does a CDN decide what to cache?</summary><div>By cache keys (URL/headers) and response headers (<code>Cache-Control</code>, <code>Expires</code>, <code>Vary</code>); configurable rules override them.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="t7">
+  <h2><span class="n">7</span>Overlap, Spectrum &amp; Real-World Layering</h2>
+  <div class="def"><b class="lbl">Definition</b>These three are best understood as a <strong>capability spectrum</strong> of the same underlying idea (a proxy) rather than rigid categories: each layer adds more intelligence for a different class of problem.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Layer</th><th>Adds</th><th>Understands</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Reverse proxy</strong></td><td>Edge handling: TLS, caching, compression, filtering</td><td>Connections / HTTP basics</td></tr>
+      <tr><td><strong>Load balancer</strong></td><td>Distribution, health checks, failover</td><td>Backend health and load</td></tr>
+      <tr><td><strong>API gateway</strong></td><td>Auth, rate limits, transformation, versioning, analytics</td><td>API semantics and clients</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card">
+    <h3 style="margin-top:0">Typical request path</h3>
+    <div class="flow"><span>Client</span><i>→</i><span>CDN (edge)</span><i>→</i><span>WAF / external LB</span><i>→</i><span>API Gateway</span><i>→</i><span>Internal LB</span><i>→</i><span>Service instances</span><i>→</i><span>Mesh sidecars</span></div>
+    <ul>
+      <li>Static/cacheable content is answered at the <strong>CDN</strong>; dynamic requests go on.</li>
+      <li>The <strong>gateway</strong> enforces policies and routes; <strong>load balancers</strong> spread traffic across instances; <strong>internal proxies</strong> handle service-to-service concerns.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Tool overlap</h3>
+    <ul>
+      <li><strong>Nginx:</strong> reverse proxy → also load balancer, and gateway with extra modules (OpenResty/Lua, NGINX Plus).</li>
+      <li><strong>Kong:</strong> an API gateway built on Nginx, so also a reverse proxy and load balancer.</li>
+      <li><strong>AWS ALB vs API Gateway:</strong> overlapping functions, different targets (ALB: traffic distribution to services; API Gateway: managed API features such as auth, throttling, usage plans).</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> If Nginx can do all three, why distinguish them?</summary><div>Because they solve different problems (edge handling, distribution/failover, API policy). Knowing the problem lets you choose and configure the right tool; the product label is secondary.</div></details>
+</section>
+
+<!-- 8 -->
+<section id="t8">
+  <h2><span class="n">8</span>Choosing the Right Tool</h2>
+  <div class="def"><b class="lbl">Definition</b>Pick the lightest layer that solves your current problem; add layers only when scale or requirements demand it.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Situation</th><th>Use</th></tr></thead>
+    <tbody>
+      <tr><td>Small app, one or few servers</td><td>Reverse proxy (Nginx/Caddy) for TLS, caching, compression</td></tr>
+      <tr><td>Need horizontal scaling and failover</td><td>Load balancer</td></tr>
+      <tr><td>Public, API-driven platform for external clients</td><td>API gateway (auth, rate limits, transforms, analytics, versioning)</td></tr>
+      <tr><td>Global users / static assets</td><td>CDN</td></tr>
+      <tr><td>Very large microservice estate</td><td>All of the above + service mesh</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tip"><strong>Warning:</strong> not every system needs every layer. Over-engineering adds latency, cost and operational complexity. Each extra hop is another thing to monitor and to fail.</div>
+  <details><summary><span class="tag q">Follow-up</span> A startup with 2 servers asks for Kong + service mesh. Your advice?</summary><div>Start simple: a reverse proxy/cloud load balancer. Add a gateway when you have many services/external API clients needing central policies; add a mesh only at large scale.</div></details>
+</section>
+
+<!-- 9 -->
+<section id="t9">
+  <h2><span class="n">9</span>Service Mesh (Context)</h2>
+  <div class="def"><b class="lbl">Definition</b>A service mesh is an <strong>infrastructure layer for service-to-service (east-west) communication</strong>, implemented with lightweight proxies (usually <strong>sidecars</strong>) next to each service instance, managed by a control plane.</div>
+  <div class="added"><span class="tag add">Added</span>
+    <ul>
+      <li><strong>Provides:</strong> mutual TLS between services, retries/timeouts, circuit breaking, traffic splitting (canary), service-level metrics and tracing: without changing application code.</li>
+      <li><strong>Examples:</strong> Istio and Linkerd (Envoy as the common data-plane proxy). Control plane configures; data plane (proxies) carries traffic.</li>
+      <li><strong>Gateway vs mesh:</strong> gateway = north-south (edge, external clients); mesh = east-west (internal).</li>
+      <li><strong>Trade-off:</strong> extra latency/resources and operational complexity; worthwhile mainly for large systems.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Spring Cloud/Resilience4j vs service mesh for retries and circuit breaking?</summary><div>Library: in-code, language-specific, fine-grained fallbacks. Mesh: language-agnostic and centrally managed but with less business-aware fallback logic. Many teams use one or the other, not both for the same concern.</div></details>
+</section>
+
+<!-- CORE -->
+<section id="core">
+  <h2>🎯 More Core Questions (Recruiter Mode)</h2>
+  <p class="legend">Answer out loud first, then tap to check.</p>
+  <details><summary>Explain forward proxy vs reverse proxy in one sentence each.</summary><div>Forward proxy represents clients to the internet; reverse proxy represents servers to clients.</div></details>
+  <details><summary>What is SSL termination and why do it at the proxy?</summary><div>Decrypting TLS at the edge so backends skip expensive crypto and certificates are managed centrally; re-encrypt to backends if internal traffic must be secure.</div></details>
+  <details><summary>Active vs passive health checks?</summary><div>Active: the LB periodically probes a health endpoint. Passive: it observes real traffic failures/timeouts and ejects bad servers.</div></details>
+  <details><summary>What headers matter behind a proxy?</summary><div><code>X-Forwarded-For</code> (client IP), <code>X-Forwarded-Proto</code> (original scheme), <code>X-Forwarded-Host</code>, and a request/trace ID. Backends must trust them only from the proxy.</div></details>
+  <details><summary>How do you do a zero-downtime deployment behind a load balancer?</summary><div>Rolling or blue-green: drain connections from instances, deploy, health-check, then add back; or shift traffic gradually (canary) via weights/gateway routing.</div></details>
+  <details><summary>How would you rate limit per client across multiple gateway instances?</summary><div>Use a shared store (e.g. Redis) for counters/token buckets so all instances see the same state; local-only limits would multiply the allowed rate.</div></details>
+  <details><summary>Where would you validate JWTs and where would you authorise?</summary><div>Validate signature/expiry at the gateway; services still enforce authorisation (roles, ownership) for defence in depth.</div></details>
+  <details><summary>What is a canary release and how does the gateway help?</summary><div>Send a small percentage of traffic to a new version (weighted routing/header-based) and watch metrics before rolling out fully.</div></details>
+  <details><summary>CDN vs reverse proxy?</summary><div>A CDN is a globally distributed fleet of reverse proxies optimised for caching near users; a typical reverse proxy is a single site/regional component.</div></details>
+  <details><summary>Design the edge for an e-commerce site at scale. Which layers and why?</summary><div>CDN for static assets/edge TLS/DDoS → WAF → API gateway (auth, rate limits, routing, versioning) → load balancers over autoscaled services → internal proxies/mesh for mTLS and resilience. Add layers only as each problem appears.</div></details>
+</section>
+</main>
+<footer>Think in problems solved, not product labels: edge handling, distribution &amp; failover, API policy.</footer>
+</body>
+</html>
