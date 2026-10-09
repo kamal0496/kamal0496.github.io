@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Java 8 Features – Interview Cheat Sheet</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6f7fb;--card:#fff;--text:#1c2230;--muted:#5b6478;--line:#e2e6ef;
+  --accent:#3b5bdb;--accent-soft:#e7ecff;--good:#2b8a3e;--good-soft:#e6f6ea;--bad:#c92a2a;--bad-soft:#fdeaea;--code:#f1f3f9;--warn:#e67700;--warn-soft:#fff4e0;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+    --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10131a;--card:#181c26;--text:#e8ebf3;--muted:#98a1b5;--line:#272d3b;
+  --accent:#8aa2ff;--accent-soft:#232b4a;--good:#69db7c;--good-soft:#16301f;--bad:#ff8787;--bad-soft:#3a1d1d;--code:#202534;--warn:#ffa94d;--warn-soft:#3a2c14;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:28px 16px 12px;max-width:900px;margin:0 auto}
+h1{font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.2;margin:0 0 8px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .row{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;overflow-x:auto;white-space:nowrap}
+nav a{flex:none;padding:6px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.88rem;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:8px 16px 48px}
+section{margin-top:30px}
+h2{font-size:1.3rem;margin:0 0 12px}
+h2 .n{display:inline-block;min-width:30px;height:30px;line-height:30px;text-align:center;border-radius:8px;background:var(--accent);color:var(--bg);font-size:.9rem;margin-right:8px;padding:0 4px}
+h3{font-size:1.05rem;margin:22px 0 8px;color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.grid .card{margin:0}
+.def{border-left:5px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:10px;margin:0 0 14px}
+.def b.lbl{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin-bottom:2px}
+ul{margin:6px 0 0;padding-left:20px}
+li{margin:3px 0}
+p{margin:6px 0}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;margin:10px 0;font:.84rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre code{background:none;padding:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent);margin-bottom:8px}
+.tag.add{background:var(--warn-soft);color:var(--warn)}
+.tag.fix{background:var(--bad-soft);color:var(--bad)}
+.tag.q{background:var(--good-soft);color:var(--good)}
+.tip{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin-top:10px}
+.added{border:1px dashed var(--warn);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.fixbox{border:1px dashed var(--bad);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);margin:10px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.92rem}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--code);font-size:.8rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0;font-size:.86rem;font-weight:600}
+.flow span{padding:5px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent)}
+.flow i{font-style:normal;color:var(--muted)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:600}
+details>div{margin-top:8px}
+ol.keys{padding-left:22px}
+ol.keys li{margin:8px 0}
+.legend{font-size:.88rem;color:var(--muted);margin:10px 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Java 8 Features – Interview Cheat Sheet</h1>
+  <p>Definitions first, then key points, code examples, pitfalls, recruiter follow-ups and tricky questions.</p>
+</header>
+<nav><div class="row">
+  <a href="#keys">Key Points</a><a href="#t1">1 Lambda</a><a href="#t2">2 Functional Interfaces</a><a href="#t3">3 Method Refs</a><a href="#t4">4 Default/Static</a><a href="#t5">5 Streams</a><a href="#t6">6 Collectors</a><a href="#t7">7 Coding Problems</a><a href="#t8">8 Parallel</a><a href="#t9">9 Optional</a><a href="#t10">10 Date/Time</a><a href="#t11">11 CompletableFuture</a><a href="#t12">12 Other APIs</a><a href="#t13">13 Not Java 8</a><a href="#core">Tricky Q&amp;A</a>
+</div></nav>
+
+<main>
+<p class="legend"><span class="tag add">Extra</span> beyond the basics · <span class="tag fix">Pitfall</span> common mistake / version trap · <span class="tag q">Follow-up</span> what a recruiter asks next</p>
+
+<section id="keys">
+  <h2>Must-Remember Key Points</h2>
+  <div class="card">
+    <ol class="keys">
+      <li>Java 8 (2014) brought <strong>functional-style programming</strong> to Java: lambdas, functional interfaces, method references, streams, Optional, default methods, new Date/Time API, CompletableFuture.</li>
+      <li><strong>Lambda</strong> = anonymous function; usable wherever a <strong>functional interface</strong> (one abstract method) is expected. Captured locals must be <strong>effectively final</strong>.</li>
+      <li><strong>Streams</strong> are lazy, single-use pipelines (source → intermediate → terminal) that don't modify the source and aren't data structures.</li>
+      <li><strong>Default/static interface methods</strong> let interfaces evolve without breaking implementors. Diamond conflicts must be resolved explicitly.</li>
+      <li><strong>Optional</strong> models "maybe absent" return values; prefer <code>orElseGet</code>/<code>map</code> over <code>get()</code>.</li>
+      <li><strong>java.time</strong> is immutable and thread-safe, replacing <code>Date</code>/<code>Calendar</code>/<code>SimpleDateFormat</code>.</li>
+      <li><strong>CompletableFuture</strong> gives non-blocking, composable async pipelines.</li>
+      <li>Know what is <strong>not</strong> Java 8 (<code>List.of</code>, <code>var</code>, <code>Stream.toList()</code>, <code>takeWhile</code>...).</li>
+    </ol>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>Feature</th><th>One-liner</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Lambda</strong></td><td><code>(a, b) -&gt; a + b</code>, concise anonymous function</td></tr>
+      <tr><td><strong>Functional interface</strong></td><td>Exactly one abstract method; <code>java.util.function</code></td></tr>
+      <tr><td><strong>Method reference</strong></td><td><code>String::length</code>, shorthand for a lambda</td></tr>
+      <tr><td><strong>Default / static methods</strong></td><td>Method bodies in interfaces</td></tr>
+      <tr><td><strong>Stream API</strong></td><td>Declarative bulk operations on data</td></tr>
+      <tr><td><strong>Optional</strong></td><td>Container for a possibly-absent value</td></tr>
+      <tr><td><strong>Date/Time API</strong></td><td><code>LocalDate</code>, <code>Instant</code>, <code>Duration</code>, <code>DateTimeFormatter</code></td></tr>
+      <tr><td><strong>CompletableFuture</strong></td><td>Composable async computation</td></tr>
+      <tr><td><strong>Others</strong></td><td><code>forEach</code>, Map methods, <code>Comparator.comparing</code>, <code>Base64</code>, repeating annotations, Metaspace</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- 1 -->
+<section id="t1">
+  <h2><span class="n">1</span>Lambda Expressions</h2>
+  <div class="def"><b class="lbl">Definition</b>A lambda expression is a <strong>concise, anonymous function</strong>: parameters, an arrow, and a body. It provides an implementation of a <strong>functional interface</strong> without writing an anonymous class, enabling behaviour to be passed as data.</div>
+  <div class="card">
+<pre><code>// syntax: (parameters) -&gt; expression   or   (parameters) -&gt; { statements; }
+Runnable r = () -&gt; System.out.println("hi");
+Comparator&lt;String&gt; c = (a, b) -&gt; a.length() - b.length();
+Function&lt;Integer, Integer&gt; square = x -&gt; x * x;       // single param: no parentheses needed
+BinaryOperator&lt;Integer&gt; add = (a, b) -&gt; { return a + b; };
+
+// before Java 8
+Collections.sort(list, new Comparator&lt;String&gt;() {
+    public int compare(String a, String b) { return a.compareTo(b); }
+});
+// Java 8
+list.sort((a, b) -&gt; a.compareTo(b));      // or list.sort(Comparator.naturalOrder())</code></pre>
+    <ul>
+      <li><strong>Target typing:</strong> the compiler infers the lambda's type from context (the expected functional interface), so parameter types are usually omitted.</li>
+      <li><strong>Captured variables</strong> (locals from the enclosing scope) must be <strong>final or effectively final</strong> (never reassigned). Instance/static fields can be modified.</li>
+      <li><strong>Benefits:</strong> less boilerplate, readable code, enables streams and functional APIs, supports lazy/deferred execution.</li>
+    </ul>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Lambda</th><th>Anonymous inner class</th></tr></thead>
+    <tbody>
+      <tr><td><strong><code>this</code></strong></td><td>The <strong>enclosing</strong> instance</td><td>The anonymous object itself</td></tr>
+      <tr><td><strong>Target</strong></td><td>Functional interfaces only</td><td>Any interface or class</td></tr>
+      <tr><td><strong>State/fields</strong></td><td>No own fields</td><td>Can have fields and multiple methods</td></tr>
+      <tr><td><strong>Compilation</strong></td><td><code>invokedynamic</code> (no extra .class file per lambda)</td><td>A separate .class file</td></tr>
+      <tr><td><strong>Variable scope</strong></td><td>Same scope as enclosing (can't shadow locals)</td><td>Own scope (can shadow)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="fixbox"><span class="tag fix">Pitfall</span>
+<pre><code>int count = 0;
+list.forEach(x -&gt; count++);        // compile error: count must be effectively final
+// fix: AtomicInteger, a one-element array, or a stream reduction (count())</code></pre></div>
+  <details><summary><span class="tag q">Follow-up</span> Why must captured locals be effectively final?</summary><div>Locals live on the stack of the defining thread; a lambda may run later or on another thread, so the value is <em>copied</em>. Allowing mutation would make the copy and original diverge and create thread-safety problems.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What does <code>this</code> mean inside a lambda?</summary><div>The enclosing class instance (lambdas don't introduce a new <code>this</code>), unlike anonymous classes.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> How are lambdas implemented?</summary><div>The compiler emits an <code>invokedynamic</code> call; at runtime the JVM (via <code>LambdaMetafactory</code>) generates the implementing class lazily, which is lighter than compiling an inner class per lambda.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="t2">
+  <h2><span class="n">2</span>Functional Interfaces</h2>
+  <div class="def"><b class="lbl">Definition</b>A functional interface has <strong>exactly one abstract method</strong> (SAM) and can be implemented by a lambda or method reference. It may still have any number of <code>default</code>, <code>static</code> methods and methods inherited from <code>Object</code> (e.g. <code>equals</code>).</div>
+  <div class="card">
+<pre><code>@FunctionalInterface                    // optional; compiler verifies a single abstract method
+interface Validator&lt;T&gt; {
+    boolean validate(T t);
+    default Validator&lt;T&gt; and(Validator&lt;T&gt; o) { return x -&gt; validate(x) &amp;&amp; o.validate(x); }
+}
+Validator&lt;String&gt; notEmpty = s -&gt; !s.isEmpty();</code></pre>
+    <div class="scroll"><table>
+      <thead><tr><th>Interface</th><th>Method</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>boolean test(T)</code></td><td>Condition</td><td><code>s -&gt; s.isEmpty()</code></td></tr>
+        <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>R apply(T)</code></td><td>Transform</td><td><code>s -&gt; s.length()</code></td></tr>
+        <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>void accept(T)</code></td><td>Side effect</td><td><code>System.out::println</code></td></tr>
+        <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>T get()</code></td><td>Produce / lazy value</td><td><code>() -&gt; new User()</code></td></tr>
+        <tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>R apply(T,U)</code></td><td>Two inputs</td><td><code>(a,b) -&gt; a+b</code></td></tr>
+        <tr><td><code>UnaryOperator&lt;T&gt;</code></td><td><code>T apply(T)</code></td><td><code>Function&lt;T,T&gt;</code></td><td><code>String::trim</code></td></tr>
+        <tr><td><code>BinaryOperator&lt;T&gt;</code></td><td><code>T apply(T,T)</code></td><td><code>BiFunction&lt;T,T,T&gt;</code></td><td><code>Integer::sum</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="added"><span class="tag add">Extra</span>
+<pre><code>Predicate&lt;String&gt; p = s -&gt; s.length() &gt; 3;
+p.and(s -&gt; s.startsWith("a")).or(s -&gt; s.isEmpty()).negate();     // composition
+
+Function&lt;Integer,Integer&gt; times2 = x -&gt; x * 2, plus3 = x -&gt; x + 3;
+times2.andThen(plus3).apply(5);   // 13  (times2 first, then plus3)
+times2.compose(plus3).apply(5);   // 16  (plus3 first, then times2)
+Function.identity();              // x -&gt; x</code></pre>
+    <ul>
+      <li><strong>Primitive specialisations</strong> avoid boxing: <code>IntPredicate</code>, <code>IntFunction</code>, <code>ToIntFunction</code>, <code>IntSupplier</code>, <code>IntUnaryOperator</code>, <code>BiConsumer</code>, <code>BiPredicate</code>...</li>
+      <li>Older functional interfaces: <code>Runnable</code>, <code>Callable</code>, <code>Comparator</code>.</li>
+      <li><code>Comparator</code> has <code>equals</code> declared but it comes from <code>Object</code>, so it still counts as functional.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Can a functional interface extend another interface?</summary><div>Yes, as long as the total number of abstract methods stays one (inherited abstract methods count).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> <code>andThen</code> vs <code>compose</code>?</summary><div><code>f.andThen(g)</code> = g(f(x)); <code>f.compose(g)</code> = f(g(x)).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why primitive specialisations like <code>IntFunction</code>?</summary><div>To avoid autoboxing overhead in hot paths.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="t3">
+  <h2><span class="n">3</span>Method References</h2>
+  <div class="def"><b class="lbl">Definition</b>A method reference (<code>Class::method</code>) is a <strong>shorthand for a lambda that just calls an existing method</strong>, improving readability.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Kind</th><th>Syntax</th><th>Equivalent lambda</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Static method</strong></td><td><code>Integer::parseInt</code></td><td><code>s -&gt; Integer.parseInt(s)</code></td></tr>
+      <tr><td><strong>Instance method of a particular object</strong></td><td><code>System.out::println</code></td><td><code>x -&gt; System.out.println(x)</code></td></tr>
+      <tr><td><strong>Instance method of an arbitrary object of a type</strong></td><td><code>String::toLowerCase</code></td><td><code>s -&gt; s.toLowerCase()</code></td></tr>
+      <tr><td><strong>Constructor</strong></td><td><code>ArrayList::new</code></td><td><code>() -&gt; new ArrayList&lt;&gt;()</code></td></tr>
+    </tbody>
+  </table></div>
+<pre><code>names.stream().map(String::toUpperCase).forEach(System.out::println);
+Supplier&lt;List&lt;String&gt;&gt; s = ArrayList::new;
+Function&lt;String, Employee&gt; f = Employee::new;       // constructor chosen from the functional signature</code></pre>
+  <details><summary><span class="tag q">Follow-up</span> When would you not use a method reference?</summary><div>When the lambda adds logic or arguments, or the reference is ambiguous/less readable than the lambda.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> <code>String::compareTo</code> as a <code>Comparator&lt;String&gt;</code>: how does it fit?</summary><div>It's the "arbitrary object" kind: <code>(a, b) -&gt; a.compareTo(b)</code>. The first argument becomes the receiver.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="t4">
+  <h2><span class="n">4</span>Default &amp; Static Methods in Interfaces</h2>
+  <div class="def"><b class="lbl">Definition</b>Since Java 8, interfaces can contain <strong>default methods</strong> (instance methods with a body, inherited by implementors) and <strong>static methods</strong> (utility methods on the interface). The goal is <strong>backward-compatible interface evolution</strong>.</div>
+  <div class="card">
+<pre><code>interface Vehicle {
+    default String horn() { return "beep"; }          // inherited, overridable
+    static Vehicle of(String n) { return () -&gt; n; }    // call as Vehicle.of(...)
+    String name();
+}
+// why: Collection.stream(), List.sort(), Iterable.forEach(), Map.getOrDefault() were added without breaking all existing implementations</code></pre>
+    <p><strong>Diamond problem rules:</strong></p>
+    <ol>
+      <li><strong>Class wins:</strong> a method from a class/superclass beats any interface default.</li>
+      <li><strong>More specific interface wins</strong> (sub-interface overrides super-interface default).</li>
+      <li>Otherwise <strong>compile error</strong>: you must override and may call <code>A.super.hello()</code>.</li>
+    </ol>
+<pre><code>class C implements A, B {                // both A and B define default hello()
+    public void hello() { A.super.hello(); }   // explicit choice
+}</code></pre>
+  </div>
+  <div class="added"><span class="tag add">Extra</span>
+    <ul>
+      <li><strong>Static interface methods aren't inherited</strong> by implementing classes and can't be called through an instance.</li>
+      <li>Default methods can't override <code>Object</code> methods (<code>equals</code>, <code>hashCode</code>, <code>toString</code>).</li>
+      <li><strong>Abstract class vs interface (still different):</strong> interfaces have no instance state or constructors, and a class can implement many interfaces. <code>private</code> interface methods arrived in Java 9.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Why were default methods introduced?</summary><div>To add methods like <code>stream()</code> and <code>forEach()</code> to existing interfaces (Collection, Iterable) without breaking every implementation.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Is an abstract class now unnecessary?</summary><div>No. Abstract classes hold state, constructors and non-public members; interfaces can't.</div></details>
+</section>
+
+<!-- 5 -->
+<section id="t5">
+  <h2><span class="n">5</span>Stream API</h2>
+  <div class="def"><b class="lbl">Definition</b>A <code>Stream</code> is a <strong>sequence of elements supporting declarative, pipelined aggregate operations</strong> (filter, map, reduce...). It is <em>not</em> a data structure: it doesn't store data or modify its source, is <strong>lazy</strong>, and can be consumed <strong>only once</strong>. It uses <strong>internal iteration</strong>.</div>
+  <div class="card">
+    <div class="flow"><span>Source</span><i>→</i><span>Intermediate ops (lazy, return Stream)</span><i>→</i><span>Terminal op (triggers execution)</span></div>
+<pre><code>List&lt;String&gt; result = employees.stream()                     // source
+    .filter(e -&gt; e.getSalary() &gt; 50_000)                    // intermediate
+    .map(Employee::getName)                                 // intermediate
+    .sorted()                                               // intermediate (stateful)
+    .collect(Collectors.toList());                          // terminal</code></pre>
+    <div class="scroll"><table>
+      <thead><tr><th>Intermediate (lazy)</th><th>Terminal (eager)</th></tr></thead>
+      <tbody>
+        <tr><td><code>filter</code>, <code>map</code>, <code>flatMap</code>, <code>distinct</code>, <code>sorted</code>, <code>peek</code>, <code>limit</code>, <code>skip</code>, <code>mapToInt/Long/Double</code>, <code>boxed</code></td>
+            <td><code>forEach</code>, <code>collect</code>, <code>reduce</code>, <code>count</code>, <code>min</code>, <code>max</code>, <code>anyMatch</code>, <code>allMatch</code>, <code>noneMatch</code>, <code>findFirst</code>, <code>findAny</code>, <code>toArray</code>, <code>sum</code>/<code>average</code> (primitive streams)</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="added"><span class="tag add">Extra</span>
+<pre><code>// creating streams
+list.stream();  Arrays.stream(arr);  Stream.of(1, 2, 3);
+Stream.iterate(1, n -&gt; n * 2).limit(10);       // infinite → needs limit
+Stream.generate(Math::random).limit(5);
+IntStream.range(0, 5);  IntStream.rangeClosed(1, 5);    // 0..4  and  1..5
+Files.lines(Paths.get("f.txt"));                          // close it (try-with-resources)
+
+// laziness: nothing prints until the terminal op; elements flow one by one through the whole pipeline
+Stream.of("a", "bb", "ccc")
+      .filter(s -&gt; { System.out.println("filter " + s); return s.length() &gt; 1; })
+      .map(s -&gt; { System.out.println("map " + s); return s.toUpperCase(); })
+      .findFirst();       // prints: filter a, filter bb, map bb  (short-circuits)</code></pre>
+    <ul>
+      <li><strong>Stateless</strong> ops (<code>filter</code>, <code>map</code>) vs <strong>stateful</strong> (<code>sorted</code>, <code>distinct</code>, which need all/many elements). <strong>Short-circuiting:</strong> <code>limit</code>, <code>findFirst</code>, <code>anyMatch</code>.</li>
+      <li><strong>map</strong>: 1 → 1. <strong>flatMap</strong>: 1 → many, flattened. <code>reduce(identity, op)</code> returns a value; <code>reduce(op)</code> returns an <code>Optional</code>.</li>
+      <li><strong>Primitive streams</strong> (<code>IntStream</code>...) avoid boxing and offer <code>sum()</code>, <code>average()</code>, <code>summaryStatistics()</code>.</li>
+    </ul>
+<pre><code>List&lt;String&gt; flat = listOfLists.stream().flatMap(List::stream).collect(toList());
+int total = nums.stream().mapToInt(Integer::intValue).sum();
+int sum2 = nums.stream().reduce(0, Integer::sum);
+IntSummaryStatistics st = nums.stream().mapToInt(i -&gt; i).summaryStatistics();   // min, max, avg, sum, count</code></pre></div>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Collection</th><th>Stream</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Stores data</strong></td><td>Yes</td><td>No (view of a source)</td></tr>
+      <tr><td><strong>Reusable</strong></td><td>Yes</td><td>No: single use</td></tr>
+      <tr><td><strong>Iteration</strong></td><td>External (you loop)</td><td>Internal (library loops)</td></tr>
+      <tr><td><strong>Evaluation</strong></td><td>Eager</td><td>Lazy</td></tr>
+      <tr><td><strong>Size</strong></td><td>Finite</td><td>May be infinite</td></tr>
+    </tbody>
+  </table></div>
+  <div class="fixbox"><span class="tag fix">Pitfalls</span>
+    <ul>
+      <li><strong>Reusing a stream:</strong> <code>IllegalStateException: stream has already been operated upon or closed</code>.</li>
+      <li>Avoid side effects and mutating the source or external state inside the pipeline (breaks laziness/parallelism; may throw <code>ConcurrentModificationException</code>).</li>
+      <li><code>peek()</code> is for debugging only. A stream with no terminal operation does <strong>nothing</strong>.</li>
+      <li><code>sorted()</code> on non-<code>Comparable</code> elements → <code>ClassCastException</code>. <code>distinct()</code> relies on <code>equals</code>/<code>hashCode</code>.</li>
+      <li><code>Stream.toList()</code> is <strong>Java 16</strong>, not 8; in Java 8 use <code>collect(Collectors.toList())</code>.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> map vs flatMap: when do you need flatMap?</summary><div>When each element maps to a collection/stream and you want a single flattened stream (e.g. a list of orders → all their items).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What does "lazy" mean for streams?</summary><div>Intermediate operations only build the pipeline; work happens when a terminal operation runs, element by element, which enables short-circuiting and loop fusion.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> <code>findFirst</code> vs <code>findAny</code>?</summary><div><code>findFirst</code> respects encounter order; <code>findAny</code> may return any element, which can be faster on parallel streams.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> <code>forEach</code> vs <code>forEachOrdered</code>? <code>count()</code> vs <code>collect(counting())</code>?</summary><div><code>forEachOrdered</code> keeps encounter order even in parallel. <code>count()</code> is a simple terminal op; <code>counting()</code> is a collector useful as a downstream (e.g. inside <code>groupingBy</code>).</div></details>
+</section>
+
+<!-- 6 -->
+<section id="t6">
+  <h2><span class="n">6</span>Collectors</h2>
+  <div class="def"><b class="lbl">Definition</b>A <code>Collector</code> is a <strong>mutable reduction</strong> strategy used by <code>collect()</code> to gather stream elements into a collection, map, string or summary result. The <code>Collectors</code> class provides ready-made ones.</div>
+<pre><code>import static java.util.stream.Collectors.*;
+
+List&lt;String&gt; l = stream.collect(toList());            Set&lt;String&gt; s = stream.collect(toSet());
+String csv = names.stream().collect(joining(", ", "[", "]"));      // [a, b, c]
+
+Map&lt;String, List&lt;Employee&gt;&gt; byDept = emps.stream().collect(groupingBy(Employee::getDept));
+Map&lt;String, Long&gt;           count  = emps.stream().collect(groupingBy(Employee::getDept, counting()));
+Map&lt;String, Double&gt;         avgSal = emps.stream().collect(groupingBy(Employee::getDept, averagingDouble(Employee::getSalary)));
+Map&lt;String, List&lt;String&gt;&gt;   names  = emps.stream().collect(groupingBy(Employee::getDept, mapping(Employee::getName, toList())));
+Map&lt;Boolean, List&lt;Employee&gt;&gt; part  = emps.stream().collect(partitioningBy(e -&gt; e.getSalary() &gt; 50_000));
+
+Map&lt;Long, Employee&gt; byId = emps.stream().collect(toMap(Employee::getId, Function.identity()));
+Map&lt;String, Employee&gt; safe = emps.stream().collect(toMap(Employee::getDept, e -&gt; e, (a, b) -&gt; a)); // merge fn for duplicates
+
+Map&lt;String, Optional&lt;Employee&gt;&gt; top = emps.stream().collect(groupingBy(Employee::getDept,
+        maxBy(Comparator.comparingDouble(Employee::getSalary))));
+List&lt;String&gt; unmod = stream.collect(collectingAndThen(toList(), Collections::unmodifiableList));</code></pre>
+  <div class="fixbox"><span class="tag fix">Pitfalls</span>
+    <ul>
+      <li><code>toMap</code> with <strong>duplicate keys</strong> throws <code>IllegalStateException</code>; supply a merge function. <code>toMap</code> with a <strong>null value</strong> throws NPE.</li>
+      <li><code>groupingBy</code> returns a <code>HashMap</code>; pass a supplier for ordering: <code>groupingBy(f, TreeMap::new, toList())</code> or <code>LinkedHashMap::new</code>.</li>
+      <li><code>partitioningBy</code> always has both <code>true</code> and <code>false</code> keys (possibly empty lists); <code>groupingBy</code> only has keys that occur.</li>
+      <li><code>Collectors.teeing</code> is Java 12, not 8.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> <code>groupingBy</code> vs <code>partitioningBy</code>?</summary><div>groupingBy: any classifier → Map&lt;K, List&gt;. partitioningBy: boolean predicate → exactly two groups.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Group employees by department and get the highest salary per department.</summary><div><code>groupingBy(dept, maxBy(comparingDouble(Employee::getSalary)))</code>, optionally unwrapped with <code>collectingAndThen(maxBy(...), Optional::get)</code>.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="t7">
+  <h2><span class="n">7</span>Classic Stream Coding Problems</h2>
+  <div class="def"><b class="lbl">Definition</b>Interviewers love small data-processing tasks. Practise these until the patterns are automatic.</div>
+<pre><code>// 1. Second highest salary
+Optional&lt;Double&gt; second = emps.stream().map(Employee::getSalary)
+    .distinct().sorted(Comparator.reverseOrder()).skip(1).findFirst();
+
+// 2. Word frequency
+Map&lt;String, Long&gt; freq = Arrays.stream(text.split("\\s+"))
+    .collect(groupingBy(Function.identity(), counting()));
+
+// 3. Find duplicates
+Set&lt;Integer&gt; seen = new HashSet&lt;&gt;();
+Set&lt;Integer&gt; dups = nums.stream().filter(n -&gt; !seen.add(n)).collect(toSet());
+
+// 4. First non-repeated character
+Character c = s.chars().mapToObj(ch -&gt; (char) ch)
+    .collect(groupingBy(Function.identity(), LinkedHashMap::new, counting()))
+    .entrySet().stream().filter(e -&gt; e.getValue() == 1).map(Map.Entry::getKey).findFirst().orElse(null);
+
+// 5. Sort a map by value (descending)
+map.entrySet().stream().sorted(Map.Entry.&lt;String,Integer&gt;comparingByValue().reversed())
+   .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -&gt; a, LinkedHashMap::new));
+
+// 6. Sort by multiple fields
+emps.sort(Comparator.comparing(Employee::getDept).thenComparing(Employee::getSalary, Comparator.reverseOrder()));
+
+// 7. Even numbers squared, summed
+int r = IntStream.rangeClosed(1, 10).filter(n -&gt; n % 2 == 0).map(n -&gt; n * n).sum();
+
+// 8. Check palindrome
+boolean pal = IntStream.range(0, s.length() / 2).allMatch(i -&gt; s.charAt(i) == s.charAt(s.length() - 1 - i));
+
+// 9. Join non-null, non-empty strings
+String out = list.stream().filter(Objects::nonNull).filter(x -&gt; !x.isEmpty()).collect(joining(","));
+
+// 10. Max / min by field
+Employee top = emps.stream().max(Comparator.comparingDouble(Employee::getSalary)).orElseThrow(NoSuchElementException::new);</code></pre>
+  <div class="tip"><strong>Say out loud:</strong> state the pipeline in words first ("filter, map, then collect by key"), mention edge cases (empty list, nulls, duplicates), and mention complexity (sorting is O(n log n)).</div>
+</section>
+
+<!-- 8 -->
+<section id="t8">
+  <h2><span class="n">8</span>Parallel Streams</h2>
+  <div class="def"><b class="lbl">Definition</b>A parallel stream splits the source into chunks processed concurrently on the <strong>common ForkJoinPool</strong> and then combines the results. Created with <code>parallelStream()</code> or <code>stream().parallel()</code>.</div>
+  <div class="card">
+<pre><code>long count = bigList.parallelStream().filter(this::expensiveCheck).count();</code></pre>
+    <ul>
+      <li><strong>Good for:</strong> large data sets, CPU-bound, stateless, independent operations, easily splittable sources (<code>ArrayList</code>, arrays, ranges).</li>
+      <li><strong>Bad for:</strong> small data, blocking I/O, order-dependent logic, shared mutable state, poorly splittable sources (<code>LinkedList</code>, <code>iterate</code>).</li>
+      <li>All parallel streams share the <strong>common pool</strong> (size ≈ cores - 1): one slow/blocking task can starve others.</li>
+    </ul>
+  </div>
+  <div class="fixbox"><span class="tag fix">Pitfalls</span>
+<pre><code>List&lt;Integer&gt; out = new ArrayList&lt;&gt;();
+nums.parallelStream().forEach(out::add);     // RACE CONDITION: ArrayList isn't thread-safe
+// fix: collect(toList()), or a concurrent collection</code></pre>
+    <ul>
+      <li>Always <strong>measure</strong>: parallelism has overhead and often isn't faster.</li>
+      <li><code>forEach</code> doesn't preserve order in parallel; use <code>forEachOrdered</code>. <code>reduce</code> needs an <strong>associative</strong> operation and a proper identity.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> What thread pool do parallel streams use? Can you change it?</summary><div>The common ForkJoinPool (<code>-Djava.util.concurrent.ForkJoinPool.common.parallelism</code>); a custom pool is possible by submitting the stream task to your own <code>ForkJoinPool</code>, though it's a workaround.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> When would you not use a parallel stream in a web service?</summary><div>When tasks block (I/O, DB) or request threads already provide concurrency; sharing the common pool across requests causes contention.</div></details>
+</section>
+
+<!-- 9 -->
+<section id="t9">
+  <h2><span class="n">9</span>Optional</h2>
+  <div class="def"><b class="lbl">Definition</b><code>Optional&lt;T&gt;</code> is a <strong>container that may or may not hold a non-null value</strong>. It makes "no result" explicit in a method's return type and reduces <code>NullPointerException</code>s.</div>
+  <div class="card">
+<pre><code>Optional&lt;User&gt; u = Optional.of(user);              // NPE if user is null
+Optional&lt;User&gt; n = Optional.ofNullable(maybeNull);  // empty if null
+Optional&lt;User&gt; e = Optional.empty();
+
+String city = repo.findById(id)                     // Optional&lt;User&gt;
+    .map(User::getAddress)                          // Optional&lt;Address&gt;  (null-safe)
+    .map(Address::getCity)
+    .filter(c -&gt; !c.isBlank())                      // isBlank is Java 11; use trim().isEmpty() in 8
+    .orElse("Unknown");
+
+repo.findById(id).ifPresent(this::notify);
+User x = repo.findById(id).orElseThrow(() -&gt; new NotFoundException(id));</code></pre>
+    <div class="scroll"><table>
+      <thead><tr><th>Method</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td><code>map</code> / <code>flatMap</code></td><td>Transform the value (<code>flatMap</code> when the function returns an Optional)</td></tr>
+        <tr><td><code>filter</code></td><td>Keep only if predicate matches</td></tr>
+        <tr><td><code>orElse(x)</code></td><td>Default value, <strong>evaluated eagerly</strong></td></tr>
+        <tr><td><code>orElseGet(supplier)</code></td><td>Default computed <strong>lazily</strong>, only if empty</td></tr>
+        <tr><td><code>orElseThrow(supplier)</code></td><td>Throw if absent</td></tr>
+        <tr><td><code>isPresent</code> / <code>ifPresent</code></td><td>Check / run if present</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="fixbox"><span class="tag fix">Pitfalls &amp; best practices</span>
+    <ul>
+      <li><code>orElse(expensive())</code> always runs <code>expensive()</code>; use <code>orElseGet(() -&gt; expensive())</code>.</li>
+      <li>Don't call <code>get()</code> without checking; prefer <code>orElseThrow</code>/<code>map</code>. Avoid the <code>if (opt.isPresent()) opt.get()</code> pattern.</li>
+      <li><strong>Use as a return type</strong>; avoid it for fields, method parameters, collection elements (use empty collections instead). It isn't <code>Serializable</code>.</li>
+      <li>Version traps: <code>ifPresentOrElse</code>, <code>or</code>, <code>stream()</code> are Java 9; <code>orElseThrow()</code> (no-arg) is Java 10; <code>isEmpty()</code> is Java 11.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> <code>map</code> vs <code>flatMap</code> on Optional?</summary><div><code>map</code> wraps the result in an Optional; if your function already returns an Optional, use <code>flatMap</code> to avoid <code>Optional&lt;Optional&lt;T&gt;&gt;</code>.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Should a method return <code>Optional&lt;List&lt;T&gt;&gt;</code>?</summary><div>No; return an empty list instead.</div></details>
+</section>
+
+<!-- 10 -->
+<section id="t10">
+  <h2><span class="n">10</span>Date &amp; Time API (java.time)</h2>
+  <div class="def"><b class="lbl">Definition</b>The <code>java.time</code> package (JSR-310) is a modern date/time API whose classes are <strong>immutable and thread-safe</strong>, with clear separation of human time (dates/zones) and machine time (<code>Instant</code>).</div>
+  <div class="card">
+    <p><strong>Problems with the old API:</strong> <code>Date</code>/<code>Calendar</code> are mutable and not thread-safe, <code>SimpleDateFormat</code> isn't thread-safe, months are 0-indexed, confusing design, poor time-zone support.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Class</th><th>Represents</th></tr></thead>
+      <tbody>
+        <tr><td><code>LocalDate</code> / <code>LocalTime</code> / <code>LocalDateTime</code></td><td>Date / time / both, <strong>no time zone</strong></td></tr>
+        <tr><td><code>ZonedDateTime</code> / <code>OffsetDateTime</code></td><td>Date-time with zone (DST rules) / with UTC offset</td></tr>
+        <tr><td><code>Instant</code></td><td>Machine timestamp (UTC epoch)</td></tr>
+        <tr><td><code>Duration</code> / <code>Period</code></td><td>Time-based amount (h/m/s) / date-based amount (y/m/d)</td></tr>
+        <tr><td><code>DateTimeFormatter</code></td><td>Thread-safe formatting/parsing</td></tr>
+        <tr><td><code>ZoneId</code>, <code>ChronoUnit</code>, <code>TemporalAdjusters</code></td><td>Zones, units, adjustments (e.g. next Monday)</td></tr>
+      </tbody>
+    </table></div>
+<pre><code>LocalDate d = LocalDate.of(2025, Month.MARCH, 15);
+LocalDate next = d.plusDays(10);                     // returns a NEW object; d is unchanged
+LocalDateTime now = LocalDateTime.now();
+ZonedDateTime ny = ZonedDateTime.now(ZoneId.of("America/New_York"));
+Instant ts = Instant.now();
+
+Period p = Period.between(LocalDate.of(2020, 1, 1), d);          // years, months, days
+Duration dur = Duration.between(start, end);                      // hours/minutes/seconds
+long days = ChronoUnit.DAYS.between(a, b);
+
+DateTimeFormatter f = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+String text = d.format(f);   LocalDate parsed = LocalDate.parse("15-03-2025", f);
+
+Date old = Date.from(ts);  Instant back = old.toInstant();       // legacy interop
+d.with(TemporalAdjusters.next(DayOfWeek.MONDAY));</code></pre>
+  </div>
+  <div class="fixbox"><span class="tag fix">Pitfalls</span>
+    <ul>
+      <li><code>d.plusDays(1);</code> alone does nothing: the result must be assigned (immutability).</li>
+      <li>Use <code>ZonedDateTime</code>/<code>Instant</code> for anything crossing time zones or DST; store timestamps as UTC <code>Instant</code>.</li>
+      <li><code>yyyy</code> vs <code>YYYY</code> (week-based year) in patterns is a classic bug.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> Duration vs Period?</summary><div>Duration: time-based (seconds/nanos). Period: date-based (years/months/days). Adding a Period of one day across DST differs from adding a Duration of 24 hours.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Why is <code>DateTimeFormatter</code> better than <code>SimpleDateFormat</code>?</summary><div>It's immutable and thread-safe, so it can be a shared constant.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What does <code>LocalDateTime</code> lack?</summary><div>A time zone/offset, so it doesn't identify a single instant; combine with <code>ZoneId</code> to get a <code>ZonedDateTime</code>.</div></details>
+</section>
+
+<!-- 11 -->
+<section id="t11">
+  <h2><span class="n">11</span>CompletableFuture</h2>
+  <div class="def"><b class="lbl">Definition</b><code>CompletableFuture&lt;T&gt;</code> implements <code>Future</code> and <code>CompletionStage</code>, representing an <strong>asynchronous computation you can chain, combine and complete manually</strong>, without blocking.</div>
+  <div class="card">
+    <p><strong>Why not plain <code>Future</code>?</strong> <code>get()</code> blocks, no callbacks, no chaining/combining, no built-in exception handling.</p>
+<pre><code>CompletableFuture&lt;User&gt;  u = CompletableFuture.supplyAsync(() -&gt; userService.find(id), executor);
+CompletableFuture&lt;Order&gt; o = CompletableFuture.supplyAsync(() -&gt; orderService.find(id), executor);
+
+CompletableFuture&lt;String&gt; result = u
+    .thenCombine(o, (user, order) -&gt; user.getName() + ": " + order.getTotal())   // combine two independent
+    .thenApply(String::toUpperCase)                                              // transform (like map)
+    .exceptionally(ex -&gt; "fallback");                                            // error recovery
+
+CompletableFuture.allOf(u, o).join();           // wait for all
+CompletableFuture.anyOf(u, o);                  // first to finish
+u.thenCompose(user -&gt; fetchOrders(user));       // dependent async step (like flatMap)</code></pre>
+    <div class="scroll"><table>
+      <thead><tr><th>Method</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>supplyAsync</code> / <code>runAsync</code></td><td>Start async task (with / without result)</td></tr>
+        <tr><td><code>thenApply</code> / <code>thenAccept</code> / <code>thenRun</code></td><td>Transform / consume / run after completion</td></tr>
+        <tr><td><code>thenCompose</code></td><td>Chain another CompletableFuture (flatMap)</td></tr>
+        <tr><td><code>thenCombine</code></td><td>Combine two independent futures</td></tr>
+        <tr><td><code>exceptionally</code> / <code>handle</code> / <code>whenComplete</code></td><td>Error handling (<code>handle</code> sees result and error)</td></tr>
+        <tr><td><code>allOf</code> / <code>anyOf</code></td><td>Wait for all / any</td></tr>
+        <tr><td><code>join</code> vs <code>get</code></td><td><code>join</code> throws unchecked <code>CompletionException</code>; <code>get</code> throws checked exceptions</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+  <div class="fixbox"><span class="tag fix">Pitfalls</span>
+    <ul>
+      <li>Without an executor, async tasks run on the <strong>common ForkJoinPool</strong>. Pass your own executor for blocking I/O.</li>
+      <li>Exceptions are wrapped in <code>CompletionException</code>; unhandled failures stay silent until you <code>join()</code>/<code>get()</code>.</li>
+      <li><code>orTimeout</code>/<code>completeOnTimeout</code> are Java 9.</li>
+      <li>Calling <code>join()</code> immediately defeats the purpose; compose first, block once at the edge.</li>
+    </ul></div>
+  <details><summary><span class="tag q">Follow-up</span> thenApply vs thenCompose?</summary><div>thenApply: function returns a plain value (map). thenCompose: function returns another CompletableFuture (flatMap), avoiding nested futures.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Call 3 microservices in parallel and merge results?</summary><div>Start three <code>supplyAsync</code> calls on a dedicated executor, then <code>allOf(...).thenApply(v -&gt; merge(f1.join(), f2.join(), f3.join()))</code> with <code>exceptionally</code> fallbacks and timeouts.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> Difference between <code>handle</code> and <code>exceptionally</code>?</summary><div><code>exceptionally</code> only runs on failure and returns a fallback; <code>handle</code> runs always with (result, error) and can transform either.</div></details>
+</section>
+
+<!-- 12 -->
+<section id="t12">
+  <h2><span class="n">12</span>Other Java 8 Additions</h2>
+  <div class="def"><b class="lbl">Definition</b>Beyond the headline features, Java 8 added many small APIs that appear in everyday code and interviews.</div>
+  <div class="card">
+<pre><code>// Iterable / Collection / List
+list.forEach(System.out::println);
+list.removeIf(x -&gt; x &lt; 0);      list.replaceAll(String::toUpperCase);      list.sort(Comparator.naturalOrder());
+
+// Map
+map.getOrDefault(k, 0);          map.putIfAbsent(k, v);
+map.computeIfAbsent(k, x -&gt; new ArrayList&lt;&gt;()).add(v);        // multimap idiom
+map.computeIfPresent(k, (key, old) -&gt; old + 1);
+map.merge(word, 1, Integer::sum);                               // word counter
+map.forEach((k, v) -&gt; System.out.println(k + "=" + v));
+
+// Comparator
+Comparator.comparing(Person::getName).thenComparing(Person::getAge).reversed();
+Comparator.comparing(Person::getName, Comparator.nullsFirst(Comparator.naturalOrder()));
+
+// Strings, Objects, Math
+String.join(", ", list);   new StringJoiner(", ", "[", "]");   Objects.requireNonNull(x, "msg");
+Math.addExact(a, b);       Integer.sum(a, b);   Integer.max(a, b);
+
+// Base64, arrays
+Base64.getEncoder().encodeToString(bytes);    Arrays.parallelSort(arr);    Arrays.setAll(arr, i -&gt; i * i);</code></pre>
+    <ul>
+      <li><strong>Repeating annotations</strong> (<code>@Repeatable</code>) and <strong>type annotations</strong> (<code>@NonNull</code> on types).</li>
+      <li><strong>Concurrency:</strong> <code>CompletableFuture</code>, <code>StampedLock</code> (optimistic reads), <code>LongAdder</code>/<code>LongAccumulator</code> (low-contention counters), new <code>ConcurrentHashMap</code> bulk methods (<code>forEach</code>, <code>reduce</code>, <code>search</code>, <code>compute</code>) and its reworked internals (CAS + per-bucket locking, no segments).</li>
+      <li><strong>JVM:</strong> <strong>PermGen removed</strong> → class metadata moves to <strong>Metaspace</strong> (native memory). HashMap buckets can convert to trees on heavy collisions.</li>
+      <li><strong>Nashorn</strong> JavaScript engine (deprecated in 11, removed in 15). <code>jjs</code> tool. JDBC 4.2 and <code>java.time</code> support.</li>
+    </ul>
+  </div>
+  <details><summary><span class="tag q">Follow-up</span> How do you count word frequency using <code>Map.merge</code>?</summary><div><code>for (String w : words) map.merge(w, 1, Integer::sum);</code> inserts 1 or adds to the existing count atomically in the map's own logic.</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What changed in HashMap in Java 8?</summary><div>Collision chains with 8+ nodes (and capacity ≥ 64) convert to balanced trees, improving worst-case lookup from O(n) to O(log n).</div></details>
+  <details><summary><span class="tag q">Follow-up</span> What replaced PermGen and why?</summary><div>Metaspace: class metadata lives in native memory that grows dynamically (bounded by <code>-XX:MaxMetaspaceSize</code>), avoiding fixed PermGen sizing errors.</div></details>
+</section>
+
+<!-- 13 -->
+<section id="t13">
+  <h2><span class="n">13</span>What Is NOT Java 8 (Version Traps)</h2>
+  <div class="def"><b class="lbl">Definition</b>Interviewers like to slip in newer APIs to see if you know which release introduced them.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Feature</th><th>Introduced in</th></tr></thead>
+    <tbody>
+      <tr><td><code>List.of</code>, <code>Set.of</code>, <code>Map.of</code>; private interface methods; <code>takeWhile</code>/<code>dropWhile</code>; <code>Optional.ifPresentOrElse/or/stream</code>; <code>Stream.iterate</code> with predicate; <code>Collectors.filtering/flatMapping</code></td><td><strong>Java 9</strong></td></tr>
+      <tr><td><code>var</code>; <code>Collectors.toUnmodifiableList</code>; <code>Optional.orElseThrow()</code></td><td><strong>Java 10</strong></td></tr>
+      <tr><td><code>String.isBlank/strip/lines/repeat</code>; <code>Optional.isEmpty</code>; <code>var</code> in lambdas; HTTP Client</td><td><strong>Java 11</strong></td></tr>
+      <tr><td><code>Collectors.teeing</code></td><td><strong>Java 12</strong></td></tr>
+      <tr><td>Text blocks; switch expressions</td><td><strong>Java 14-15</strong></td></tr>
+      <tr><td><code>record</code>; <code>Stream.toList()</code>; pattern-matching <code>instanceof</code></td><td><strong>Java 16</strong></td></tr>
+      <tr><td>Sealed classes</td><td><strong>Java 17</strong></td></tr>
+      <tr><td>Virtual threads</td><td><strong>Java 21</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- CORE -->
+<section id="core">
+  <h2>🎯 Tricky &amp; Concept Questions (Recruiter Mode)</h2>
+  <p class="legend">Answer out loud first, then tap to check.</p>
+  <details><summary>Lambda vs anonymous inner class: key differences?</summary><div>Lambda: functional interfaces only, <code>this</code> = enclosing instance, no own state, implemented via <code>invokedynamic</code>. Anonymous class: any type, has its own <code>this</code>, fields and a separate class file.</div></details>
+  <details><summary>Is this a valid functional interface? <code>interface X { void a(); boolean equals(Object o); }</code></summary><div>Yes. <code>equals</code> is an <code>Object</code> method, so it doesn't count as an abstract method.</div></details>
+  <details><summary>What does this print? <code>Stream.of(1,2,3).peek(System.out::println);</code></summary><div>Nothing: no terminal operation, so the pipeline never runs.</div></details>
+  <details><summary>What happens if you reuse a stream after a terminal operation?</summary><div><code>IllegalStateException</code> (stream already operated upon or closed). Create a new stream from the source.</div></details>
+  <details><summary>Can you <code>break</code> or <code>continue</code> inside <code>forEach</code>?</summary><div>No (it's a lambda; <code>return</code> only skips the current element). Use a regular loop, <code>anyMatch</code>/<code>findFirst</code> for short-circuiting, or <code>takeWhile</code> (Java 9).</div></details>
+  <details><summary>Does a stream modify the original collection?</summary><div>No. Operations produce new results; the source is untouched (unless you mutate it via side effects, which you shouldn't).</div></details>
+  <details><summary><code>reduce(0, Integer::sum)</code> vs <code>mapToInt(...).sum()</code>?</summary><div>Both sum; the primitive stream avoids boxing and is usually faster and clearer. The <code>reduce</code> form with an identity returns a value; without identity returns an <code>Optional</code> (empty stream).</div></details>
+  <details><summary>What if <code>Stream.iterate(1, n -&gt; n + 1)</code> has no <code>limit</code>?</summary><div>It's infinite and a terminal op like <code>forEach</code>/<code>collect</code> will run forever (or until memory is exhausted). Add <code>limit</code> or a short-circuiting op.</div></details>
+  <details><summary>Can <code>sorted()</code> be short-circuited?</summary><div>No, it's stateful and must see all elements before emitting; elements after it can still short-circuit (e.g. <code>sorted().findFirst()</code> still sorts everything).</div></details>
+  <details><summary>Output? <code>IntStream.range(1, 5).sum()</code> vs <code>rangeClosed(1, 5).sum()</code></summary><div>10 (1+2+3+4) and 15 (1+...+5).</div></details>
+  <details><summary>What happens with <code>Optional.of(null)</code>? <code>Optional.ofNullable(null).get()</code>?</summary><div><code>of(null)</code> → <code>NullPointerException</code>. <code>ofNullable(null)</code> gives an empty Optional; <code>get()</code> then throws <code>NoSuchElementException</code>.</div></details>
+  <details><summary>Two interfaces with the same default method: how to resolve?</summary><div>Override the method in your class; optionally delegate with <code>InterfaceName.super.method()</code>. A class method always wins over interface defaults.</div></details>
+  <details><summary>Can an interface's static method be called via an implementing class instance?</summary><div>No. Static interface methods are called only as <code>InterfaceName.method()</code>.</div></details>
+  <details><summary>Is parallel stream always faster? What can go wrong?</summary><div>No. Overhead, shared mutable state (races), blocking tasks in the common pool, and ordering assumptions can make it slower or wrong. Measure first.</div></details>
+  <details><summary>Convert a <code>List&lt;Employee&gt;</code> to a <code>Map&lt;Integer, Employee&gt;</code> safely.</summary><div><code>toMap(Employee::getId, Function.identity(), (a, b) -&gt; a)</code> handles duplicate keys; avoid null values.</div></details>
+  <details><summary>Is Java a functional language now?</summary><div>No, it stays object-oriented but supports functional style (lambdas, higher-order functions, immutability helpers). Streams shift code from "how" (loops) to "what" (declarative).</div></details>
+  <details><summary>Stream pipeline vs a for loop: when prefer the loop?</summary><div>For tiny collections, hot performance-critical code, complex control flow (break/continue, checked exceptions, mutation), or when debugging readability suffers.</div></details>
+</section>
+</main>
+<footer>Know the concept, write the snippet, mention the pitfall, and know which Java version added what.</footer>
+</body>
+</html>
